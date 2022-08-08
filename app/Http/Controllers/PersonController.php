@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class PersonController extends Controller
 {
+    protected static $tittle = 'Personas';
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +16,9 @@ class PersonController extends Controller
     public function index()
     {
         //
-        return view('person/index');
+        // $tittle = "Personas";
+        $data['persons'] = Person::paginate(20);
+        return view('person/index')->with($data)->with('tittle', static::$tittle);
     }
 
     /**
@@ -26,7 +29,7 @@ class PersonController extends Controller
     public function create()
     {
         //
-        return view('person/create');
+        return view('person/create')->with('tittle', static::$tittle);
     }
 
     /**
@@ -38,6 +41,30 @@ class PersonController extends Controller
     public function store(Request $request)
     {
         //
+        $data = [
+            'name' => 'required|string|max:100',
+            'surname' => 'required|string|max:100',
+            'email' => 'required|email',
+        ];
+        $message = [
+            'required' => 'El :attribute es requerido',
+        ];
+        if($request->cuit != ""){
+            $data['cuit'] = 'digits_between:10,11|integer';
+            $message['cuit.digits_between'] = 'El CUIT debe ser de al menos 11 digitos';
+        }
+        if($request->telephone != ""){
+            $data['telephone'] = 'integer|digits_between:6,16';
+            $message['telephone.digits_between'] = 'El numero de telefono tiene que ser valido';
+            $message['telephone'] = 'El numero de telefono tiene que ser valido';
+        }
+        $this->validate($request, $data, $message);
+
+        $dataPerson = request()->except('_token');
+
+        $tittle = "Personas";
+        Person::insert($dataPerson);
+        return redirect('person')->with('mensaje', 'Persona agregado con exito')->with('tittle', static::$tittle);
     }
 
     /**
@@ -46,9 +73,11 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function show(Person $person)
+    public function show($id)
     {
         //
+        $person = Person::findOrFail($id);
+        return view('person.show', compact('person'))->with('tittle', static::$tittle);
     }
 
     /**
@@ -57,10 +86,11 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function edit(Person $person)
+    public function edit($id)
     {
         //
-        return view('person/edit');
+        $person = Person::findOrFail($id);
+        return view('person.edit', compact('person'))->with('tittle', static::$tittle);
     }
 
     /**
@@ -70,9 +100,35 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Person $person)
+    public function update(Request $request, $id)
     {
         //
+        $data = [
+            'name' => 'required|string|max:100',
+            'surname' => 'required|string|max:100',
+            'email' => 'required|email',
+        ];
+        $message = [
+            'required' => 'El :attribute es requerido',
+        ];
+        if($request->cuit != ""){
+            $data['cuit'] = 'digits_between:10,11|integer';
+            $message['cuit.digits_between'] = 'El CUIT debe ser de al menos 11 digitos';
+        }
+        if($request->telephone != ""){
+            $data['telephone'] = 'integer|digits_between:6,16';
+            $message['telephone.digits_between'] = 'El numero de telefono tiene que ser valido';
+            $message['telephone'] = 'El numero de telefono tiene que ser valido';
+        }
+
+        $this->validate($request, $data, $message);
+
+        $dataPerson = request()->except(['_token', '_method']);
+
+        Person::where('id', '=', $id)->update($dataPerson);
+
+        $person = Person::findOrFail($id);
+        return redirect('person')->with('mensaje', 'Persona modificada')->with('tittle', static::$tittle);
     }
 
     /**
@@ -81,8 +137,13 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Person $person)
+    public function destroy($id)
     {
         //
+        $person = Person::findOrFail($id);
+
+        Person::destroy($id);
+
+        return redirect('person')->with('mensaje', 'Persona eliminada')->with('tittle', static::$tittle);
     }
 }
