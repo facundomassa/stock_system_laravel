@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    protected static $tittle = 'Articulos';
     /**
      * Display a listing of the resource.
      *
@@ -15,6 +16,8 @@ class ArticleController extends Controller
     public function index()
     {
         //
+        $data['articles'] = Article::paginate(20);
+        return view('article/index')->with($data)->with('tittle', static::$tittle);
     }
 
     /**
@@ -25,6 +28,7 @@ class ArticleController extends Controller
     public function create()
     {
         //
+        return view('article/create')->with('tittle', static::$tittle);
     }
 
     /**
@@ -36,6 +40,27 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         //
+        $data = [
+            'name' => 'required|string|max:60',
+            'unit' => 'required|string|max:1'
+        ];
+        if($request->type != ""){
+            $data['type'] = 'string|max:30';
+        }
+        if($request->code != ""){
+            $data['code'] = 'string|max:16';
+        }
+        $message = [
+            'required' => 'El :attribute es requerido',
+            'max' => 'El :attribute no puedo tener mas de :max caracteres'
+        ];
+
+        $this->validate($request, $data, $message);
+
+        $dataArticle = request()->except('_token');
+
+        Article::insert($dataArticle);
+        return redirect('article')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
     }
 
     /**
@@ -44,9 +69,11 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function show(Article $article)
+    public function show($id)
     {
         //
+        $article = Article::findOrFail($id);
+        return view('article.show', compact('article'))->with('tittle', static::$tittle);
     }
 
     /**
@@ -55,9 +82,11 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function edit(Article $article)
+    public function edit($id)
     {
         //
+        $article = Article::findOrFail($id);
+        return view('article.edit', compact('article'))->with('tittle', static::$tittle);
     }
 
     /**
@@ -67,9 +96,31 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $id)
     {
         //
+        $data = [
+            'name' => 'required|string|max:60',
+            'unit' => 'required|string|max:1'
+        ];
+        if($request->type != ""){
+            $data['type'] = 'string|max:30';
+        }
+        if($request->code != ""){
+            $data['code'] = 'string|max:16';
+        }
+        $message = [
+            'required' => 'El :attribute es requerido',
+            'max' => 'El :attribute no puedo tener mas de :max caracteres'
+        ];
+
+        $this->validate($request, $data, $message);
+
+        $dataArticle = request()->except(['_token', '_method']);
+
+        Article::where('id', '=', $id)->update($dataArticle);
+
+        return redirect('article')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
     }
 
     /**
@@ -78,8 +129,13 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Article $article)
+    public function destroy($id)
     {
         //
+        $article = Article::findOrFail($id);
+
+        Article::destroy($id);
+
+        return redirect('article')->with('mensaje', 'Articulo eliminada')->with('tittle', static::$tittle);
     }
 }
