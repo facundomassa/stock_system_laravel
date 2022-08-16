@@ -1,7 +1,10 @@
 <?php
 
+
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\PersonController;
+use App\Models\Direction;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,5 +26,6 @@ Auth::routes();
 
 Route::resource('person', PersonController::class);
 Route::resource('article', ArticleController::class);
+Route::resource('direction', DirectionController::class);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
