@@ -120,7 +120,7 @@ class ArticleController extends Controller
 
         Article::where('id', '=', $id)->update($dataArticle);
 
-        return redirect('article')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
+        return redirect('article')->with('mensaje', 'Articulo editado con exito')->with('tittle', static::$tittle);
     }
 
     /**
