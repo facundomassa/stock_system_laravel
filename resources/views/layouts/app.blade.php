@@ -8,6 +8,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Sistema de Stock') }}</title>
+    <!-- CSS -->
+    @yield('css')
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -33,5 +35,8 @@
             
         </main>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" type="text/javascript"></script>
+    @yield('js')
+    
 </body>
 </html>

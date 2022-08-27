@@ -73,4 +73,6 @@
 <input class="btn btn-success" type="submit" value="{{ $modo }} Datos">
 <a class="btn btn-primary" href="{{ url('direction/') }}">Regresar</a>
 
+@section('js')
 @vite(['resources/js/ajax/state.js'])
+@endsection

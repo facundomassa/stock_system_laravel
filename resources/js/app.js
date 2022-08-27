@@ -1,7 +1,7 @@
 import './bootstrap';
-import $ from 'jquery';
-window.jQuery = $;
-window.$ = $;
+// import $ from 'jquery';
+// window.jQuery = $;
+// window.$ = $;
 
 (function () {
     var $body = document.body,

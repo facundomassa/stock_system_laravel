@@ -17,7 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('origen_id_stockcenter');
             $table->unsignedInteger('destiny_id_stockcenter');
-            $table->date('date_ended')->nullable();
+            $table->dateTime('date_ended')->nullable();
             $table->unsignedInteger('id_user');
             $table->string('status', 1)->default('I');
             $table->foreign('origen_id_stockcenter')->references('id')->on('stockcenters')->onDelete('cascade');

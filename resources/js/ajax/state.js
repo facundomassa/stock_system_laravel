@@ -1,7 +1,4 @@
-import {
-    parseJSON
-} from "jquery";
-
+ 
 $(document).ready(function () {
 
     var $countrySelect = $("#country"),

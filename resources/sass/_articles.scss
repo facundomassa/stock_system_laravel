@@ -1,0 +1,41 @@
+.aticle-container{
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.25);
+    
+    .article-store{
+        position: relative;
+        width: 80vw;
+        height: 80vh;
+        margin: 10vh auto;
+        padding: 3rem;
+        border-radius: 1rem;
+        background-color: rgb(252, 254, 255);
+        .article-btn{
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            height: 40px;
+            width: 40px;
+            border-radius: 40%;
+        }
+        .article-tittle{
+            height: 100%;
+            .article-scroll{
+                overflow: hidden;
+                overflow-y: scroll;
+            }
+            .article-buttom{
+                text-align: right;
+            }
+        }
+    }
+}
+
+.expandCheckbox{
+    transform: scale(1.5);
+}
