@@ -2,16 +2,7 @@
 
 @section('content')
     <div class="container">
-        @if (Session::has('mensaje'))
-            <div class="alert alert-success alert-dismissible" role="alert">
-
-                <strong>{{ Session::get('mensaje') }}</strong>
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+        @include('layouts/alert')
         <table class="table table-striped table-hover table-md">
             <thead>
                 <tr>
@@ -41,6 +32,6 @@
             </tbody>
 
         </table>
-        {!! $movements->links() !!}
+        {!! $movements->links('vendor.pagination.bootstrap-5') !!}
     </div>
 @endsection

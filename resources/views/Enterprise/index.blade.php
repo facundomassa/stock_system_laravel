@@ -2,16 +2,7 @@
 
 @section('content')
     <div class="container">
-        @if (Session::has('mensaje'))
-        <div class="alert alert-success alert-dismissible" role="alert">
-            
-                <strong>{{ Session::get('mensaje') }}</strong>
-            
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        @endif
+        @include('layouts/alert')
         <table class="table table-striped table-hover table-md" >
             <thead >
                 <tr>
@@ -42,7 +33,7 @@
             </tbody>
 
         </table>
-        {!! $enterprises->links()!!}
+        {!! $enterprises->links('vendor.pagination.bootstrap-5')!!}
         <a class="btn btn-success" href="{{ url('/enterprise/create') }}">Nueva sucursal</a>
     </div>
 @endsection

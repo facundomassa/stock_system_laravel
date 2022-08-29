@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Movement;
 use App\Models\Refer;
 use Illuminate\Http\Request;
 use App\Models\Stockcenter;
@@ -9,6 +10,20 @@ use App\Models\Stockcenter;
 class ReferController extends Controller
 {
     protected static $tittle = 'Remito';
+
+    private static $rules = [
+        'origen_id_stockcenter' => 'required|integer|digits_between:0,10',
+        'destiny_id_stockcenter' => 'required|integer|digits_between:0,10',
+        'status' => 'required|string|max:1',
+        'date_ended' => 'nullable|date_format:Y-m-d H:i|after:-1 days',
+        'id_user' => 'required|integer|digits_between:0,10',
+    ];
+    private static $message = [
+        'required' => 'El :attribute es requerido',
+        'date_ended.required' => 'Falta fecha finalizado',
+        'max' => 'El :attribute no puedo tener mas de :max caracteres',
+        'after' => 'La fecha no puede ser menor al ingreso de hoy'
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -18,17 +33,6 @@ class ReferController extends Controller
     {
         //
         $data['refers'] = Refer::paginate(20);
-        
-        foreach ($data['refers'] as $key => $value) {
-            $data['refers'][$key]->origen_id_stockcenter = $value->Origin->name;
-            $data['refers'][$key]->destiny_id_stockcenter = $value->Destiny->name;
-
-            $data['refers'][$key]->id_user = $value->User->name . " " . $value->User->surname;
-
-            $data['refers'][$key]->status_n = $value->status;
-            $data['refers'][$key]->StatusOf();
-        }
-
         return view('refer/index')->with($data)->with('tittle', static::$tittle);
     }
 
@@ -54,33 +58,15 @@ class ReferController extends Controller
     public function store(Request $request)
     {
         //
+        $request['id_user'] = auth()->user()->id;
+        $request['status'] = 'I';
         $request = Refer::ValidateIDRel($request);
-        $request->merge(['id_user' => auth()->id()]);
 
-        if(isset($request->date_ended)){
-            $request->merge(['date_ended' => str_replace("T", " ", $request->date_ended)]);
-        }
-        
-        
-        $data = [
-            'origen_id_stockcenter' => 'required|integer|digits_between:0,10',
-            'destiny_id_stockcenter' => 'required|integer|digits_between:0,10',
-            'status' => 'required|string|max:1',
-            'date_ended' => 'nullable|date_format:Y-m-d H:i|after:-1 days',
-            'id_user' => 'required|integer|digits_between:0,10',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres',
-            'after' => 'La fecha no puede ser menor al ingreso de hoy'
-        ];
-
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$rules, static::$message);
 
         $dataRefer = request()->except('_token');
-
-        Refer::insert($dataRefer);
         
+        Refer::create($dataRefer);
         return redirect('refer/' . Refer::latest('id')->first()->id)->with('mensaje', 'Remito creado con exito')->with('tittle', static::$tittle);
     }
 
@@ -93,16 +79,10 @@ class ReferController extends Controller
     public function show($id)
     {
         //
+        $data['movements'] = Movement::get()->where('id_refer', $id);
+
         $refer = Refer::findOrFail($id);
-
-        $refer->origen_id_stockcenter = $refer->Origin->name;
-        $refer->destiny_id_stockcenter = $refer->Destiny->name;
-        $refer->id_user = $refer->User->name . " " . $refer->User->surname;
-
-        $refer->status_n = $refer->status;
-        $refer->StatusOf();
-
-        return view('refer.show', compact('refer'))->with('tittle', static::$tittle);
+        return view('refer.show', compact('refer'))->with($data)->with('tittle', static::$tittle);
     }
 
     /**
@@ -115,10 +95,7 @@ class ReferController extends Controller
     {
         //
         $data['stockcenters'] = Stockcenter::get();
-
         $refer = Refer::findOrFail($id);
-        $refer->StatusOf();
-        
         return view('refer.edit', compact('refer'))->with($data)->with('tittle', static::$tittle);
     }
 
@@ -129,9 +106,25 @@ class ReferController extends Controller
      * @param  \App\Models\Refer  $refer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Refer $refer)
+    public function update(Request $request, $id)
     {
         //
+        $refer = Refer::find($id);
+        $request['id_user'] = $refer->id_user;
+        $request['status'] = $refer->status;
+
+        if(isset($request['date_ended'])){
+            $request['date_ended'] = str_replace("T", " ", $request['date_ended']);
+        }
+
+        $request = Refer::ValidateIDRel($request);
+        
+        $this->validate($request, static::$rules, static::$message);
+
+        $dataRefer = request()->except(['_token', '_method']);
+        
+        $refer->update($dataRefer);
+        return redirect('refer')->with('mensaje', 'Remito editado con exito')->with('tittle', static::$tittle);
     }
 
     /**
@@ -140,8 +133,36 @@ class ReferController extends Controller
      * @param  \App\Models\Refer  $refer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Refer $refer)
+    public function destroy($id)
     {
         //
+        $refer = Refer::findOrFail($id);
+        $refer->canceled();
+
+        return redirect('refer')->with('mensaje', 'Remito cancelado')->with('tittle', static::$tittle);
+    }
+
+    public function emited($id)
+    {
+        //
+        $refer = Refer::findOrFail($id);
+        $refer->emited();
+
+        return redirect('refer')->with('mensaje', 'Remito emitido')->with('tittle', static::$tittle);
+    }
+
+    public function finalized(Request $request, $id)
+    {
+        //
+        $refer = Refer::findOrFail($id);
+        $request->request->add($refer->getAttributes());
+        
+        $rules = static::$rules;
+        $rules['date_ended'] = 'required|date_format:Y-m-d H:i:s';
+        
+        $this->validate($request, $rules, static::$message);
+        
+        $refer->finalized();
+        return redirect('refer')->with('mensaje', 'Remito Finalizado')->with('tittle', static::$tittle);
     }
 }

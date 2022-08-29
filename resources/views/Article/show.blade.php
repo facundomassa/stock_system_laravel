@@ -13,7 +13,7 @@
         </div>
         <div class="form-group">
             <label for="unit">Unidad:</label>
-            <p>{{$article->unit }}</p>
+            <p>{{$article->unitName }}</p>
         </div>
         <div class="form-group">
             <label for="type">Tipo:</label>

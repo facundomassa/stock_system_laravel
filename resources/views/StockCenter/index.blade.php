@@ -2,18 +2,9 @@
 
 @section('content')
     <div class="container">
-        @if (Session::has('mensaje'))
-        <div class="alert alert-success alert-dismissible" role="alert">
-            
-                <strong>{{ Session::get('mensaje') }}</strong>
-            
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        @endif
-        <table class="table table-striped table-hover table-md" >
-            <thead >
+        @include('layouts/alert')
+        <table class="table table-striped table-hover table-md">
+            <thead>
                 <tr>
                     <th class="table-light">#</th>
                     <th class="table-light">Operacion</th>
@@ -34,23 +25,25 @@
                         <td>{{ $stockcenter->id_direction }}</td>
                         <td>{{ $stockcenter->id_person }}</td>
                         <td>
-                            <a class="btn btn-warning py-0" href="{{ url('/stockcenter/' . $stockcenter->id . '/edit') }}">Editar</a>
+                            <a class="btn btn-warning py-0"
+                                href="{{ url('/stockcenter/' . $stockcenter->id . '/edit') }}">Editar</a>
 
                             <form class="d-inline" action="{{ url('/stockcenter/' . $stockcenter->id) }}" method="post">
                                 @csrf
                                 {{ method_field('DELETE') }}
-                                <input class="btn btn-danger py-0" type="submit" onclick="return confirm('¿Quieres borrar?')"
-                                    value="Borrar">
+                                <input class="btn btn-danger py-0" type="submit"
+                                    onclick="return confirm('¿Quieres borrar?')" value="Borrar">
                             </form>
-                            <a class="btn btn-outline-dark py-0" href="{{ url('/stockcenter/' . $stockcenter->id) }}"><i class="bi bi-eye-fill"></i></a>
-                            
+                            <a class="btn btn-outline-dark py-0" href="{{ url('/stockcenter/' . $stockcenter->id) }}"><i
+                                    class="bi bi-eye-fill"></i></a>
+
                         </td>
                     </tr>
                 @endforeach
             </tbody>
 
         </table>
-        {!! $stockcenters->links()!!}
+        {!! $stockcenters->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-success" href="{{ url('/stockcenter/create') }}">Nuevo ingreso</a>
     </div>
 @endsection

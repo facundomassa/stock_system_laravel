@@ -9,7 +9,7 @@
 @endif
 <div class="form-group">
     <label for="name">Nombre:</label>
-    <input class="form-control" type="text" name="name" maxlength="60"
+    <input required class="form-control" type="text" name="name" maxlength="60"
         value="{{ isset($article->name) ? $article->name : old('name') }}" id="name">
 </div>
 <div class="form-group">
@@ -19,8 +19,12 @@
 </div>
 <div class="form-group">
     <label for="unit">Unidad:</label>
-    <input class="form-control" type="text" name="unit" maxlength="1"
-        value="{{ isset($article->unit) ? $article->unit : old('unit') }}" id="unit">
+    <select required class="form-control" name="unit" id="unit">
+        <option disabled selected value="">-Seleccionar una opcion-</option>
+        <option {{(isset($article->unit) ? $article->unit : old('unit')) == "U" ? "selected" : ""}} value="U"> Unidad</option>
+        <option {{(isset($article->unit) ? $article->unit : old('unit')) == "M" ? "selected" : ""}} value="M"> Metro</option>
+        <option {{(isset($article->unit) ? $article->unit : old('unit')) == "K" ? "selected" : ""}} value="K"> Kilogramo</option>
+    </select>
 </div>
 <div class="form-group">
     <label for="type">Tipo:</label>

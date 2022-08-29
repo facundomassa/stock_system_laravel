@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 class EnterpriseController extends Controller
 {
     protected static $tittle = 'Operacion';
+
+    private static $data = [
+        'name' => 'required|string|max:255',
+    ];
+    private static $message = [
+        'required' => 'El :attribute es requerido',
+        'max' => 'El :attribute no puedo tener mas de :max caracteres'
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -40,19 +49,11 @@ class EnterpriseController extends Controller
     public function store(Request $request)
     {
         //
-        $data = [
-            'name' => 'required|string|max:255',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
-
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$data, static::$message);
 
         $dataEnterprise = request()->except('_token');
 
-        Enterprise::insert($dataEnterprise);
+        Enterprise::create($dataEnterprise);
         return redirect('enterprise')->with('mensaje', 'Operacion agregada con exito')->with('tittle', static::$tittle);
     }
 
@@ -92,19 +93,11 @@ class EnterpriseController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $data = [
-            'name' => 'required|string|max:60',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
+        $this->validate($request, static::$data, static::$message);
 
-        $this->validate($request, $data, $message);
+        $dataEnterprise = request()->except(['_token', '_method']);
 
-        $dataentErprise = request()->except(['_token', '_method']);
-
-        Enterprise::where('id', '=', $id)->update($dataentErprise);
+        Enterprise::find($id)->update($dataEnterprise);
 
         return redirect('enterprise')->with('mensaje', 'Operacion editada con exito')->with('tittle', static::$tittle);
     }

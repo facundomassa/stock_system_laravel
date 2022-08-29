@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Enterprise extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name'];
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper($value);
+    }
 }

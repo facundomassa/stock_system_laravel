@@ -2,16 +2,8 @@
 
 @section('content')
     <div class="container">
-        @if (Session::has('mensaje'))
-            <div class="alert alert-success alert-dismissible" role="alert">
-
-                <strong>{{ Session::get('mensaje') }}</strong>
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+        @include('layouts/alert')
+          
         <table class="table table-striped table-hover table-md">
             <thead>
                 <tr>
@@ -29,19 +21,25 @@
                 @foreach ($refers as $refer)
                     <tr>
                         <td>{{ $refer->id }}</td>
-                        <td>{{ $refer->origen_id_stockcenter }}</td>
-                        <td>{{ $refer->destiny_id_stockcenter }}</td>
-                        <td>{{ $refer->created_at }}</td>
-                        <td>{{ $refer->date_ended }}</td>
-                        <td>{{ $refer->id_user }}</td>
-                        <td>{{ $refer->status }}</td>
+                        <td>{{ $refer->nameOrigin }}</td>
+                        <td>{{ $refer->nameDestiny }}</td>
+                        <td>{{ $refer->created_at_formatted }}</td>
+                        <td>{{ $refer->dateEndedFormatted }}</td>
+                        <td>{{ $refer->fullNameUser }}</td>
+                        <td>{{ $refer->statusName }}</td>
                         <td>
-                            @if ($refer->status_n == 'I')
-                                <a class="btn btn-success py-0" href="{{ url('refer/' . $refer->id . '/edit') }}">Emitir</a>
+                            @if ($refer->status == 'I')
+                                <a class="btn btn-success py-0" href="{{ url('refer/emited/' . $refer->id) }}">Emitir</a>
                             @endif
-                            @if ($refer->status_n == 'I' || $refer->status_n == 'E')
+                            @if ($refer->status == 'I' || $refer->status == 'E')
                                 <a class="btn btn-warning py-0"
                                     href="{{ url('/refer/' . $refer->id . '/edit') }}">Editar</a>
+                                <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}" method="post">
+                                    @csrf
+                                    {{ method_field('PATCH') }}
+                                    <input class="btn btn-danger py-0" type="submit"
+                                        onclick="return confirm('¿Finalizar remito?')" value="Finalizar">
+                                </form>
                                 <form class="d-inline" action="{{ url('/refer/' . $refer->id) }}" method="post">
                                     @csrf
                                     {{ method_field('DELETE') }}
@@ -58,7 +56,7 @@
             </tbody>
 
         </table>
-        {!! $refers->links() !!}
+        {!! $refers->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-success" href="{{ url('/refer/create') }}">Nuevo ingreso</a>
     </div>
 @endsection

@@ -8,6 +8,19 @@ use Illuminate\Http\Request;
 class PersonController extends Controller
 {
     protected static $tittle = 'Personas';
+
+    private static $data = [
+        'name' => 'required|string|max:100',
+        'surname' => 'required|string|max:100',
+        'email' => 'required|email',
+        'cuit' => 'nullable|digits_between:10,11|integer',
+        'telephone' => 'nullable|integer|digits_between:6,16',
+    ];
+    private static $message = [
+        'required' => 'El :attribute es requerido',
+        'telephone.digits_between' => 'El numero de telefono tiene que ser valido',
+        'telephone' => 'El numero de telefono tiene que ser valido',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -41,29 +54,11 @@ class PersonController extends Controller
     public function store(Request $request)
     {
         //
-        $data = [
-            'name' => 'required|string|max:100',
-            'surname' => 'required|string|max:100',
-            'email' => 'required|email',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-        ];
-        if($request->cuit != ""){
-            $data['cuit'] = 'digits_between:10,11|integer';
-            $message['cuit.digits_between'] = 'El CUIT debe ser de al menos 11 digitos';
-        }
-        if($request->telephone != ""){
-            $data['telephone'] = 'integer|digits_between:6,16';
-            $message['telephone.digits_between'] = 'El numero de telefono tiene que ser valido';
-            $message['telephone'] = 'El numero de telefono tiene que ser valido';
-        }
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$data, static::$message);
 
         $dataPerson = request()->except('_token');
 
-        $tittle = "Personas";
-        Person::insert($dataPerson);
+        Person::create($dataPerson);
         return redirect('person')->with('mensaje', 'Persona agregado con exito')->with('tittle', static::$tittle);
     }
 
@@ -103,31 +98,11 @@ class PersonController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $data = [
-            'name' => 'required|string|max:100',
-            'surname' => 'required|string|max:100',
-            'email' => 'required|email',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-        ];
-        if($request->cuit != ""){
-            $data['cuit'] = 'digits_between:10,11|integer';
-            $message['cuit.digits_between'] = 'El CUIT debe ser de al menos 11 digitos';
-        }
-        if($request->telephone != ""){
-            $data['telephone'] = 'integer|digits_between:6,16';
-            $message['telephone.digits_between'] = 'El numero de telefono tiene que ser valido';
-            $message['telephone'] = 'El numero de telefono tiene que ser valido';
-        }
-
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$data, static::$message);
 
         $dataPerson = request()->except(['_token', '_method']);
 
-        Person::where('id', '=', $id)->update($dataPerson);
-
-        $person = Person::findOrFail($id);
+        Person::find($id)->update($dataPerson);
         return redirect('person')->with('mensaje', 'Persona modificada')->with('tittle', static::$tittle);
     }
 

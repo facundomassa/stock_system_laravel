@@ -35,6 +35,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('stockcenter', StockcenterController::class);
     Route::resource('refer', ReferController::class);
 
+    Route::patch('refer/finalized/{refer}', [ReferController::class, 'finalized']);
+    Route::get('refer/emited/{refer}', [ReferController::class, 'emited']);
     Route::get('movement', [MovementController::class, 'index']);
     Route::get('movement/create/{refer}', [MovementController::class, 'create']);
     Route::get('movement/{refer}/edit', [MovementController::class, 'create']);

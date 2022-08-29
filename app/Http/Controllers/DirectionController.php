@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Http;
 class DirectionController extends Controller
 {
     protected static $tittle = 'Direcciones';
+
+    private static $data = [
+        'country' => 'required|string|max:60',
+        'state' => 'required|string|max:60',
+        'city' => 'required|string|max:60',
+        'locality' => 'required|string|max:100',
+        'street' => 'required|string|max:100',
+        'number' => 'required|digits_between:1,11|integer',
+        'department' => 'nullable|digits_between:0,6|integer',
+        'house' => 'nullable|digits_between:0,6|integer',
+        'floor' => 'nullable|digits_between:0,4|integer',
+        'cp' => 'required|digits_between:0,11|integer',
+    ];
+    private static $message = [
+        'required' => 'El :attribute es requerido',
+        'max' => 'El :attribute no puedo tener mas de :max caracteres'
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -42,28 +60,12 @@ class DirectionController extends Controller
     public function store(Request $request)
     {
         //
-        $data = [
-            'country' => 'required|string|max:60',
-            'state' => 'required|string|max:60',
-            'city' => 'required|string|max:60',
-            'locality' => 'required|string|max:100',
-            'street' => 'required|string|max:100',
-            'number' => 'required|digits_between:1,11|integer',
-            'department' => 'nullable|digits_between:0,6|integer',
-            'house' => 'nullable|digits_between:0,6|integer',
-            'floor' => 'nullable|digits_between:0,4|integer',
-            'cp' => 'required|digits_between:0,11|integer',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
-
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$data, static::$message);
+        
 
         $dataDirection = request()->except('_token');
-
-        Direction::insert($dataDirection);
+        
+        Direction::create($dataDirection);
         return redirect('direction')->with('mensaje', 'Direccion agregada con exito')->with('tittle', static::$tittle);
     }
 
@@ -104,28 +106,11 @@ class DirectionController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $data = [
-            'country' => 'required|string|max:60',
-            'state' => 'required|string|max:60',
-            'city' => 'required|string|max:60',
-            'locality' => 'required|string|max:100',
-            'street' => 'required|string|max:100',
-            'number' => 'required|digits_between:1,11|integer',
-            'department' => 'nullable|digits_between:0,6|integer',
-            'house' => 'nullable|digits_between:0,6|integer',
-            'floor' => 'nullable|digits_between:0,4|integer',
-            'cp' => 'required|digits_between:0,11|integer',
-        ];
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
-
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$data, static::$message);
 
         $dataDirection = request()->except(['_token', '_method']);
 
-        Direction::where('id', '=', $id)->update($dataDirection);
+        Direction::find($id)->update($dataDirection);
         return redirect('direction')->with('mensaje', 'Direccion editada con exito')->with('tittle', static::$tittle);
     }
 

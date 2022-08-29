@@ -35,7 +35,7 @@
 </div>
 <div class="form-group">
     <label for="status">Estatus:</label>
-    <P>{{isset($refer->status) ? $refer->status : "INGRESADO"}}</P>
+    <P>{{isset($refer->statusName) ? $refer->statusName : "INGRESADO"}}</P>
 </div>
 <div class="form-group">
     <label for="date_ended">Fecha Finalizado:</label>

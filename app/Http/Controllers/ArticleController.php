@@ -8,6 +8,18 @@ use Illuminate\Http\Request;
 class ArticleController extends Controller
 {
     protected static $tittle = 'Articulos';
+
+    private static $rules = array(
+        'name' => 'required|string|max:60',
+        'unit' => 'required|string|max:1',
+        'type' => 'nullable|string|max:30',
+        'code' => 'nullable|string|max:16'
+    );
+    private static $message = array(
+        'required' => 'El :attribute es requerido',
+        'max' => 'El :attribute no puedo tener mas de :max caracteres'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -40,26 +52,13 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         //
-        $data = [
-            'name' => 'required|string|max:60',
-            'unit' => 'required|string|max:1'
-        ];
-        if($request->type != ""){
-            $data['type'] = 'string|max:30';
-        }
-        if($request->code != ""){
-            $data['code'] = 'string|max:16';
-        }
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
+        $request['unit'] = Article::validateUnit($request['unit']);
 
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$rules, static::$message);
 
         $dataArticle = request()->except('_token');
 
-        Article::insert($dataArticle);
+        Article::create($dataArticle);
         return redirect('article')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
     }
 
@@ -99,27 +98,13 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $data = [
-            'name' => 'required|string|max:60',
-            'unit' => 'required|string|max:1'
-        ];
-        if($request->type != ""){
-            $data['type'] = 'string|max:30';
-        }
-        if($request->code != ""){
-            $data['code'] = 'string|max:16';
-        }
-        $message = [
-            'required' => 'El :attribute es requerido',
-            'max' => 'El :attribute no puedo tener mas de :max caracteres'
-        ];
+        $request['unit'] = Article::validateUnit($request['unit']);
 
-        $this->validate($request, $data, $message);
+        $this->validate($request, static::$rules, static::$message);
 
         $dataArticle = request()->except(['_token', '_method']);
 
-        Article::where('id', '=', $id)->update($dataArticle);
-
+        Article::find($id)->update($dataArticle);
         return redirect('article')->with('mensaje', 'Articulo editado con exito')->with('tittle', static::$tittle);
     }
 
