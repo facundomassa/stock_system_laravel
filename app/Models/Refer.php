@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\StockController;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -108,12 +109,20 @@ class Refer extends Model
 
     public function emited(){
         $this->status = 'E';
+        if($this->Origin->type != 'P'){
+            $movements = Movement::where('id_refer', $this->id)->get();
+            StockController::discount($this->attributes, $movements);
+        }
 
         $this->update($this->attributes);
     }
 
     public function finalized(){
         $this->status = 'F';
+        if($this->Destiny->type != 'C'){
+            $movements = Movement::where('id_refer', $this->id)->get();
+            StockController::increase($this->attributes, $movements);
+        }
 
         $this->update($this->attributes);
     }

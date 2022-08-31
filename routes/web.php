@@ -8,6 +8,7 @@ use App\Http\Controllers\MovementController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\StockcenterController;
 use App\Http\Controllers\ReferController;
+use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,11 +38,15 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::patch('refer/finalized/{refer}', [ReferController::class, 'finalized']);
     Route::get('refer/emited/{refer}', [ReferController::class, 'emited']);
+
     Route::get('movement', [MovementController::class, 'index']);
     Route::get('movement/create/{refer}', [MovementController::class, 'create']);
     Route::get('movement/{refer}/edit', [MovementController::class, 'create']);
     Route::post('movement', [MovementController::class, 'store']);
     Route::get('movement/show/{refer}', [MovementController::class, 'show']);
+
+    Route::get('stock', [StockController::class, 'index']);
+    Route::post('stock', [StockController::class, 'store']);
 });
 
 
