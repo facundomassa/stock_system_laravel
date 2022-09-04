@@ -123,4 +123,21 @@ class ArticleController extends Controller
 
         return redirect('article')->with('mensaje', 'Articulo eliminada')->with('tittle', static::$tittle);
     }
+
+    public function filters()
+    {
+        //
+        $nameTx = request()->get('nameTx');
+        $typeTx = request()->get('typeTx');
+
+        $dataArticle = Article::Name($nameTx)
+            ->Type($typeTx)
+            ->orderBy('name', 'asc')
+            ->get();
+        foreach ($dataArticle as $key => $value) {
+            $dataArticle[$key]->UnitName;
+        }
+        // $data->UnitName();
+        return with($dataArticle);
+    }
 }

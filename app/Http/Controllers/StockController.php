@@ -33,6 +33,9 @@ class StockController extends Controller
 
         $data['stocks'] = Stock::StockCenters($stockCenter)
             ->Articles($articleTX)
+            ->orderBy('id_stockcenter', 'asc')
+            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
+            ->orderBy('articles.name', 'asc')
             ->paginate(20);
         // dd( $article);
         return view('stock/index')->with($data)->with('sc', $stockCenter)->with('ar', $articleTX)->with('tittle', static::$tittle);

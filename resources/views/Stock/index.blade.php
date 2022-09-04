@@ -27,6 +27,7 @@
                     <th class="table-light">#</th>
                     <th class="table-light">Centro de Stock</th>
                     <th class="table-light">Articulo</th>
+                    <th class="table-light">Unidad</th>
                     <th class="table-light">Cantidad</th>
                     <th class="table-light">Acciones</th>
                 </tr>
@@ -37,6 +38,7 @@
                         <td>{{ $stock->id }}</td>
                         <td>{{ $stock->StockCenter->name }}</td>
                         <td>{{ $stock->Article->name }}</td>
+                        <td>{{ $stock->Article->UnitName }}</td>
                         <td>{{ $stock->quantity }}</td>
                         <td>
                             <a class="btn btn-outline-dark py-0" href="{{ url('/stock/' . $stock->id) }}"><i

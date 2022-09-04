@@ -17,15 +17,12 @@
                 @foreach ($movements as $movement)
                     <tr>
                         <td>{{ $movement->id }}</td>
-                        <td><a class="btn btn-outline-dark py-0"
-                                href="{{ url('/refer/' . $movement->id_refer) }}"><i class="bi bi-eye-fill"> </i> </a>
-                                 {{"   " . $movement->id_refer }} </td>
+                        <td>{{ $movement->id_refer }} </td>
                         <td>{{ $movement->id_article }}</td>
                         <td>{{ $movement->quantity }}</td>
                         <td>
-                            <a class="btn btn-outline-dark py-0" href="{{ url('/movement/' . $movement->id) }}"><i
+                            <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $movement->id_refer) }}"><i
                                     class="bi bi-eye-fill"></i></a>
-
                         </td>
                     </tr>
                 @endforeach

@@ -38,23 +38,23 @@
                 </div>
                 <br>
                 @if ($refer->status == 'I')
-                    <a class="btn btn-success" href="{{ url('refer/' . $refer->id . '/edit') }}">Emitir</a>
+                    <a class="btn btn-primary me-1" href="{{ url('refer/' . $refer->id . '/edit') }}">Emitir</a>
                 @endif
                 @if ($refer->status == 'I' || $refer->status == 'E')
-                    <a class="btn btn-warning" href="{{ url('refer/' . $refer->id . '/edit') }}">Editar</a>
+                    <a class="btn btn-warning me-1" href="{{ url('refer/' . $refer->id . '/edit') }}">Editar</a>
                     <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}" method="post">
                         @csrf
                         {{ method_field('PATCH') }}
-                        <input class="btn btn-danger" type="submit"
+                        <input class="btn btn-success me-1" type="submit"
                             onclick="return confirm('¿Finalizar remito?')" value="Finalizar">
                     </form>
                     <form class="d-inline" action="{{ url('/refer/' . $refer->id) }}" method="post">
                         @csrf
                         {{ method_field('DELETE') }}
-                        <input class="btn btn-danger" type="submit" onclick="return confirm('¿Cancelar remito?')" value="Cancelar">
+                        <input class="btn btn-danger me-1" type="submit" onclick="return confirm('¿Cancelar remito?')" value="Cancelar">
                     </form>
                 @endif
-                <a class="btn btn-primary" href="{{ url('refer/') }}">Regresar</a>
+                <a class="btn btn-secondary" href="{{ url('refer/') }}">Regresar</a>
             </div>
             <div class="d-flex flex-column w-50">
                 <h3 class="text-center">Articulos</h3>
@@ -81,10 +81,14 @@
                     </table>
                     
                 </div>
-                <br>
-                @if ($refer->status == 'I' || $refer->status == 'E')
-                        <a class="btn btn-warning" href="{{ url('movement/create/' . $refer->id ) }}">Editar Articulos</a>
-                    @endif
+                <div>
+                    {!! $movements->links('vendor.pagination.bootstrap-5') !!}
+                    @if ($refer->status == 'I' || $refer->status == 'E')
+                    <a class="btn btn-warning me-2" href="{{ url('movement/create/' . $refer->id ) }}">Editar Articulos</a>
+                @endif
+                <a class="btn btn-secondary" href="{{ url('movement/show/' . $refer->id ) }}">Ver Articulos</a>
+                </div>
+                
             </div>
 
         </div>

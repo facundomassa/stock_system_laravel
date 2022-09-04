@@ -29,7 +29,7 @@
                         <td>{{ $refer->statusName }}</td>
                         <td>
                             @if ($refer->status == 'I')
-                                <a class="btn btn-success py-0" href="{{ url('refer/emited/' . $refer->id) }}">Emitir</a>
+                                <a class="btn btn-primary py-0 " href="{{ url('refer/emited/' . $refer->id) }}">Emitir</a>
                             @endif
                             @if ($refer->status == 'I' || $refer->status == 'E')
                                 <a class="btn btn-warning py-0"
@@ -37,7 +37,7 @@
                                 <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}" method="post">
                                     @csrf
                                     {{ method_field('PATCH') }}
-                                    <input class="btn btn-danger py-0" type="submit"
+                                    <input class="btn btn-success py-0" type="submit"
                                         onclick="return confirm('¿Finalizar remito?')" value="Finalizar">
                                 </form>
                                 <form class="d-inline" action="{{ url('/refer/' . $refer->id) }}" method="post">
@@ -49,7 +49,6 @@
                             @endif
                             <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $refer->id) }}"><i
                                     class="bi bi-eye-fill"></i></a>
-
                         </td>
                     </tr>
                 @endforeach

@@ -44,4 +44,21 @@ class Article extends Model
                 break;
         }
     }
+
+    public function scopeName($query, $nameTx){
+        if ($nameTx && $nameTx != '') {
+            return $query->where('name', 'LIKE', '%' . $nameTx . '%');
+        }
+    }
+
+    public function scopeType($query, $typeTx){
+        if ($typeTx && $typeTx != '') {
+            return $query->where('type', 'LIKE', '%' . $typeTx . '%');
+        }
+    }
+
+    public function StockQuantity($refer){
+        return $this->stock = Stock::select('quantity')->where('id_stockcenter', $refer->origen_id_stockcenter)
+        ->where('id_article', $this->id)->first();
+    }
 }

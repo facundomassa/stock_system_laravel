@@ -60,6 +60,11 @@ class ReferController extends Controller
         //
         $request['id_user'] = auth()->user()->id;
         $request['status'] = 'I';
+        
+        if(isset($request['date_ended']) && $request['date_ended'] != null){
+            $request['date_ended'] = str_replace("T", " ", $request['date_ended']);
+        }
+
         $request = Refer::ValidateIDRel($request);
 
         $this->validate($request, static::$rules, static::$message);
@@ -79,7 +84,7 @@ class ReferController extends Controller
     public function show($id)
     {
         //
-        $data['movements'] = Movement::get()->where('id_refer', $id);
+        $data['movements'] = Movement::where('id_refer', $id)->paginate(10);
 
         $refer = Refer::findOrFail($id);
         return view('refer.show', compact('refer'))->with($data)->with('tittle', static::$tittle);
@@ -162,6 +167,9 @@ class ReferController extends Controller
         
         $this->validate($request, $rules, static::$message);
         
+        if($refer->status == "I"){
+            $refer->emited();
+        }
         $refer->finalized();
         return redirect('refer')->with('mensaje', 'Remito Finalizado')->with('tittle', static::$tittle);
     }

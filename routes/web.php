@@ -9,6 +9,7 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\StockcenterController;
 use App\Http\Controllers\ReferController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,9 +48,12 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('stock', [StockController::class, 'index']);
     Route::post('stock', [StockController::class, 'store']);
+
+    Route::get('home', [HomeController::class, 'index']);
+    Route::get('howtouse', [HomeController::class, 'howtouse']);
 });
 
 
 
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
