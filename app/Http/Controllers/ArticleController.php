@@ -129,9 +129,11 @@ class ArticleController extends Controller
         //
         $nameTx = request()->get('nameTx');
         $typeTx = request()->get('typeTx');
+        $codeTx = request()->get('codeTx');
 
         $dataArticle = Article::Name($nameTx)
             ->Type($typeTx)
+            ->Code($codeTx)
             ->orderBy('name', 'asc')
             ->get();
         foreach ($dataArticle as $key => $value) {

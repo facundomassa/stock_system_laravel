@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         @include('layouts/alert')
-          
+
         <table class="table table-striped table-hover table-md">
             <thead>
                 <tr>
@@ -26,29 +26,50 @@
                         <td>{{ $refer->created_at_formatted }}</td>
                         <td>{{ $refer->dateEndedFormatted }}</td>
                         <td>{{ $refer->fullNameUser }}</td>
-                        <td>{{ $refer->statusName }}</td>
-                        <td>
-                            @if ($refer->status == 'I')
-                                <a class="btn btn-primary py-0 " href="{{ url('refer/emited/' . $refer->id) }}">Emitir</a>
-                            @endif
-                            @if ($refer->status == 'I' || $refer->status == 'E')
-                                <a class="btn btn-warning py-0"
-                                    href="{{ url('/refer/' . $refer->id . '/edit') }}">Editar</a>
-                                <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}" method="post">
-                                    @csrf
-                                    {{ method_field('PATCH') }}
-                                    <input class="btn btn-success py-0" type="submit"
-                                        onclick="return confirm('¿Finalizar remito?')" value="Finalizar">
-                                </form>
-                                <form class="d-inline" action="{{ url('/refer/' . $refer->id) }}" method="post">
-                                    @csrf
-                                    {{ method_field('DELETE') }}
-                                    <input class="btn btn-danger py-0" type="submit"
-                                        onclick="return confirm('¿Cancelar remito?')" value="Cancelar">
-                                </form>
-                            @endif
-                            <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $refer->id) }}"><i
-                                    class="bi bi-eye-fill"></i></a>
+                        <td class="{{ $refer->status }}">{{ $refer->statusName }}</td>
+                        <td class="text-center">
+                            <div class="row me-1">
+                                <div class="col p-0">
+                                    @if ($refer->status == 'I')
+                                        <a class="btn btn-primary py-0 " href="{{ url('refer/emited/' . $refer->id) }}"><i
+                                                class="bi bi-send"></i></a>
+                                    @endif
+                                </div>
+                                <div class="col p-0">
+                                    @if ($refer->status == 'I' || $refer->status == 'E')
+                                        <a class="btn btn-warning py-0" href="{{ url('/refer/' . $refer->id . '/edit') }}"><i
+                                                class="bi bi-pencil"></i></a>
+                                    @endif
+                                </div>
+                                <div class="col p-0">
+                                    @if ($refer->status == 'I' || $refer->status == 'E')
+                                        <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}"
+                                            method="post">
+                                            @csrf
+                                            {{ method_field('PATCH') }}
+                                            <button class="btn btn-success py-0" type="submit"
+                                                onclick="return confirm('¿Finalizar remito?')"><i
+                                                    class="bi bi-check2-square"></i></button>
+                                        </form>
+                                    @endif
+                                </div>
+                                <div class="col p-0">
+                                    @if ($refer->status == 'I' || $refer->status == 'E')
+                                        <form class="d-inline" action="{{ url('/refer/' . $refer->id) }}" method="post">
+                                            @csrf
+                                            {{ method_field('DELETE') }}
+                                            <button class="btn btn-danger py-0" type="submit"
+                                                onclick="return confirm('¿Cancelar remito?')"><i
+                                                    class="bi bi-x-circle"></i></button>
+                                        </form>
+                                    @endif
+                                </div>
+                                <div class="col p-0">
+                                    <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $refer->id) }}"><i
+                                            class="bi bi-eye-fill"></i></a>
+                                </div>
+                            </div>
+                            
                         </td>
                     </tr>
                 @endforeach

@@ -57,6 +57,12 @@ class Article extends Model
         }
     }
 
+    public function scopeCode($query, $codeTx){
+        if ($codeTx && $codeTx != '') {
+            return $query->where('code', 'LIKE', '%' . $codeTx . '%');
+        }
+    }
+
     public function StockQuantity($refer){
         return $this->stock = Stock::select('quantity')->where('id_stockcenter', $refer->origen_id_stockcenter)
         ->where('id_article', $this->id)->first();

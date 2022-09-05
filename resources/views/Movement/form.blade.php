@@ -50,7 +50,7 @@
     Agregar articulos</button>
 <br>
 <input class="btn btn-success m-2" type="submit" value="{{ $modo }} Datos">
-<a class="btn btn-primary m-2" href="{{ url('refer/') }}">Regresar</a>
+<a class="btn btn-primary" href="{{  url('/refer/' . $refer->id) }}">Regresar</a>
 
 <div class="fixed-top aticle-container collapse" id="article-t">
     <div class="article-store">
@@ -61,13 +61,27 @@
 
             <div class="filters" style="max-height: 160px">
                 <h3 class="text-center">Seleccionar Articulos</h3>
-                <label for="nameTx">Nombre:</label>
-                <input class="form-control" type="text" maxlength="40"
-                    value="{{ isset($nameTx) ? $nameTx : old('nameTx') }}" id="nameTx">
-                <label for="typeTx">Tipo:</label>
-                <input class="form-control" type="text" maxlength="40"
-                    value="{{ isset($typeTx) ? $typeTx : old('typeTx') }}" id="typeTx">
-                <button id="filter-b">Buscar</button>
+                <p class="m-0 filter">Filtros:</p>
+                <div class="row align-items-center border border-secondary p-2 mb-2 rounded">
+                    <div class="col-auto">
+                        <label for="codeTx">Codigo:</label>
+                        <input class="form-control" type="text" maxlength="40"
+                            value="{{ isset($codeTx) ? $codeTx : old('codeTx') }}" id="codeTx">
+                    </div>
+                    <div class="col-auto">
+                        <label for="nameTx">Nombre:</label>
+                        <input class="form-control" type="text" maxlength="40"
+                            value="{{ isset($nameTx) ? $nameTx : old('nameTx') }}" id="nameTx">
+                    </div>
+                    <div class="col-auto">
+                        <label for="typeTx">Tipo:</label>
+                        <input class="form-control" type="text" maxlength="40"
+                            value="{{ isset($typeTx) ? $typeTx : old('typeTx') }}" id="typeTx">
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary md-block" id="filter-b">Buscar</button>
+                    </div>
+                </div>
             </div>
 
             <div class="article-scroll flex-grow-1">
@@ -83,17 +97,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($articles as $article) 
+                        @foreach ($articles as $article)
                             <tr>
                                 <td>{{ $article->id }}</td>
                                 <td>{{ $article->code }}</td>
                                 <td>{{ $article->name }}</td>
                                 <td>{{ $article->unitName }}</td>
                                 <td>{{ $article->type }}</td>
-                                <td>{{ isset($article->stock->quantity) ? $article->stock->quantity : "-" }}</td>
+                                <td>{{ isset($article->stock->quantity) ? $article->stock->quantity : '-' }}</td>
                                 <td class="text-center">
                                     <input class="expandCheckbox" type="checkbox" name="article"
-                                        value="{{ $article->id }}" data-stock="{{isset($article->stock->quantity) ? $article->stock->quantity : "-"}}">
+                                        value="{{ $article->id }}"
+                                        data-stock="{{ isset($article->stock->quantity) ? $article->stock->quantity : '-' }}">
 
                                 </td>
                             </tr>

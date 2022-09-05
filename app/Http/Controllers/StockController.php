@@ -28,17 +28,27 @@ class StockController extends Controller
     {
         //
         $data['stockcenters'] = Stockcenter::whereNotIn('type', ['P', 'C'])->get();
-        $stockCenter = request()->get('sc');
-        $articleTX = request()->get('ar');
-
-        $data['stocks'] = Stock::StockCenters($stockCenter)
-            ->Articles($articleTX)
+        $options = [
+            'stockselect' => request()->get('stockselect'),
+            'type' => request()->get('type'),
+            'articlename' => request()->get('articlename'),
+            'code' => request()->get('code')
+        ];
+        // $options[] = request()->get('options');
+        // dd($options);
+        $data['stocks'] = Stock::StockCenters($options['stockselect'])
+            ->Type($options['type'])
+            ->Articles($options['articlename'])
+            ->Code($options['code'])
             ->orderBy('id_stockcenter', 'asc')
             ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
             ->orderBy('articles.name', 'asc')
             ->paginate(20);
         // dd( $article);
-        return view('stock/index')->with($data)->with('sc', $stockCenter)->with('ar', $articleTX)->with('tittle', static::$tittle);
+        return view('stock/index')
+            ->with($data)
+            ->with($options)
+            ->with('tittle', static::$tittle);
     }
 
     /**

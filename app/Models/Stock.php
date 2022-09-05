@@ -32,6 +32,33 @@ class Stock extends Model
     {
         if ($articleTX && $articleTX != '') {
             $articles  = Article::select('id')->where('name', 'LIKE', '%' . $articleTX . '%')->get();
+            $article = [];
+            foreach ($articles as $key => $value) {
+                $article[] = $value->id;
+            }
+            // dd($article);
+            return $query->whereIn('id_article', $article );
+        }
+    }
+
+    public function scopeType($query, $typeTx)
+    {
+        if ($typeTx && $typeTx != '') {
+            $articles  = Article::select('id')->where('type', 'LIKE', '%' . $typeTx . '%')->get();
+            $article = [];
+            foreach ($articles as $key => $value) {
+                $article[] = $value->id;
+            }
+            // dd($article);
+            return $query->whereIn('id_article', $article );
+        }
+    }
+
+    public function scopeCode($query, $codeTx)
+    {
+        if ($codeTx && $codeTx != '') {
+            $articles  = Article::select('id')->where('code', 'LIKE', '%' . $codeTx . '%')->get();
+            $article = [];
             foreach ($articles as $key => $value) {
                 $article[] = $value->id;
             }

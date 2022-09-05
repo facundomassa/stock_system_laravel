@@ -11,6 +11,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
+        "tremby/laravel-git-version": "^1.2",
         "tymon/jwt-auth": "dev-develop"
     },
     "require-dev": {

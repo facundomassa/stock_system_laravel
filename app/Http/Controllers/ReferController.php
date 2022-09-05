@@ -118,7 +118,7 @@ class ReferController extends Controller
         $request['id_user'] = $refer->id_user;
         $request['status'] = $refer->status;
 
-        if(isset($request['date_ended'])){
+        if(isset($request['date_ended']) && $request['date_ended'] != null){
             $request['date_ended'] = str_replace("T", " ", $request['date_ended']);
         }
 

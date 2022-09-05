@@ -49,4 +49,3 @@
 </div>
 <br>
 <input class="btn btn-success" type="submit" value="{{ $modo }} Datos">
-<a class="btn btn-primary" href="{{ url('refer/') }}">Regresar</a>

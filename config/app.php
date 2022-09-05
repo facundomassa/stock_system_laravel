@@ -187,6 +187,9 @@ return [
          */
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
 
+        //Git version controller
+        Tremby\LaravelGitVersion\GitVersionServiceProvider::class,
+
         /*
          * Application Service Providers...
          */

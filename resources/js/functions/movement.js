@@ -6,6 +6,7 @@ $(document).ready(function () {
         $insertButtom = $('#insert'),
         $nameTx = $('#nameTx'),
         $typeTx = $('#typeTx'),
+        $codeTx = $('#codeTx'),
         $filterButtom = $('#filter-b')
 
     $quantityArticle = Quantity();
@@ -78,8 +79,17 @@ $(document).ready(function () {
         }
     })
 
+    $codeTx.change(function (event) {
+        event.preventDefault();
+        filter();
+    })
+    codeTx.addEventListener('keypress', e => {
+        if(e.keyCode == 13) {
+          e.preventDefault();
+        }
+    })
+
     $filterButtom.click(function(event){
-        console.log('hola');
         event.preventDefault();
         filter();
     })
@@ -89,7 +99,8 @@ $(document).ready(function () {
             url: route,
             data: {
                 'nameTx': $nameTx.val(),
-                'typeTx': $typeTx.val()
+                'typeTx': $typeTx.val(),
+                'codeTx': $codeTx.val()
             },
             dataType: "json",
             method: "GET",
