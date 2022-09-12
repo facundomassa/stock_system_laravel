@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Stock;
 use App\Models\Stockcenter;
 use Illuminate\Http\Request;
+use App\Exports\StocksExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class StockController extends Controller
 {
@@ -34,8 +37,7 @@ class StockController extends Controller
             'articlename' => request()->get('articlename'),
             'code' => request()->get('code')
         ];
-        // $options[] = request()->get('options');
-        // dd($options);
+
         $data['stocks'] = Stock::StockCenters($options['stockselect'])
             ->Type($options['type'])
             ->Articles($options['articlename'])
@@ -44,7 +46,7 @@ class StockController extends Controller
             ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
             ->orderBy('articles.name', 'asc')
             ->paginate(20);
-        // dd( $article);
+
         return view('stock/index')
             ->with($data)
             ->with($options)
@@ -96,5 +98,30 @@ class StockController extends Controller
                 Stock::create($dataStock);
             }
         }
+    }
+
+    public function getpdf(){
+        
+        $data['stockselect'] = request()->get('stockselect');
+        $data['type'] = request()->get('type');
+        $data['articlename'] = request()->get('articlename');
+        $data['code'] = request()->get('code');
+
+        $data['stocks'] = Stock::StockCenters($data['stockselect'])
+            ->Type($data['type'])
+            ->Articles($data['articlename'])
+            ->Code($data['code'])
+            ->orderBy('id_stockcenter', 'asc')
+            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
+            ->orderBy('articles.name', 'asc')
+            ->get();
+        
+        $pdf = PDF::loadView('stock/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
+        return $pdf->stream('archivo-pdf.pdf');
+    }
+
+    public function getexcel(){
+        
+        return Excel::download(new StocksExport, 'stocks.xlsx');
     }
 }

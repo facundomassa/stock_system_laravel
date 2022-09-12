@@ -38,8 +38,12 @@
     <P>{{isset($refer->statusName) ? $refer->statusName : "INGRESADO"}}</P>
 </div>
 <div class="form-group">
+    <label for="date_ended">Fecha Inicio:</label>
+    <input class="form-control" type="datetime-local" value="{{(isset($refer->date_up) ? $refer->date_up : old('date_up')) != "" ?: date("Y-m-d H:i")}}" name="date_up" id="date_up">
+</div>
+<div class="form-group">
     <label for="date_ended">Fecha Finalizado:</label>
-    <input class="form-control" min="{{date("Y-m-d") . "T" . date("h:i")}}" type="datetime-local" value="{{isset($refer->date_ended) ? $refer->date_ended : old('date_ended')}}" name="date_ended" id="date_ended">
+    <input class="form-control" type="datetime-local" value="{{isset($refer->date_ended) ? $refer->date_ended : old('date_ended')}}" name="date_ended" id="date_ended">
 </div>
 <div class="form-group">
     <label>Creado por:</label>

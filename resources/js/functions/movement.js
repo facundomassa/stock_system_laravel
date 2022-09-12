@@ -98,6 +98,7 @@ $(document).ready(function () {
         $.ajax({
             url: route,
             data: {
+                'refer': refer,
                 'nameTx': $nameTx.val(),
                 'typeTx': $typeTx.val(),
                 'codeTx': $codeTx.val()
@@ -114,15 +115,16 @@ $(document).ready(function () {
                         <td>${result[index].name}</td>
                         <td>${result[index].unit}</td>
                         <td>${result[index].type}</td>
+                        <td>${result[index].stock}</td>
                         <td class="text-center">
                             <input class="expandCheckbox" type="checkbox" name="article"
-                                value="${result[index].id}">
+                                value="${result[index].id}"
+                                data-stock="${result[index].stock.quantity}">
 
                         </td>
                     </tr>
                     `)
                 })
-                console.log(result);
             }
         })
     }

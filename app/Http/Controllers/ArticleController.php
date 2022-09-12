@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Refer;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -127,6 +128,8 @@ class ArticleController extends Controller
     public function filters()
     {
         //
+        $referId = request()->get('refer');
+        $refer = Refer::where('id',$referId)->first();
         $nameTx = request()->get('nameTx');
         $typeTx = request()->get('typeTx');
         $codeTx = request()->get('codeTx');
@@ -136,8 +139,15 @@ class ArticleController extends Controller
             ->Code($codeTx)
             ->orderBy('name', 'asc')
             ->get();
+
         foreach ($dataArticle as $key => $value) {
             $dataArticle[$key]->UnitName;
+            $dataArticle[$key]->StockQuantity($refer);
+            if(isset($dataArticle[$key]->stock->quantity)){
+                $dataArticle[$key]->stock = $dataArticle[$key]->stock->quantity;
+            } else {
+                $dataArticle[$key]->stock = "-";
+            }
         }
         // $data->UnitName();
         return with($dataArticle);

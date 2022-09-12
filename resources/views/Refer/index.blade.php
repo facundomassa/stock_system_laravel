@@ -3,14 +3,57 @@
 @section('content')
     <div class="container">
         @include('layouts/alert')
-
+        <form action="{{ url('/refer/') }}" method="get">
+            <p class="m-0 filter">Filtros:</p>
+            <div class="row align-items-center border border-secondary p-2 mb-2 rounded">
+                <div class="col-auto">
+                    <label for="stockselectorigen">Centro de Stock Origen:</label>
+                    <select required class="form-control" name="stockselectorigen" maxlength="60" id="stockselectorigen"
+                        onchange="this.form.submit()">
+                        <option selected value="*">-Todos-</option>
+                        @foreach ($stockcenters as $stockcenter)
+                            @if ($stockselectorigen == $stockcenter->id)
+                                <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
+                            @else
+                                <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="stockselectdestiny">Centro de Stock Destino:</label>
+                    <select required class="form-control" name="stockselectdestiny" maxlength="60" id="stockselectdestiny"
+                        onchange="this.form.submit()">
+                        <option selected value="*">-Todos-</option>
+                        @foreach ($stockcenters as $stockcenter)
+                            @if ($stockselectdestiny == $stockcenter->id)
+                                <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
+                            @else
+                                <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="status">Estatus:</label>
+                    <select required class="form-control" name="status" maxlength="60" id="status"
+                        onchange="this.form.submit()">
+                        <option selected value="*">-Todos-</option>
+                        <option {{$status == "I" ? "selected" : ""}} value="I"> Ingresado</option>
+                        <option {{$status == "E" ? "selected" : ""}} value="E"> Emitido</option>
+                        <option {{$status == "C" ? "selected" : ""}} value="C"> Cancelado</option>
+                        <option {{$status == "F" ? "selected" : ""}} value="F"> Finalizado</option>
+                    </select>
+                </div>
+            </div>
+        </form>
         <table class="table table-striped table-hover table-md">
             <thead>
                 <tr>
                     <th class="table-light">#</th>
                     <th class="table-light">Origen</th>
                     <th class="table-light">Destino</th>
-                    <th class="table-light">Fecha Creado</th>
+                    <th class="table-light">Fecha Inicio</th>
                     <th class="table-light">Fecha Finalizado</th>
                     <th class="table-light">Creado por</th>
                     <th class="table-light">Estaus</th>
@@ -23,7 +66,7 @@
                         <td>{{ $refer->id }}</td>
                         <td>{{ $refer->nameOrigin }}</td>
                         <td>{{ $refer->nameDestiny }}</td>
-                        <td>{{ $refer->created_at_formatted }}</td>
+                        <td>{{ $refer->dateUpFormatted }}</td>
                         <td>{{ $refer->dateEndedFormatted }}</td>
                         <td>{{ $refer->fullNameUser }}</td>
                         <td class="{{ $refer->status }}">{{ $refer->statusName }}</td>
@@ -76,7 +119,10 @@
             </tbody>
 
         </table>
-        {!! $refers->links('vendor.pagination.bootstrap-5') !!}
+        {!! $refers->appends(['stockselectorigen' => $stockselectorigen,
+                                'stockselectdestiny' => $stockselectdestiny,
+                                'status' => $status])
+                                ->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-success" href="{{ url('/refer/create') }}">Nuevo ingreso</a>
     </div>
 @endsection

@@ -5,8 +5,6 @@
         @include('layouts/alert')
 
         <form action="{{ url('/stock/') }}" method="get">
-            @csrf
-            {{ method_field('GET') }}
             <p class="m-0 filter">Filtros:</p>
             <div class="row align-items-center border border-secondary p-2 mb-2 rounded">
                 <div class="col-auto">
@@ -26,17 +24,18 @@
                 <div class="col-auto">
                     <label for="code">Codigo:</label>
                     <input class="form-control" type="text" name="code" maxlength="40"
-                        value="{{ isset($code) ? $code : old("code") }}" id="code" onchange="this.form.submit()">
+                        value="{{ isset($code) ? $code : old('code') }}" id="code" onchange="this.form.submit()">
                 </div>
                 <div class="col-auto">
                     <label for="articlename">Articulo:</label>
                     <input class="form-control" type="text" name="articlename" maxlength="40"
-                        value="{{ isset($articlename) ? $articlename : old("articlename") }}" id="articlename" onchange="this.form.submit()">
+                        value="{{ isset($articlename) ? $articlename : old('articlename') }}" id="articlename"
+                        onchange="this.form.submit()">
                 </div>
                 <div class="col-auto">
                     <label for="type">Tipo:</label>
                     <input class="form-control" type="text" name="type" maxlength="40"
-                        value="{{ isset($type) ? $type : old("type") }}" id="type" onchange="this.form.submit()">
+                        value="{{ isset($type) ? $type : old('type') }}" id="type" onchange="this.form.submit()">
                 </div>
             </div>
         </form>
@@ -47,10 +46,10 @@
                     <th class="table-light">Centro de Stock</th>
                     <th class="table-light">Codigo</th>
                     <th class="table-light">Articulo</th>
-                    <th class="table-light">Unidad</th>
+                    <th class="taable-light">Unidad</th>
                     <th class="table-light">Tipo</th>
                     <th class="table-light">Cantidad</th>
-                    <th class="table-light">Acciones</th>
+                    <th class="tble-light">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,6 +71,20 @@
             </tbody>
 
         </table>
-        {!! $stocks->links('vendor.pagination.bootstrap-5') !!}
+        {!! $stocks->appends(['stockselect' => $stockselect, 'code' => $code, 'articlename' => $articlename, 'type' => $type])->links('vendor.pagination.bootstrap-5') !!}
+        <a class="btn btn-primary py-0 " href="{{ url('stock/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar PDF</a>
+        <a class="btn btn-primary py-0 " href="{{ url('stock/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar Excel</a>
+        <div class="fixed-top aticle-container collapse" id="article-t">
+            <div class="article-store">
+                <div class="article-tittle d-flex gap-2 flex-column">
+                    <button class="btn btn-dark article-btn" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#article-t" aria-expanded="true" aria-controls="article-t">X</button>
+                        <iframe id="framepdf" height="100%" class="frame" src="" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
     </div>
+@endsection
+@section('js')
+    @vite('resources/js/ajax/generatepdf.js')
 @endsection

@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/sass/app.scss',
                 'resources/js/app.js',
                 'resources/js/ajax/state.js',
+                'resources/js/ajax/generatepdf.js',
                 'resources/js/functions/movement.js',
             ],
             refresh: true,

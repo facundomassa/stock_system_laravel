@@ -64,7 +64,10 @@ class Article extends Model
     }
 
     public function StockQuantity($refer){
-        return $this->stock = Stock::select('quantity')->where('id_stockcenter', $refer->origen_id_stockcenter)
-        ->where('id_article', $this->id)->first();
+        if($refer){
+            return $this->stock = Stock::select('quantity')
+            ->where('id_stockcenter', $refer->origen_id_stockcenter)
+            ->where('id_article', $this->id)->first();
+        }
     }
 }

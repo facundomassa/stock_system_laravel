@@ -50,7 +50,6 @@
     Agregar articulos</button>
 <br>
 <input class="btn btn-success m-2" type="submit" value="{{ $modo }} Datos">
-<a class="btn btn-primary" href="{{  url('/refer/' . $refer->id) }}">Regresar</a>
 
 <div class="fixed-top aticle-container collapse" id="article-t">
     <div class="article-store">
@@ -93,6 +92,7 @@
                             <th class="table-light">Nombre</th>
                             <th class="table-light">Unidad</th>
                             <th class="table-light">Tipo</th>
+                            <th class="table-light">En Stock</th>
                             <th class="table-light text-center">Agregar</th>
                         </tr>
                     </thead>
@@ -129,5 +129,6 @@
     @vite(['resources/js/functions/movement.js'])
     <script>
         let route = "{{ url('api/article') }}";
+        let refer = {{ $id_refer }};
     </script>
 @endsection

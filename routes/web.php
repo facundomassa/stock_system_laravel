@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::patch('refer/finalized/{refer}', [ReferController::class, 'finalized']);
     Route::get('refer/emited/{refer}', [ReferController::class, 'emited']);
+    Route::get('refer/pdf/{refer}', [ReferController::class, 'getpdf']);
 
     Route::get('movement', [MovementController::class, 'index']);
     Route::get('movement/create/{refer}', [MovementController::class, 'create']);
@@ -47,6 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('movement/show/{refer}', [MovementController::class, 'show']);
 
     Route::get('stock', [StockController::class, 'index']);
+    Route::get('stock/pdf', [StockController::class, 'getpdf']);
+    Route::get('stock/excel', [StockController::class, 'getexcel']);
     Route::post('stock', [StockController::class, 'store']);
 
     Route::get('home', [HomeController::class, 'index']);

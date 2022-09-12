@@ -11,7 +11,7 @@ class Refer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['origen_id_stockcenter', 'destiny_id_stockcenter', 'status', 'date_ended', 'id_user'];
+    protected $fillable = ['origen_id_stockcenter', 'destiny_id_stockcenter', 'date_up', 'status', 'date_ended', 'id_user'];
 
     public function Origin()
     {
@@ -46,6 +46,11 @@ class Refer extends Model
     public function setDate_endedAttribute($value)
     {
         $this->attributes['date_ended'] = str_replace("T", " ", $value);
+    }
+
+    public function setDate_upAttribute($value)
+    {
+        $this->attributes['date_up'] = str_replace("T", " ", $value);
     }
 
     public function setIdUserAttribute()
@@ -101,6 +106,14 @@ class Refer extends Model
         }
     }
 
+    public function getDateUpFormattedAttribute($value)
+    {
+        if($this->date_up != null){
+            $timestamp = strtotime($this->date_up); 
+            return date('d/m/Y', $timestamp );
+        }
+    }
+
     public function canceled(){
         $this->status = 'C';
 
@@ -125,5 +138,26 @@ class Refer extends Model
         }
 
         $this->update($this->attributes);
+    }
+
+    public function scopeStockCenterOrigin($query, $stockcenter)
+    {
+        if ($stockcenter && $stockcenter != '*') {
+            return $query->where('origen_id_stockcenter', '=', $stockcenter);
+        }
+    }
+
+    public function scopeStockCenterDestiny($query, $stockcenter)
+    {
+        if ($stockcenter && $stockcenter != '*') {
+            return $query->where('destiny_id_stockcenter', '=', $stockcenter);
+        }
+    }
+
+    public function scopeStatus($query, $status)
+    {
+        if ($status && $status != '*') {
+            return $query->where('status', '=', $status);
+        }
     }
 }
