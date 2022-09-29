@@ -1,53 +1,42 @@
 # <p align="center">Stock System</p>
+En desarollo...
+## Sobre la aplicación
+**Stock System** es un sistema para llevar un control detallado de materiales o articulos en diferentes centros de stock
 
-## Sobre la aplicacion
+## Estado del proyecto
+El proyecto actualmente se encuentra en fase de desarrollo pero aquí van las ideas principales en la que se estarán trabajando:
+ - [x] Ingresos, movimientos y retiros de materiales por centro de stock
+ - [ ] Exportaciones de tabla en Excel
+ - [x] Creación de remitos PDF
+ - [ ] Múltiples graficas de control
+ - [ ] Alertas y notificaciones
+ - [ ] Usuarios y roles
 
-*Stock System* es un sistema para llevar un control detallado de materiales o articulos en diferentes centros de stock
-
-## Proximos Cambios
-
-- 
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
+## Como instalar
+```bash
+git clone https://github.com/facundomassa/stock_system_laravel.git
+```
+```bash
+composer install
+php artisan migration
+```
+```bash
+npm install
+npm run dev
+```
 ## Contacto
-
-- **[Instagram]()**
-- **[Twitter]()**
-- **[Facebook]()**
-- **[Correo]()**
-- **[Whatsapp]()**
-- **[GitHub]()**
-- **[LinkedIn]()**
-
-## Librerias y frameworks utilizados
-
+- **[Instagram](https://www.instagram.com/facu_massa1)**
+- **[Twitter](https://twitter.com/FacuMassa11)**
+- **[Facebook](https://www.facebook.com/facundo.massa11)**
+- **[Correo](mailto:massafacundo11@gmail.com)**
+- **[Whatsapp](https://wa.link/ctk5y4)**
+- **[GitHub](https://github.com/facundomassa)**
+- **[LinkedIn](https://www.linkedin.com/in/facundo-massa-bba110162)**
+- 
+## Librerías y frameworks utilizados
 * Laravel
 * Bootstrap
 * Jquery
 * ChartJs
 * Laravel Excel
 * DomPDF
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
