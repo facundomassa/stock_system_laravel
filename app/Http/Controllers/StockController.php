@@ -17,13 +17,14 @@ class StockController extends Controller
         'id_stockcenter' => 'required|digits_between:0,10|integer',
         'id_article' => 'required|digits_between:0,10|integer',
         'quantity' => 'required|digits_between:0,11|integer',
+        'limit' => 'nullable|digits_between:0,11|integer',
     );
     private static $message = array(
         'required' => 'El :attribute es requerido',
         'digits_between' => 'El :attribute debe tener entre 0 y 11 digitos'
     );
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.s
      *
      * @return \Illuminate\Http\Response
      */
@@ -59,9 +60,19 @@ class StockController extends Controller
      * @param  \App\Models\Stock  $stock
      * @return \Illuminate\Http\Response
      */
-    public function show(Stock $stock)
+    public function show($id)
     {
         //
+        $stock = Stock::findOrFail($id);
+        return view('stock.show', compact('stock'))->with('tittle', static::$tittle);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $stock = Stock::find($id);
+        $stock->limit = request()->limit;
+        $stock->update();
+        return redirect('stock')->with('mensaje', 'Stock editado con exito')->with('tittle', static::$tittle);
     }
 
     public static function discount($refer, $movements)

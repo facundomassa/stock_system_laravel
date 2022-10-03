@@ -49,12 +49,13 @@
                     <th class="taable-light">Unidad</th>
                     <th class="table-light">Tipo</th>
                     <th class="table-light">Cantidad</th>
+                    <th class="table-light">Limite</th>
                     <th class="tble-light">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($stocks as $stock)
-                    <tr>
+                    <tr {{ $stock->warning ? "class=bg-warning" : "class=bg-light"}}>
                         <td>{{ $stock->id }}</td>
                         <td>{{ $stock->StockCenter->name }}</td>
                         <td>{{ $stock->Article->code }}</td>
@@ -62,6 +63,7 @@
                         <td>{{ $stock->Article->UnitName }}</td>
                         <td>{{ $stock->Article->type }}</td>
                         <td>{{ $stock->quantity }}</td>
+                        <td>{{ isset($stock->limit) ? $stock->limit : "-" }}</td>
                         <td>
                             <a class="btn btn-outline-dark py-0" href="{{ url('/stock/' . $stock->id) }}"><i
                                     class="bi bi-eye-fill"></i></a>
@@ -69,7 +71,6 @@
                     </tr>
                 @endforeach
             </tbody>
-
         </table>
         {!! $stocks->appends(['stockselect' => $stockselect, 'code' => $code, 'articlename' => $articlename, 'type' => $type])->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-primary py-0 " href="{{ url('stock/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar PDF</a>
@@ -84,7 +85,9 @@
             </div>
         </div>
     </div>
+
 @endsection
+
 @section('js')
     @vite('resources/js/ajax/generatepdf.js')
 @endsection

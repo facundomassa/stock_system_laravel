@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quantity', 'id_stockcenter', 'id_article'];
+    protected $fillable = ['quantity', 'id_stockcenter', 'id_article', 'limit'];
 
     public function StockCenter()
     {
@@ -65,5 +65,11 @@ class Stock extends Model
             // dd($article);
             return $query->whereIn('id_article', $article );
         }
+    }
+
+    public function getWarningAttribute(){
+        if ($this->limit == 0) return;
+        return $this->limit <= $this->quantity ? true : false;
+
     }
 }

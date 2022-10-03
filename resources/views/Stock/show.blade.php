@@ -2,54 +2,53 @@
 
 @section('content')
     <div class="container">
-        @if (Session::has('mensaje'))
-            <div class="alert alert-success alert-dismissible" role="alert">
-
-                <strong>{{ Session::get('mensaje') }}</strong>
-
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <form class="d-inline" action="{{ url('/stock/' . $stock->id) }}" method="post">
+            @csrf
+            {{ method_field('PUT') }}
+            <p>{{ $stock->id }}</p>
+            <div class="form-group">
+                <label for="name">Stock Center:</label>
+                <p>{{ $stock->StockCenter->name }}</p>
             </div>
-        @endif
-        <table class="table table-striped table-hover table-md" id="movement-t">
-            <thead>
-                <tr>
-                    <th class="table-light">#</th>
-                    <th class="table-light">Codigo</th>
-                    <th class="table-light">Nombre</th>
-                    <th class="table-light">Unidad</th>
-                    <th class="table-light">Tipo</th>
-                    <th class="table-light">Cantidad</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (isset($movements))
-                    @foreach ($movements as $movement)
-                        <tr>
-                            <td>{{ $movement->id_article->id }}</td>
-                            <td>{{ $movement->id_article->code }}</td>
-                            <td>{{ $movement->id_article->name }}</td>
-                            <td>{{ $movement->id_article->unit }}</td>
-                            <td>{{ $movement->id_article->type }}</td>
-                            <td>{{ $movement->quantity }}</td>
-                        </tr>
-                    @endforeach
-                @endif
-            </tbody>
-        </table>
-        @if ($refer->status == 'I')
-            <a class="btn btn-success" href="{{ url('movement/' . $refer->id . '/edit') }}">Emitir</a>
-        @endif
-        @if ($refer->status == 'I' || $refer->status == 'E')
-            <a class="btn btn-warning" href="{{ url('movement/' . $refer->id . '/edit') }}">Editar</a>
+            <div class="form-group">
+                <label for="code">Codigo:</label>
+                <p>{{ $stock->Article->code }}</p>
+            </div>
+            <div class="form-group">
+                <label for="article">Articulo:</label>
+                <p>{{ $stock->Article->name }}</p>
+            </div>
+            <div class="form-group">
+                <label for="unit">Unidad:</label>
+                <p>{{ $stock->Article->UnitName }}</p>
+            </div>
+            <div class="form-group">
+                <label for="type">Tipo:</label>
+                <p>{{ $stock->Article->type }}</p>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Cantidad:</label>
+                <p>{{ $stock->quantity }}</p>
+            </div>
 
-            <form class="d-inline" action="{{ url('/movement/' . $refer->id) }}" method="post">
-                @csrf
-                {{ method_field('DELETE') }}
-                <input class="btn btn-danger" type="submit" onclick="return confirm('¿Cancelar remito?')" value="Cancelar">
-            </form>
-        @endif
-        <a class="btn btn-primary" href="{{ url('movement/') }}">Regresar</a>
+            <div class="form-group">
+                <label for="limit">Limite de alerta:</label>
+                <input class="form-control" type="number" name="limit" maxlength="11"
+                    value="{{ isset($stock->limit) ? $stock->limit : old('limit') }}" id="limit">
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">Ultima Actualizacion:</label>
+                <p>{{ $stock->updated_at }}</p>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-success">Editar</button>
+            <a class="btn btn-primary" href="{{ url('stock/') }}">Regresar</a>
+        </form>
+        <form class="d-inline" action="{{ url('/stock/' . $stock->id) }}" method="post">
+            @csrf
+            {{ method_field('DELETE') }}
+            <input class="btn btn-danger" type="submit" onclick="return confirm('¿Quieres borrar?')" value="Borrar">
+        </form>
     </div>
 @endsection

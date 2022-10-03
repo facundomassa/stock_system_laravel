@@ -48,6 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('movement/show/{refer}', [MovementController::class, 'show']);
 
     Route::get('stock', [StockController::class, 'index']);
+    Route::get('stock/{stock}', [StockController::class, 'show']);
+    Route::put('stock/{stock}', [StockController::class, 'update']);
     Route::get('stock/pdf', [StockController::class, 'getpdf']);
     Route::get('stock/excel', [StockController::class, 'getexcel']);
     Route::post('stock', [StockController::class, 'store']);

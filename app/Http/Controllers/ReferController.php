@@ -46,6 +46,7 @@ class ReferController extends Controller
         $data['refers'] = Refer::StockCenterOrigin($options['stockselectorigen'])
             ->StockCenterDestiny($options['stockselectdestiny'])
             ->Status($options['status'])
+            ->orderBy('id', 'desc')
             ->paginate(20);
 
         return view('refer/index')
