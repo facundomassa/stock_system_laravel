@@ -160,4 +160,14 @@ class Refer extends Model
             return $query->where('status', '=', $status);
         }
     }
+
+    public function scopeFechaCreado($query, $dateStart = '0000-00-00', $dateEnd = '2099-01-01')
+    {
+        return $query->whereBetween('date_up', [$dateStart,$dateEnd]);
+    }
+
+    public function scopeFechaFinalizado($query, $dateStart = 0, $dateEnd = 0)
+    {
+        return $query->whereBetween('date_ended', [$dateStart,$dateEnd]);
+    }
 }

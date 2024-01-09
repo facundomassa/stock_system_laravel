@@ -50,8 +50,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('stock', [StockController::class, 'index']);
     Route::get('stock/{stock}', [StockController::class, 'show']);
     Route::put('stock/{stock}', [StockController::class, 'update']);
-    Route::get('stock/pdf', [StockController::class, 'getpdf']);
-    Route::get('stock/excel', [StockController::class, 'getexcel']);
+    
+    Route::get('stock/get/pdf', [StockController::class, 'getpdf']);
+    Route::get('stock/get/excel', [StockController::class, 'getexcel']);
     Route::post('stock', [StockController::class, 'store']);
 
     Route::get('home', [HomeController::class, 'index']);

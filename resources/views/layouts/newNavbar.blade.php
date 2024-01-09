@@ -17,7 +17,7 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
                     <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="#">Home</a>
+                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Home</a>
                     </li>
                     <li class="nav-item fs-4">
                         <a class="nav-link" aria-current="page" href="{{ url('/article') }}">Articulos</a>

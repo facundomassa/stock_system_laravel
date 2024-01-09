@@ -18,7 +18,7 @@ class Stock extends Model
 
     public function Article()
     {
-        return $this->belongsTo(Article::class, 'id_article');
+        return $this->belongsTo(Article::class, 'id_article')->orderBy('name', 'asc');
     }
 
     public function scopeStockCenters($query, $stockcenter)
@@ -46,6 +46,7 @@ class Stock extends Model
         if ($typeTx && $typeTx != '') {
             $articles  = Article::select('id')->where('type', 'LIKE', '%' . $typeTx . '%')->get();
             $article = [];
+            
             foreach ($articles as $key => $value) {
                 $article[] = $value->id;
             }

@@ -23,6 +23,27 @@ class StockController extends Controller
         'required' => 'El :attribute es requerido',
         'digits_between' => 'El :attribute debe tener entre 0 y 11 digitos'
     );
+
+    public function getpdf(){
+        
+        $data['stockselect'] = request()->get('stockselect');
+        $data['type'] = request()->get('type');
+        $data['articlename'] = request()->get('articlename');
+        $data['code'] = request()->get('code');
+
+        $data['stocks'] = Stock::StockCenters($data['stockselect'])
+            ->Type($data['type'])
+            ->Articles($data['articlename'])
+            ->Code($data['code'])
+            ->orderBy('id_stockcenter', 'asc')
+            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
+            ->orderBy('articles.name', 'asc')
+            ->get();
+        
+        $pdf = PDF::loadView('stock/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
+        return $pdf->stream('archivo-pdf.pdf');
+    }
+
     /**
      * Display a listing of the resource.s
      *
@@ -44,15 +65,16 @@ class StockController extends Controller
             ->Articles($options['articlename'])
             ->Code($options['code'])
             ->orderBy('id_stockcenter', 'asc')
-            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
-            ->orderBy('articles.name', 'asc')
+            // ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
+            // ->orderBy('articles.name', 'asc')
             ->paginate(20);
-
         return view('stock/index')
             ->with($data)
             ->with($options)
             ->with('tittle', static::$tittle);
     }
+
+   
 
     /**
      * Display the specified resource.
@@ -70,7 +92,7 @@ class StockController extends Controller
     public function update(Request $request, $id)
     {
         $stock = Stock::find($id);
-        $stock->limit = request()->limit;
+        $stock->quantity_alert = request()->quantity_alert;
         $stock->update();
         return redirect('stock')->with('mensaje', 'Stock editado con exito')->with('tittle', static::$tittle);
     }
@@ -111,25 +133,7 @@ class StockController extends Controller
         }
     }
 
-    public function getpdf(){
-        
-        $data['stockselect'] = request()->get('stockselect');
-        $data['type'] = request()->get('type');
-        $data['articlename'] = request()->get('articlename');
-        $data['code'] = request()->get('code');
-
-        $data['stocks'] = Stock::StockCenters($data['stockselect'])
-            ->Type($data['type'])
-            ->Articles($data['articlename'])
-            ->Code($data['code'])
-            ->orderBy('id_stockcenter', 'asc')
-            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
-            ->orderBy('articles.name', 'asc')
-            ->get();
-        
-        $pdf = PDF::loadView('stock/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
-        return $pdf->stream('archivo-pdf.pdf');
-    }
+    
 
     public function getexcel(){
         

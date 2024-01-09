@@ -32,9 +32,9 @@
             </div>
 
             <div class="form-group">
-                <label for="limit">Limite de alerta:</label>
-                <input class="form-control" type="number" name="limit" maxlength="11"
-                    value="{{ isset($stock->limit) ? $stock->limit : old('limit') }}" id="limit">
+                <label for="quantity_alert">Limite de alerta:</label>
+                <input class="form-control" type="number" name="quantity_alert" maxlength="11"
+                    value="{{ isset($stock->quantity_alert) ? $stock->quantity_alert : old('quantity_alert') }}" id="quantity_alert">
             </div>
 
             <div class="form-group">

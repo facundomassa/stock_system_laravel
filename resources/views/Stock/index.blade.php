@@ -49,7 +49,7 @@
                     <th class="taable-light">Unidad</th>
                     <th class="table-light">Tipo</th>
                     <th class="table-light">Cantidad</th>
-                    <th class="table-light">Limite</th>
+                    <th class="table-light">Alerta</th>
                     <th class="tble-light">Acciones</th>
                 </tr>
             </thead>
@@ -63,7 +63,7 @@
                         <td>{{ $stock->Article->UnitName }}</td>
                         <td>{{ $stock->Article->type }}</td>
                         <td>{{ $stock->quantity }}</td>
-                        <td>{{ isset($stock->limit) ? $stock->limit : "-" }}</td>
+                        <td>{{ isset($stock->quantity_alert) ? $stock->quantity_alert : "-" }}</td>
                         <td>
                             <a class="btn btn-outline-dark py-0" href="{{ url('/stock/' . $stock->id) }}"><i
                                     class="bi bi-eye-fill"></i></a>
@@ -73,8 +73,8 @@
             </tbody>
         </table>
         {!! $stocks->appends(['stockselect' => $stockselect, 'code' => $code, 'articlename' => $articlename, 'type' => $type])->links('vendor.pagination.bootstrap-5') !!}
-        <a class="btn btn-primary py-0 " href="{{ url('stock/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar PDF</a>
-        <a class="btn btn-primary py-0 " href="{{ url('stock/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar Excel</a>
+        <a class="btn btn-primary py-0 " href="{{ url('stock/get/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar PDF</a>
+        <a class="btn btn-primary py-0 " href="{{ url('stock/get/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar Excel</a>
         <div class="fixed-top aticle-container collapse" id="article-t">
             <div class="article-store">
                 <div class="article-tittle d-flex gap-2 flex-column">

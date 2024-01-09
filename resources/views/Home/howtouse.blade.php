@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        <p>En desarrollo...</p>
         <ul>
             <li><a href="#introduccion">Introducción</a></li>
             <ul>
