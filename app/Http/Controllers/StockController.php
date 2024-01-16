@@ -25,7 +25,7 @@ class StockController extends Controller
     );
 
     public function getpdf(){
-        
+
         $data['stockselect'] = request()->get('stockselect');
         $data['type'] = request()->get('type');
         $data['articlename'] = request()->get('articlename');
@@ -39,7 +39,7 @@ class StockController extends Controller
             ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
             ->orderBy('articles.name', 'asc')
             ->get();
-        
+            
         $pdf = PDF::loadView('stock/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
         return $pdf->stream('archivo-pdf.pdf');
     }

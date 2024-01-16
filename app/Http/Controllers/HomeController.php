@@ -9,6 +9,8 @@ use App\Models\Refer;
 use App\Models\Article;
 use App\Models\Movement;
 use App\Models\Stockcenter;
+use App\Exports\MovementExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HomeController extends Controller
 {
@@ -91,6 +93,11 @@ class HomeController extends Controller
         return view('home', compact('chart'))
         ->with($data)
         ->with($options);
+    }
+
+    public function reportRpFyS(){
+    
+        return Excel::download(new MovementExport, 'consumo.xlsx');
     }
 
     public function howtouse()

@@ -46,16 +46,16 @@
                     <th class="table-light">Centro de Stock</th>
                     <th class="table-light">Codigo</th>
                     <th class="table-light">Articulo</th>
-                    <th class="taable-light">Unidad</th>
+                    <th class="table-light">Unidad</th>
                     <th class="table-light">Tipo</th>
                     <th class="table-light">Cantidad</th>
                     <th class="table-light">Alerta</th>
-                    <th class="tble-light">Acciones</th>
+                    <th class="table-light">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($stocks as $stock)
-                    <tr {{ $stock->warning ? "class=bg-warning" : "class=bg-light"}}>
+                    <tr {{ $stock->warning ? "class=table-alert" : "class=bg-light"}}>
                         <td>{{ $stock->id }}</td>
                         <td>{{ $stock->StockCenter->name }}</td>
                         <td>{{ $stock->Article->code }}</td>

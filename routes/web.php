@@ -56,6 +56,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('stock', [StockController::class, 'store']);
 
     Route::get('home', [HomeController::class, 'index']);
+    Route::get('home/reportRpFyS', [HomeController::class, 'reportRpFyS']);
     Route::get('howtouse', [HomeController::class, 'howtouse']);
 });
 

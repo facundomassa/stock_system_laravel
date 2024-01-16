@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quantity', 'id_stockcenter', 'id_article', 'limit'];
+    protected $fillable = ['quantity', 'id_stockcenter', 'id_article', 'quantity_alert'];
 
     public function StockCenter()
     {
@@ -69,8 +69,8 @@ class Stock extends Model
     }
 
     public function getWarningAttribute(){
-        if ($this->limit == 0) return;
-        return $this->limit <= $this->quantity ? true : false;
+        // if ($this->quantity_alert == 0) return;
+        return $this->quantity_alert >= $this->quantity ? true : false;
 
     }
 }

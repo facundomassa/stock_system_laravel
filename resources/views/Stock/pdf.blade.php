@@ -83,6 +83,9 @@
             border-top-left-radius: 15PX; 
         }
         
+        .table-alert{
+            background-color: #ffe5e5;
+        }
 
         .col-auto {
             flex: 0 0 auto;
@@ -142,18 +145,18 @@
                         <th class="table-light">Codigo</th>
                         <th class="table-light">Articulo</th>
                         <th class="taable-light">Unidad</th>
-                        <th class="table-light">Tipo</th>
+                        <th class="table-light">Minimo</th>
                         <th class="text-right">Cantidad</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($stocks as $stock)
-                        <tr>
+                        <tr {{ $stock->warning ? "class=table-alert" : "class=bg-light"}}>
                             <td>{{ $stock->StockCenter->name }}</td>
                             <td>{{ $stock->Article->code }}</td>
                             <td>{{ $stock->Article->name }}</td>
                             <td>{{ $stock->Article->UnitName }}</td>
-                            <td>{{ $stock->Article->type }}</td>
+                            <td>{{ $stock->quantity_alert }}</td>
                             <td class="text-right">{{ $stock->quantity }}</td>
                         </tr>
                     @endforeach
