@@ -46,6 +46,7 @@
                             id="date_ended">
                     </div>
                 </div>
+<<<<<<< Updated upstream
                 <div class="col-6 p-3">
                     <p class="m-0 filter">Fechas de finalizado:</p>
                     <div class="align-items-center border border-secondary p-2 rounded">
@@ -56,6 +57,15 @@
                         <input class="form-control" type="date"
                             value="{{ isset($hoy) ? $hoy : old('hoy') ?: date('Y-m-d') }}" name="date_ended"
                             id="date_ended">
+=======
+            </form>
+            <div class="row">
+                <div class="col-md-12 ">
+                    <div class="panel panel-default">
+                        <div class="panel-heading my-2">Movimiento de materiales finalizados del
+                            {{ Helpers::x_fechaEspañol($mes) }} al {{ Helpers::x_fechaEspañol($hoy)}}</div>
+                        <canvas id="userChart" width="100%" height="90px" class="rounded shadow"></canvas>
+>>>>>>> Stashed changes
                     </div>
                 </div>
                 <div class="col-12">
