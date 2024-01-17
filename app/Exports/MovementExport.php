@@ -11,11 +11,11 @@ class MovementExport implements FromView
 {
     public function view(): View
     {
-        $data['stc_origin'] = 15;
-        $data['stc_destiny'] = '*';
-        $data['date_start'] = '2023-12-01';
-        $data['date_end'] = '2023-12-31';
-
+        $data['stc_origin'] = request()->get('check_origin') ?: '*';
+        $data['stc_destiny'] = request()->get('check_destiny') ?: '*';
+        $data['date_start'] = request()->get('date_start');
+        $data['date_end'] = request()->get('date_end');
+        
         //obtenemos los remitos con los datos entregados
         $refer = Refer::FechaFinalizado($data['date_start'], $data['date_end'])
             ->StockCenterOrigin($data['stc_origin'])

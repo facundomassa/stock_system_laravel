@@ -8,6 +8,9 @@
                 <tr>
                     <th class="table-light">#</th>
                     <th class="table-light">N° Remito</th>
+                    <th class="table-light">Origen</th>
+                    <th class="table-light">Destino</th>
+                    <th class="table-light">Fecha</th>
                     <th class="table-light">Articulo</th>
                     <th class="table-light">Cantidad</th>
                     <th class="table-light">Acciones</th>
@@ -17,8 +20,11 @@
                 @foreach ($movements as $movement)
                     <tr>
                         <td>{{ $movement->id }}</td>
-                        <td>{{ $movement->id_refer }} </td>
-                        <td>{{ $movement->id_article }}</td>
+                        <td>{{ $movement->Refer->id }} </td>
+                        <td>{{ $movement->Refer->nameOrigin }} </td>
+                        <td>{{ $movement->Refer->nameDestiny }} </td>
+                        <td>{{ $movement->Refer->dateEndedFormatted }} </td>
+                        <td>{{ $movement->Article->name }}</td>
                         <td>{{ $movement->quantity }}</td>
                         <td>
                             <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $movement->id_refer) }}"><i

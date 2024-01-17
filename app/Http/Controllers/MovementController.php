@@ -26,7 +26,7 @@ class MovementController extends Controller
     public function index()
     {
         //
-        $data['movements'] = Movement::paginate(20);
+        $data['movements'] = Movement::orderBy('id', 'desc')->paginate(20);
 
         foreach ($data['movements'] as $key => $value) {
             $data['movements'][$key]->id_article = $value->Article->name;
