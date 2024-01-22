@@ -39,7 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::patch('refer/finalized/{refer}', [ReferController::class, 'finalized']);
     Route::get('refer/emited/{refer}', [ReferController::class, 'emited']);
-    Route::get('refer/pdf/{refer}', [ReferController::class, 'getpdf']);
+    Route::get('refer/get/pdf/{refer}', [ReferController::class, 'getpdf']);
 
     Route::get('movement', [MovementController::class, 'index']);
     Route::get('movement/create/{refer}', [MovementController::class, 'create']);

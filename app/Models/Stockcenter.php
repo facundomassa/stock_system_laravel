@@ -27,6 +27,11 @@ class Stockcenter extends Model
         return $this->belongsTo(Person::class, 'id_person');
     }
 
+    public function getFullNamePersonAttribute()
+    {
+        return $this->Person->name . " " . $this->Person->surname;
+    }
+
     //validate id of related tables
     public static function ValidateIDRel(Request $request){
         if (!Direction::where('id', '=', $request->id_direction)->exists()) {

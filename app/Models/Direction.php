@@ -11,6 +11,11 @@ class Direction extends Model
 
     protected $fillable = ['country', 'state', 'city', 'locality', 'street', 'number', 'department', 'house', 'floor', 'cp'];
 
+    public function getFullDirectionAttribute()
+    {
+        return $this->street . " " . $this->number;
+    }
+
     public function setCityAttribute($value){
         return $this->attributes['city'] = ucwords(strtolower($value));
     }
