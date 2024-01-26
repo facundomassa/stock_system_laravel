@@ -203,13 +203,11 @@ class ReferController extends Controller
     {
         //
         $data['refer'] = Refer::findOrFail($id);
-        $data['origen_id_stockcenter'] = Stockcenter::findOrFail($data['refer']->origen_id_stockcenter);
-        $data['destiny_id_stockcenter'] = Stockcenter::findOrFail($data['refer']->destiny_id_stockcenter);
         $data['movements'] = Movement::where('id_refer', $id)->get();
 
         $refer = Refer::findOrFail($id);
         // dd($data);
         $pdf = PDF::loadView('refer/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
-        return $pdf->stream('remito'.$refer->id.'.pdf');
+        return $pdf->stream('remito_'.$refer->id.'.pdf');
     }
 }

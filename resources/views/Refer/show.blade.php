@@ -93,6 +93,7 @@
 
         </div>
 
+        <a class="btn btn-primary py-0" href="{{ url('refer/get/pdf/'.$refer->id)}}">Generar PDF</a>
         
     </div>
 @endsection
