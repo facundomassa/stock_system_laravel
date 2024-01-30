@@ -4,7 +4,25 @@
             aria-controls="offcanvasDarkNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">Stock System</a>
+        
+        <div class="dropdown-center">
+            <button class="btn btn-outline-light rounded-circle me-4 position-relative" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class='bi bi-bell-fill'></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{Auth::user()->unreadNotifications->count();}}
+                    
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </button>
+                
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
+                @foreach (Auth::user()->notifications as $notification)
+                    <li><p class="dropdown-item text-wrap" style="width: 30rem;">{{$notification->data['menssage']}}</p></li>
+                @endforeach
+            </ul>
+            <a class="navbar-brand" href="/home">Stock System</a>
+        </div>
+        
         <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
             aria-labelledby="offcanvasDarkNavbarLabel">
             <div class="offcanvas-header">

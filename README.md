@@ -6,10 +6,10 @@ En desarollo...
 ## Estado del proyecto
 El proyecto actualmente se encuentra en fase de desarrollo pero aquí van las ideas principales en la que se estarán trabajando:
  - [x] Ingresos, movimientos y retiros de materiales por centro de stock
- - [ ] Exportaciones de tabla en Excel
+ - [X] Exportaciones de tablas en Excel
  - [x] Creación de remitos PDF
  - [ ] Múltiples graficas de control
- - [ ] Alertas y notificaciones
+ - [x] Alertas y notificaciones
  - [ ] Usuarios y roles
 
 ## Como instalar

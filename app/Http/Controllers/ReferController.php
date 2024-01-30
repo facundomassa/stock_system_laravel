@@ -188,7 +188,9 @@ class ReferController extends Controller
         $request->request->add($refer->getAttributes());
 
         $rules = static::$rules;
-        $rules['date_ended'] = 'required|date_format:Y-m-d H:i:s';
+        $rules['date_ended'] = 'required:Y-m-d H:i:s';
+        $rules['date_up'] = 'required:Y-m-d H:i:s';
+        
 
         $this->validate($request, $rules, static::$message);
 
