@@ -57,6 +57,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('home', [HomeController::class, 'index']);
     Route::get('home/reportRpFyS', [HomeController::class, 'reportRpFyS']);
+    Route::get('home/reportAllMovement', [HomeController::class, 'reportAllMovement']);
     Route::get('howtouse', [HomeController::class, 'howtouse']);
 });
 

@@ -42,4 +42,24 @@
         <button type="submit" class="btn btn-primary">Generar reporte</button>
         </form>
     </div>
+    <a class="btn p-2" type="button" data-bs-toggle="collapse" href="#report2" role="button" aria-expanded="false" aria-controls="report1"">
+        Todos los movimientos por fecha
+    </a>
+    <div class="collapse p-2" id="report2">
+        <form action="{{ url('/home/reportAllMovement') }}" method="get">
+            <div class="row">
+                    <p class="m-0 filter">Fecha de finalizado:</p>
+                    <div class="align-items-center border border-secondary p-3 rounded">
+                        <label for="date_start">Desde:</label>
+                        <input class="form-control" type="date" 
+                            name="date_start" id="date_start" required>
+                        <label for="date_end">Hasta:</label>
+                        <input class="form-control" type="date" name="date_end"
+                            id="date_end" required>
+                    </div>
+            </div>
+            
+        <button type="submit" class="btn btn-primary">Generar reporte</button>
+        </form>
+    </div>
 </div>
