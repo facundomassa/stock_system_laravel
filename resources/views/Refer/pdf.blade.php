@@ -1,6 +1,7 @@
 <html>
 
 <head>
+    <title>Remito N°{{ $refer->id}}</title>
     <style>
         html {
             font-size: 14px;
@@ -17,9 +18,9 @@
         footer {
             position: fixed;
             left: 0px;
-            bottom: -100px;
+            bottom: 0px;
             right: 0px;
-            height: 300px;
+            height: 120px;
         }
 
         footer .page:after {
@@ -56,6 +57,8 @@
 
         td{
             padding: 5px 10px;
+            letter-spacing: 1px;
+            word-spacing: 4px;
         }
 
         .color tr {
@@ -71,7 +74,7 @@
         }
 
         .footer td {
-            padding: 0px 15px 120px 15px
+            padding: 0px 15px 60px 15px
         }
 
         .col-auto {
@@ -108,8 +111,17 @@
             text-align: center;
             font-size: 16px;
         }
+        
+        .bold{
+            font-weight: bold;
+        }
+        
+        .observation{
+            padding: 5px;
+            color: rgb(50, 50, 50);
+        }
     </style>
-
+</head>
 <body>
     <footer>
         <table class="footer">
@@ -146,60 +158,42 @@
         <div class="container">
             <table class="border-box">
                 <tr>
-                    <td class="m-width">Desde:</td>
-                    <td></td>
-                    <td class="left-box m-width">Remito:</td>
-                    <td>{{ $refer->id}}</td>
+                    <td class="m-width bold">Desde:</td>
+                    <td class="left-box m-width bold">Remito:   {{ $refer->id}}</td>
                 </tr>
                 <tr>
-                    <td class="m-width">Nombre:</td>
-                    <td>{{ $refer->nameOrigin}}</td>
-                    <td class="left-box m-width">Fecha emitido:</td>
-                    <td>{{ $refer->DateUpFormatted}}</td>
+                    <td class="m-width">Nombre:   {{ $refer->nameOrigin}}</td>
+                    <td class="left-box m-width">Fecha emitido:   {{ $refer->DateUpFormatted}}</td>
                 </tr>
                 <tr>
-                    <td class="m-width">Direccion:</td>
-                    <td>{{ $refer->Origin->Direction->FullDirection}}</td>
-                    <td class="left-box m-width">Fecha finalizado:</td>
-                    <td>{{ $refer->DateEndedFormatted}}</td>
+                    <td class="m-width">Direccion:   {{ $refer->Origin->Direction->FullDirection}}</td>
+                    <td class="left-box m-width">Fecha finalizado:   {{ $refer->DateEndedFormatted}}</td>
                 </tr>
                 <tr>
-                    <td class="m-width">Encargado:</td>
-                    <td>{{ $refer->FullNameUser}}</td>
+                    <td class="m-width">Encargado:   {{ $refer->FullNameUser}}</td>
                     <td class="left-box m-width"></td>
-                    <td></td>
                 </tr>
             </table>
             <table class="border-box">
 	            <tbody>
                     <tr>
-                        <td>A:</td>
-                        <td>{{ $refer->NameDestiny}}</td>
-                        <td></td>
+                        <td class="bold">A: {{ $refer->NameDestiny}}</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Nombre:</td>
-                        <td>{{ $refer->Destiny->FullNamePerson}}</td>
-			            <td>Telefono:</td>
-                        <td>{{ $refer->Destiny->Person->telephone}}</td>
+                        <td>Nombre: {{ $refer->Destiny->FullNamePerson}}</td>
+			            <td>Telefono: {{ $refer->Destiny->Person->telephone}}</td>
                     </tr>
 		            <tr>
-                        <td>Domicilio:</td>
-                        <td>{{ $refer->Destiny->Direction->FullDirection}}</td>
-			            <td>Provincia:</td>
-                        <td>{{ $refer->Destiny->Direction->state}}</td>
+                        <td>Domicilio: {{ $refer->Destiny->Direction->FullDirection}}</td>
+			            <td>Provincia: {{ $refer->Destiny->Direction->state}}</td>
                     </tr>
 		            <tr>
-                        <td>CP:</td>
-                        <td>{{ $refer->Destiny->Direction->cp}}</td>
-			            <td>Localidad:</td>
-                        <td>{{ $refer->Destiny->Direction->city}}</td>
+                        <td>CP: {{ $refer->Destiny->Direction->cp}}</td>
+			            <td>Localidad: {{ $refer->Destiny->Direction->city}}</td>
                     </tr>
 		            <tr>
-                        <td>Cuit:</td>
-                        <td>{{ $refer->Destiny->Person->cuit}}</td>
-                        <td></td>
+                        <td>Cuit: {{ $refer->Destiny->Person->cuit}}</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -224,6 +218,7 @@
                     @endforeach
                 </tbody>
             </table>
+            <p class="observation">Observaciones: {{ $refer->observation}}</p>
         </div>
     </main>
 </body>

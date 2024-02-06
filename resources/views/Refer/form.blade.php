@@ -51,5 +51,10 @@
         <option selected value="{{ auth()->id(); }}"> {{ auth()->user()->name . " " . auth()->user()->surname; }}</option>
     </select>
 </div>
+<div class="form-group">
+    <label>Observaciones:</label>
+    <input class="form-control" type="text" name="observation" maxlength="60"
+        value="{{ isset($refer->observation) ? $refer->observation : old('observation') }}" id="observation">
+</div>
 <br>
 <input class="btn btn-success" type="submit" value="{{ $modo }} Datos">

@@ -11,7 +11,7 @@ class Refer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['origen_id_stockcenter', 'destiny_id_stockcenter', 'date_up', 'status', 'date_ended', 'id_user'];
+    protected $fillable = ['origen_id_stockcenter', 'destiny_id_stockcenter', 'date_up', 'status', 'date_ended', 'id_user', 'observation'];
 
     public function Origin()
     {
@@ -143,21 +143,21 @@ class Refer extends Model
     public function scopeStockCenterOrigin($query, $stockcenter)
     {
         if ($stockcenter && $stockcenter != '*') {
-            return $query->where('origen_id_stockcenter', '=', $stockcenter);
+            return $query->whereIn('origen_id_stockcenter', $stockcenter);
         }
     }
 
     public function scopeStockCenterDestiny($query, $stockcenter)
     {
         if ($stockcenter && $stockcenter != '*') {
-            return $query->where('destiny_id_stockcenter', '=', $stockcenter);
+            return $query->whereIn('destiny_id_stockcenter', $stockcenter);
         }
     }
 
     public function scopeStatus($query, $status)
     {
         if ($status && $status != '*') {
-            return $query->where('status', '=', $status);
+            return $query->whereIn('status', $status);
         }
     }
 

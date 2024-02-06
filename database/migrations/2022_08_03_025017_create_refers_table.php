@@ -20,6 +20,7 @@ return new class extends Migration
             $table->dateTime('date_ended')->nullable();
             $table->unsignedInteger('id_user');
             $table->string('status', 1)->default('I');
+            $table->string('observation')->nullable();
             $table->foreign('origen_id_stockcenter')->references('id')->on('stockcenters')->onDelete('cascade');
             $table->foreign('destiny_id_stockcenter')->references('id')->on('stockcenters')->onDelete('cascade');
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
