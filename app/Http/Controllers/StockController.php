@@ -105,7 +105,9 @@ class StockController extends Controller
             if ($stockQuery->exists()) {
                 $dataStock = $stockQuery->first()->getAttributes();
                 $dataStock['quantity'] -= $movement->quantity;
-                Stock::find($dataStock['id'])->update($dataStock);
+                $stock = Stock::find($dataStock['id']);
+                $stock->update($dataStock);
+                $stock->updateAlert(false);
             } else {
                 $dataStock['id_stockcenter'] = $refer['origen_id_stockcenter'];
                 $dataStock['id_article'] = $movement->id_article;
@@ -123,7 +125,9 @@ class StockController extends Controller
             if ($stockQuery->exists()) {
                 $dataStock = $stockQuery->first()->getAttributes();
                 $dataStock['quantity'] += $movement->quantity;
-                Stock::find($dataStock['id'])->update($dataStock);
+                $stock = Stock::find($dataStock['id']);
+                $stock->update($dataStock);
+                $stock->updateAlert(true);
             } else {
                 $dataStock['id_stockcenter'] = $refer['destiny_id_stockcenter'];
                 $dataStock['id_article'] = $movement->id_article;

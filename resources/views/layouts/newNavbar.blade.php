@@ -4,7 +4,29 @@
             aria-controls="offcanvasDarkNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">Stock System</a>
+        
+        <div class="dropdown-center">
+            <button class="btn btn-outline-light rounded-circle me-4 position-relative" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class='bi bi-bell-fill'></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{Auth::user()->unreadNotifications->count();}}
+                    
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </button>
+                
+            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
+                @if (Auth::user()->notifications->isEmpty())
+                <li><p class="dropdown-item text-wrap text-muted" style="width: 30rem;">No tiene alertas.</p></li>
+                @else
+                @foreach (Auth::user()->notifications as $notification)
+                    <li><p class="dropdown-item text-wrap" style="width: 30rem;">{{$notification->data['menssage']}}</p></li>
+                @endforeach
+                @endif
+            </ul>
+            <a class="navbar-brand" href="/home">Stock System</a>
+        </div>
+        
         <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
             aria-labelledby="offcanvasDarkNavbarLabel">
             <div class="offcanvas-header">
@@ -17,7 +39,7 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
                     <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Home</a>
+                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Dashboard</a>
                     </li>
                     <li class="nav-item fs-4">
                         <a class="nav-link" aria-current="page" href="{{ url('/article') }}">Articulos</a>

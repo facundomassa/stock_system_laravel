@@ -16,6 +16,7 @@ class ReferController extends Controller
         'origen_id_stockcenter' => 'required|integer|digits_between:0,10',
         'destiny_id_stockcenter' => 'required|integer|digits_between:0,10',
         'status' => 'required|string|max:1',
+        'observation' => 'nullable|string|max:60',
         'date_ended' => 'nullable|date_format:Y-m-d H:i',
         'date_up' => 'required|date_format:Y-m-d H:i',
         'id_user' => 'required|integer|digits_between:0,10',
@@ -188,7 +189,9 @@ class ReferController extends Controller
         $request->request->add($refer->getAttributes());
 
         $rules = static::$rules;
-        $rules['date_ended'] = 'required|date_format:Y-m-d H:i:s';
+        $rules['date_ended'] = 'required:Y-m-d H:i:s';
+        $rules['date_up'] = 'required:Y-m-d H:i:s';
+        
 
         $this->validate($request, $rules, static::$message);
 

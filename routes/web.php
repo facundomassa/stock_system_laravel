@@ -10,6 +10,7 @@ use App\Http\Controllers\StockcenterController;
 use App\Http\Controllers\ReferController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\HomeController;
+use App\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,7 +58,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('home', [HomeController::class, 'index']);
     Route::get('home/reportRpFyS', [HomeController::class, 'reportRpFyS']);
+    Route::get('home/reportAllMovement', [HomeController::class, 'reportAllMovement']);
     Route::get('howtouse', [HomeController::class, 'howtouse']);
+
+    Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.delete');
 });
 
 

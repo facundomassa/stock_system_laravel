@@ -10,6 +10,7 @@ use App\Models\Article;
 use App\Models\Movement;
 use App\Models\Stockcenter;
 use App\Exports\MovementExport;
+use App\Exports\ReportRpFySExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HomeController extends Controller
@@ -96,6 +97,11 @@ class HomeController extends Controller
     }
 
     public function reportRpFyS(){
+    
+        return Excel::download(new ReportRpFySExport, 'consumo.xlsx');
+    }
+
+    public function reportAllMovement(){
     
         return Excel::download(new MovementExport, 'consumo.xlsx');
     }
