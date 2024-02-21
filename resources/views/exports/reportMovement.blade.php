@@ -18,7 +18,7 @@
     <tbody>
         @foreach ($movements as $movement)
             <tr>
-                <td>{{ $movement->id_reder }}</td>
+                <td>{{ $movement->id_refer }}</td>
                 <td>{{ $movement->Refer->NameOrigin }}</td>
                 <td>{{ $movement->Refer->NameDestiny }}</td>
                 <td>{{ $movement->Refer->DateUpFormatted }}</td>
@@ -29,7 +29,7 @@
                 <td>{{ $movement->Article->name }}</td>
                 <td>{{ $movement->Article->UnitName }}</td>
                 <td>{{ $movement->Article->type }}</td>
-                <td>{{ $movement->total_quantity }}</td>
+                <td>{{ $movement->quantity }}</td>
             </tr>
         @endforeach
     </tbody>

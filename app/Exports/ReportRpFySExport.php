@@ -7,7 +7,7 @@ use App\Models\Movement;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class MovementExport implements FromView
+class ReportRpFySExport implements FromView
 {
     public function view(): View
     {
@@ -32,6 +32,6 @@ class MovementExport implements FromView
             ->selectRaw('id_article, SUM(quantity) as total_quantity')
             ->get();
         
-        return view('exports.reportRpFySExport')->with('movements', $movements);
+        return view('exports.reportRpFyS')->with('movements', $movements);
     }
 }

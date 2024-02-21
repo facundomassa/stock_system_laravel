@@ -59,4 +59,16 @@ class Notificationalert extends Notification
     {
         return $this->data;
     }
+
+    public function destroy($id)
+    {
+        $notification = Auth::user()->notifications()->where('id', $id)->first();
+
+        if ($notification) {
+            $notification->delete();
+            return redirect()->back()->with('success', 'Notificación eliminada correctamente.');
+        } else {
+            return redirect()->back()->with('error', 'La notificación no pudo ser encontrada.');
+        }
+    }
 }

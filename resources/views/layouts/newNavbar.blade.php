@@ -16,9 +16,13 @@
             </button>
                 
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
+                @if (Auth::user()->notifications->isEmpty())
+                <li><p class="dropdown-item text-wrap text-muted" style="width: 30rem;">No tiene alertas.</p></li>
+                @else
                 @foreach (Auth::user()->notifications as $notification)
                     <li><p class="dropdown-item text-wrap" style="width: 30rem;">{{$notification->data['menssage']}}</p></li>
                 @endforeach
+                @endif
             </ul>
             <a class="navbar-brand" href="/home">Stock System</a>
         </div>
@@ -35,7 +39,7 @@
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
                     <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Home</a>
+                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Dashboard</a>
                     </li>
                     <li class="nav-item fs-4">
                         <a class="nav-link" aria-current="page" href="{{ url('/article') }}">Articulos</a>
