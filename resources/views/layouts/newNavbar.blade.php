@@ -6,6 +6,7 @@
         </button>
         
         <div class="dropdown-center">
+            @if (Auth::check())
             <button class="btn btn-outline-light rounded-circle me-4 position-relative" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class='bi bi-bell-fill'></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -24,6 +25,7 @@
                 @endforeach
                 @endif
             </ul>
+            @endif
             <a class="navbar-brand" href="/home">Stock System</a>
         </div>
         
