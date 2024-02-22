@@ -55,6 +55,7 @@
                     </form>
                 @endif
                 <a class="btn btn-secondary" href="{{ url('refer/') }}">Regresar</a>
+                <a class="btn btn-outline-dark" title="Generar Pdf" href="{{ url('refer/get/pdf/'.$refer->id)}}"><i class='bi bi-printer'></i></a>
             </div>
             <div class="d-flex flex-column w-50">
                 <h3 class="text-center">Articulos</h3>
@@ -93,7 +94,7 @@
 
         </div>
 
-        <a class="btn btn-primary py-0" href="{{ url('refer/get/pdf/'.$refer->id)}}">Generar PDF</a>
+        
         
     </div>
 @endsection

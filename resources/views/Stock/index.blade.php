@@ -37,6 +37,13 @@
                     <input class="form-control" type="text" name="type" maxlength="40"
                         value="{{ isset($type) ? $type : old('type') }}" id="type" onchange="this.form.submit()">
                 </div>
+                <div class="col-auto ms-auto">
+                    <a class="btn btn-outline-primary py-0 " title="Generar Pdf" onclick="openPdf('{{ url('stock/get/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}')">
+                    <i class="bi bi-file-pdf"></i></a>
+                    <a class="btn btn-outline-success py-0 " title="Generar Excel" 
+                    href="{{ url('stock/get/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">
+                    <i class="bi bi-file-earmark-spreadsheet"></i></a>
+                </div>
             </div>
         </form>
         <table class="table table-striped table-hover table-md">
@@ -73,14 +80,19 @@
             </tbody>
         </table>
         {!! $stocks->appends(['stockselect' => $stockselect, 'code' => $code, 'articlename' => $articlename, 'type' => $type])->links('vendor.pagination.bootstrap-5') !!}
-        <a class="btn btn-primary py-0 " href="{{ url('stock/get/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar PDF</a>
-        <a class="btn btn-primary py-0 " href="{{ url('stock/get/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">Generar Excel</a>
-        <div class="fixed-top aticle-container collapse" id="article-t">
-            <div class="article-store">
-                <div class="article-tittle d-flex gap-2 flex-column">
-                    <button class="btn btn-dark article-btn" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#article-t" aria-expanded="true" aria-controls="article-t">X</button>
-                        <iframe id="framepdf" height="100%" class="frame" src="" frameborder="0"></iframe>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfModalLabel">PDF Viewer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-dark">
+                        <!-- Aquí se cargará el iframe -->
+                        <iframe id="pdfIframe" src="" style="width: 100%; height: 500px;"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,4 +102,10 @@
 
 @section('js')
     @vite('resources/js/ajax/generatepdf.js')
+    <script>
+        function openPdf(pdfUrl) {
+            $('#pdfIframe').attr('src', pdfUrl);
+            $('#pdfModal').modal('show');
+        }
+    </script>
 @endsection
