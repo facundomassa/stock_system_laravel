@@ -157,7 +157,7 @@ class Refer extends Model
     public function scopeStatus($query, $status)
     {
         if ($status && $status != '*') {
-            return $query->whereIn('status', $status);
+            return $query->where('status', $status);
         }
     }
 

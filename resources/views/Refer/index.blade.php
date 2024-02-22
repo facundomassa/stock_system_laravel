@@ -45,7 +45,11 @@
                         <option {{$status == "F" ? "selected" : ""}} value="F"> Finalizado</option>
                     </select>
                 </div>
+                <div class="col-auto ms-auto">
+                    <a class="btn btn-success" href="{{ url('/refer/create') }}">Nuevo ingreso</a>
+                </div>
             </div>
+            
         </form>
         <table class="table table-striped table-hover table-md">
             <thead>
@@ -111,6 +115,9 @@
                                     <a class="btn btn-outline-dark py-0" href="{{ url('/refer/' . $refer->id) }}"><i
                                             class="bi bi-eye-fill"></i></a>
                                 </div>
+                                <div class="col p-0">
+                                    <a class="btn btn-outline-dark py-0" title="Generar Pdf" onclick="openPdf('{{ url('refer/get/pdf/'.$refer->id)}}')"><i class='bi bi-printer'></i></a>
+                                </div>
                             </div>
                             
                         </td>
@@ -125,4 +132,29 @@
                                 ->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-success" href="{{ url('/refer/create') }}">Nuevo ingreso</a>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">PDF Viewer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-dark">
+                    <!-- Aquí se cargará el iframe -->
+                    <iframe id="pdfIframe" src="" style="width: 100%; height: 500px;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('js')
+    <script>
+        function openPdf(pdfUrl) {
+            $('#pdfIframe').attr('src', pdfUrl);
+            $('#pdfModal').modal('show');
+        }
+    </script>
 @endsection

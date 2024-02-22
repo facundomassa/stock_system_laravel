@@ -43,7 +43,7 @@ class ReferController extends Controller
             'stockselectdestiny' => request()->get('stockselectdestiny'),
             'status' => request()->get('status')
         ];
-
+        
         $data['refers'] = Refer::StockCenterOrigin($options['stockselectorigen'])
             ->StockCenterDestiny($options['stockselectdestiny'])
             ->Status($options['status'])
