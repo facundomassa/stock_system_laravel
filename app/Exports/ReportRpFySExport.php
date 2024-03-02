@@ -18,8 +18,8 @@ class ReportRpFySExport implements FromView
         
         //obtenemos los remitos con los datos entregados
         $refer = Refer::FechaFinalizado($data['date_start'], $data['date_end'])
-            ->StockCenterOrigin($data['stc_origin'])
-            ->StockCenterDestiny($data['stc_destiny'])
+            ->StockCenterInOrigin($data['stc_origin'])
+            ->StockCenterInDestiny($data['stc_destiny'])
             ->pluck('id')
             ->all();
 

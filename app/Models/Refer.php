@@ -140,17 +140,31 @@ class Refer extends Model
         $this->update($this->attributes);
     }
 
-    public function scopeStockCenterOrigin($query, $stockcenter)
+    public function scopeStockCenterInOrigin($query, $stockcenter)
     {
         if ($stockcenter && $stockcenter != '*') {
             return $query->whereIn('origen_id_stockcenter', $stockcenter);
         }
     }
 
-    public function scopeStockCenterDestiny($query, $stockcenter)
+    public function scopeStockCenterInDestiny($query, $stockcenter)
     {
         if ($stockcenter && $stockcenter != '*') {
             return $query->whereIn('destiny_id_stockcenter', $stockcenter);
+        }
+    }
+
+    public function scopeStockCenterOrigin($query, $stockcenter)
+    {
+        if ($stockcenter && $stockcenter != '*') {
+            return $query->where('origen_id_stockcenter', $stockcenter);
+        }
+    }
+
+    public function scopeStockCenterDestiny($query, $stockcenter)
+    {
+        if ($stockcenter && $stockcenter != '*') {
+            return $query->where('destiny_id_stockcenter', $stockcenter);
         }
     }
 

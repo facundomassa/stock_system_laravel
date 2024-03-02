@@ -137,6 +137,29 @@ class StockController extends Controller
         }
     }
 
+    // Para la función discount     adjustStock($refer, $movements, false);
+    // Para la función increase     adjustStock($refer, $movements, true);
+    public static function adjustStock($refer, $movements, $increase)
+    {
+        $stockcenterField = $increase ? 'destiny_id_stockcenter' : 'origen_id_stockcenter';
+        $quantityMultiplier = $increase ? 1 : -1;
+
+        foreach ($movements as $movement) {
+            $stockQuery = Stock::where("id_stockcenter", $refer[$stockcenterField])->where('id_article', $movement->id_article);
+            if ($stockQuery->exists()) {
+                $dataStock = $stockQuery->first()->getAttributes();
+                $dataStock['quantity'] += $quantityMultiplier * $movement->quantity;
+                $stock = Stock::find($dataStock['id']);
+                $stock->update($dataStock);
+                $stock->updateAlert($increase);
+            } else {
+                $dataStock['id_stockcenter'] = $refer[$stockcenterField];
+                $dataStock['id_article'] = $movement->id_article;
+                $dataStock['quantity'] = $quantityMultiplier * $movement->quantity;
+                Stock::create($dataStock);
+            }
+        }
+    }
     
 
     public function getexcel(){

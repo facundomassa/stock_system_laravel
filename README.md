@@ -26,12 +26,10 @@ npm run dev
 ```
 ## Contacto
 - **[Instagram](https://www.instagram.com/facu_massa1)**
-- **[Twitter](https://twitter.com/FacuMassa11)**
-- **[Facebook](https://www.facebook.com/facundo.massa11)**
 - **[Correo](mailto:massafacundo11@gmail.com)**
 - **[Whatsapp](https://wa.link/ctk5y4)**
 - **[GitHub](https://github.com/facundomassa)**
-- **[LinkedIn](https://www.linkedin.com/in/facundo-massa-bba110162)**
+- **[LinkedIn](https://www.linkedin.com/in/facundo-massa/)**
 - 
 ## Librerías y frameworks utilizados
 * Laravel
