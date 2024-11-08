@@ -124,7 +124,7 @@ class Refer extends Model
         $this->status = 'E';
         if($this->Origin->type != 'P'){
             $movements = Movement::where('id_refer', $this->id)->get();
-            StockController::discount($this->attributes, $movements);
+            Stock::discount($this->attributes, $movements);
         }
 
         $this->update($this->attributes);
@@ -134,7 +134,7 @@ class Refer extends Model
         $this->status = 'F';
         if($this->Destiny->type != 'C'){
             $movements = Movement::where('id_refer', $this->id)->get();
-            StockController::increase($this->attributes, $movements);
+            Stock::increase($this->attributes, $movements);
         }
 
         $this->update($this->attributes);

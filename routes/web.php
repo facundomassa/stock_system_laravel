@@ -43,6 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('refer/get/pdf/{refer}', [ReferController::class, 'getpdf']);
 
     Route::get('movement', [MovementController::class, 'index']);
+    Route::get('transit', [MovementController::class, 'transit']);
     Route::get('movement/create/{refer}', [MovementController::class, 'create']);
     Route::get('movement/{refer}/edit', [MovementController::class, 'create']);
     Route::post('movement', [MovementController::class, 'store']);

@@ -26,7 +26,9 @@ box-sizing: border-box;
 display: flex;
 flex-direction: column;
 min-height: 100vh;">
-    @include('layouts/newNavbar')
+@if (Auth::check())
+    @include('layouts.newNavbar')
+@endif
 
     <main class="py-2 fs-6" style="flex: 1;">
         <div>

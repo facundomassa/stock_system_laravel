@@ -54,6 +54,9 @@
                         <a class="nav-link" aria-current="page" href="{{ url('/movement') }}">Movimientos</a>
                     </li>
                     <li class="nav-item fs-4">
+                        <a class="nav-link" aria-current="page" href="{{ url('/transit') }}">En Transito</a>
+                    </li>
+                    <li class="nav-item fs-4">
                         <a class="nav-link" aria-current="page" href="{{ url('/person') }}">Personas</a>
                     </li>
                     <li class="nav-item fs-4">

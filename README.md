@@ -10,7 +10,17 @@ El proyecto actualmente se encuentra en fase de desarrollo pero aquí van las id
  - [x] Creación de remitos PDF
  - [ ] Múltiples graficas de control
  - [x] Alertas y notificaciones
- - [ ] Usuarios y roles
+ - [ ] Roles y permisos
+ - [ ] Inventario intermedio para control
+ - [ ] Segundad unidad para materiales
+### Parte tecnica:
+- [ ] Solicitud de materiales
+- [ ] Control de stock diario
+### Administración:
+- [ ] Consumo tecnico actual
+- [ ] Movimientos de materiales entre operaciones
+- [ ] Transportes pendientes
+- [ ] Pedidos actuales
 
 ## Como instalar
 ```bash
@@ -24,6 +34,7 @@ php artisan migration
 npm install
 npm run dev
 ```
+...continuar
 ## Contacto
 - **[Instagram](https://www.instagram.com/facu_massa1)**
 - **[Correo](mailto:massafacundo11@gmail.com)**

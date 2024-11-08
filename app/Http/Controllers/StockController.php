@@ -74,9 +74,7 @@ class StockController extends Controller
             ->with('tittle', static::$tittle);
     }
 
-   
-
-    /**
+    /*
      * Display the specified resource.
      *
      * @param  \App\Models\Stock  $stock
@@ -97,48 +95,11 @@ class StockController extends Controller
         return redirect('stock')->with('mensaje', 'Stock editado con exito')->with('tittle', static::$tittle);
     }
 
-    public static function discount($refer, $movements)
-    {
-        //
-        foreach ($movements as $movement) {
-            $stockQuery = Stock::where("id_stockcenter", $refer['origen_id_stockcenter'])->where('id_article', $movement->id_article);
-            if ($stockQuery->exists()) {
-                $dataStock = $stockQuery->first()->getAttributes();
-                $dataStock['quantity'] -= $movement->quantity;
-                $stock = Stock::find($dataStock['id']);
-                $stock->update($dataStock);
-                $stock->updateAlert(false);
-            } else {
-                $dataStock['id_stockcenter'] = $refer['origen_id_stockcenter'];
-                $dataStock['id_article'] = $movement->id_article;
-                $dataStock['quantity'] = -$movement->quantity;
-                Stock::create($dataStock);
-            }
-        }
-    }
-
-    public static function increase($refer, $movements)
-    {
-        //
-        foreach ($movements as $movement) {
-            $stockQuery = Stock::where("id_stockcenter", $refer['destiny_id_stockcenter'])->where('id_article', $movement->id_article);
-            if ($stockQuery->exists()) {
-                $dataStock = $stockQuery->first()->getAttributes();
-                $dataStock['quantity'] += $movement->quantity;
-                $stock = Stock::find($dataStock['id']);
-                $stock->update($dataStock);
-                $stock->updateAlert(true);
-            } else {
-                $dataStock['id_stockcenter'] = $refer['destiny_id_stockcenter'];
-                $dataStock['id_article'] = $movement->id_article;
-                $dataStock['quantity'] = $movement->quantity;
-                Stock::create($dataStock);
-            }
-        }
-    }
+    
 
     // Para la función discount     adjustStock($refer, $movements, false);
     // Para la función increase     adjustStock($refer, $movements, true);
+    /*
     public static function adjustStock($refer, $movements, $increase)
     {
         $stockcenterField = $increase ? 'destiny_id_stockcenter' : 'origen_id_stockcenter';
@@ -160,6 +121,7 @@ class StockController extends Controller
             }
         }
     }
+    */
     
 
     public function getexcel(){

@@ -115,4 +115,44 @@ class Stock extends Model
             $user->notify(new Notificationalert($data));
         }
     }
+
+    public static function increase($refer, $movements)
+    {
+        foreach ($movements as $movement) {
+            $stockQuery = self::where("id_stockcenter", $refer['destiny_id_stockcenter'])->where('id_article', $movement->id_article);
+            $movement->OutTransit();
+            if ($stockQuery->exists()) {
+                $dataStock = $stockQuery->first();
+                $dataStock->quantity += $movement->quantity;
+                $dataStock->save();
+                $dataStock->updateAlert(true);
+            } else {
+                self::create([
+                    'id_stockcenter' => $refer['destiny_id_stockcenter'],
+                    'id_article' => $movement->id_article,
+                    'quantity' => $movement->quantity
+                ]);
+            }
+        }
+    }
+
+    public static function discount($refer, $movements)
+    {
+        foreach ($movements as $movement) {
+            $stockQuery = self::where("id_stockcenter", $refer['origen_id_stockcenter'])->where('id_article', $movement->id_article);
+            $movement->InTransit();
+            if ($stockQuery->exists()) {
+                $dataStock = $stockQuery->first();
+                $dataStock->quantity -= $movement->quantity;
+                $dataStock->save();
+                $dataStock->updateAlert(true);
+            } else {
+                self::create([
+                    'id_stockcenter' => $refer['origen_id_stockcenter'],
+                    'id_article' => $movement->id_article,
+                    'quantity' => $movement->quantity
+                ]);
+            }
+        }
+    }
 }

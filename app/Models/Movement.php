@@ -10,7 +10,7 @@ class Movement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quantity', 'id_refer', 'id_article', 'quantity_origen', 'quantity_destiny'];
+    protected $fillable = ['quantity', 'id_refer', 'id_article', 'quantity_origen', 'quantity_destiny', 'transit'];
 
     public function Refer()
     {
@@ -47,5 +47,15 @@ class Movement extends Model
         $this->update($this->attributes);
     }
 
+    public function InTransit(){
+        $this->transit = true;
 
+        $this->update($this->attributes);
+    }
+
+    public function OutTransit(){
+        $this->transit = false;
+
+        $this->update($this->attributes);
+    }
 }

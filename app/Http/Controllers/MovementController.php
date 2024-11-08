@@ -155,5 +155,19 @@ class MovementController extends Controller
         return Validator::make($data, static::$rules);
     }
 
-    
+    public function transit()
+    {
+        //
+        $data['movements'] = Movement::whereHas('refer', function ($q) {
+            $q->where('status', 'E');
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(20);
+
+        foreach ($data['movements'] as $key => $value) {
+            $data['movements'][$key]->id_article = $value->Article->name;
+        }
+
+        return view('movement/transit')->with($data)->with('tittle', 'Movimientos en Transito');
+    }
 }
