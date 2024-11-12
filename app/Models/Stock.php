@@ -106,13 +106,13 @@ class Stock extends Model
             }
         );} else{
             // Crear alerta si no existe una creada
-            $data = [
-                'menssage' => 'El material '. $this->Article->name . ' se encuentra por debajo del nivel de stock',
-                'article_id' => $this->id_article,
-                'stockcenter_id' => $this->id_stockcenter
-            ];
+            // $data = [
+            //     'menssage' => 'El material '. $this->Article->name . ' se encuentra por debajo del nivel de stock',
+            //     'article_id' => $this->id_article,
+            //     'stockcenter_id' => $this->id_stockcenter
+            // ];
             
-            $user->notify(new Notificationalert($data));
+            // $user->notify(new Notificationalert($data));
         }
     }
 
@@ -145,7 +145,7 @@ class Stock extends Model
                 $dataStock = $stockQuery->first();
                 $dataStock->quantity -= $movement->quantity;
                 $dataStock->save();
-                $dataStock->updateAlert(true);
+                $dataStock->updateAlert(false);
             } else {
                 self::create([
                     'id_stockcenter' => $refer['origen_id_stockcenter'],

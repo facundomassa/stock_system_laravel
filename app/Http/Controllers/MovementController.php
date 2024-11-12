@@ -8,6 +8,7 @@ use App\Models\Article;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MovementController extends Controller
 {
@@ -158,16 +159,31 @@ class MovementController extends Controller
     public function transit()
     {
         //
-        $data['movements'] = Movement::whereHas('refer', function ($q) {
+        $data['refermovement'] = Movement::whereHas('refer', function ($q) {
             $q->where('status', 'E');
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(20);
+        })->get()
+        ->groupBy('id_refer');
+        
+        
+        // Configura la paginación manual en la colección agrupada
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 10; // Número de resultados por página
+        $paginatedResults = new LengthAwarePaginator(
+            $data['refermovement']->forPage($currentPage, $perPage),
+            $data['refermovement']->count(),
+            $perPage,
+            $currentPage,
+            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+        );
 
-        foreach ($data['movements'] as $key => $value) {
-            $data['movements'][$key]->id_article = $value->Article->name;
+        foreach ($data['refermovement'] as $remitoId  => $movements) {
+            $data['refer'][$remitoId] = Refer::where('id', $remitoId)->first();
+            // foreach ($movements as $key => $value) {
+            //     $data['refermovement'][$remitoId][$key]->id_article = $value->Article->name;
+            // }
         }
 
-        return view('movement/transit')->with($data)->with('tittle', 'Movimientos en Transito');
+        // dd($data);
+        return view('movement/transit')->with($data)->with('tittle', 'Movimientos en Transito')->with('paginatedResults', $paginatedResults);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stock;
+use App\Models\Movement;
 use App\Models\Stockcenter;
 use Illuminate\Http\Request;
 use App\Exports\StocksExport;
@@ -83,8 +84,13 @@ class StockController extends Controller
     public function show($id)
     {
         //
-        $stock = Stock::findOrFail($id);
-        return view('stock.show', compact('stock'))->with('tittle', static::$tittle);
+        $data['stock'] = Stock::findOrFail($id);
+        $data['movements'] = Movement::where('id_article', $data['stock']->id_article)
+        ->whereHas('Refer', function($query) use ($data) {
+            $query->where('origen_id_stockcenter', $data['stock']->id_stockcenter)
+                  ->orWhere('destiny_id_stockcenter', $data['stock']->id_stockcenter);
+        })->paginate(20);
+        return view('stock.show')->with($data)->with('tittle', static::$tittle);
     }
 
     public function update(Request $request, $id)
