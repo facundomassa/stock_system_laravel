@@ -11,9 +11,9 @@ class Stockcenter extends Model
 {
     use HasFactory;
 
-    public function Enterprise()
+    public function Operation()
     {
-        return $this->belongsTo(Enterprise::class, 'id_enterprise');
+        return $this->belongsTo(Operation::class, 'id_operation');
         
     }
 
@@ -37,8 +37,8 @@ class Stockcenter extends Model
         if (!Direction::where('id', '=', $request->id_direction)->exists()) {
             $request->merge(['id_direction' => null]);
         }
-        if (!Enterprise::where('id', '=', $request->id_enterprise)->exists()) {
-            $request->merge(['id_enterprise' => null]);
+        if (!Operation::where('id', '=', $request->id_operation)->exists()) {
+            $request->merge(['id_operation' => null]);
         }
         if (!Person::where('id', '=', $request->id_person)->exists()) {
             $request->merge(['id_person' => null]);

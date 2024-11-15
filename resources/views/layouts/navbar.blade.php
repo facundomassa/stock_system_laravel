@@ -8,7 +8,7 @@
                 <ul>
                     <li><a href="{{ url('/article') }}">Articulos</a></li>
                     <li><a href="{{ url('/direction') }}">Direcciones</a></li>
-                    <li><a href="{{ url('/enterprise') }}">Operaciones</a></li>
+                    <li><a href="{{ url('/operation') }}">Operaciones</a></li>
                     <li><a href="{{ url('/movement') }}">Movimientos</a></li>
                     <li><a href="{{ url('/permission') }}">Permisos</a></li>
                     <li><a href="{{ url('/person') }}">Personas</a></li>

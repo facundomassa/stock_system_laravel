@@ -3,7 +3,7 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DirectionController;
-use App\Http\Controllers\EnterpriseController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\MovementController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\StockcenterController;
@@ -34,7 +34,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('person', PersonController::class);
     Route::resource('article', ArticleController::class);
     Route::resource('direction', DirectionController::class);
-    Route::resource('enterprise', EnterpriseController::class);
+    Route::resource('operation', OperationController::class);
     Route::resource('stockcenter', StockcenterController::class);
     Route::resource('refer', ReferController::class);
 

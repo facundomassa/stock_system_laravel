@@ -19,7 +19,7 @@
                 @foreach ($stockcenters as $stockcenter)
                     <tr>
                         <td>{{ $stockcenter->id }}</td>
-                        <td>{{ $stockcenter->id_enterprise }}</td>
+                        <td>{{ $stockcenter->id_operation }}</td>
                         <td>{{ $stockcenter->name }}</td>
                         <td>{{ $stockcenter->type }}</td>
                         <td>{{ $stockcenter->id_direction }}</td>

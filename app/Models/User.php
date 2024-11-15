@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Operation;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -53,5 +54,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function allowedOperations()
+    {
+        return Operation::whereIn('name', $this->getPermissionNames())->get();
     }
 }

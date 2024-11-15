@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +25,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        View::composer('*', function ($view) {
+            $view->with('selected_operation', session('selected_operation'));
+        });
+        View::composer('*', function ($view) {
+            $view->with('allowed_operations', session('allowed_operations') ?? auth()->user()->allowedOperations());
+        });
     }
 }

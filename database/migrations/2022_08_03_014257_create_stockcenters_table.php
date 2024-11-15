@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('stockcenters', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('id_enterprise');
+            $table->unsignedInteger('id_operation');
             $table->string('name', 60);
             $table->string('type', 1);
             $table->unsignedInteger('id_direction');
             $table->unsignedInteger('id_person')->nullable();
             $table->foreign('id_person')->references('id')->on('persons')->onDelete('cascade');
             $table->foreign('id_direction')->references('id')->on('directions')->onDelete('cascade');
-            $table->foreign('id_enterprise')->references('id')->on('enterprises')->onDelete('cascade');
+            $table->foreign('id_operation')->references('id')->on('operations')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -8,14 +8,14 @@
     </div>
 @endif
 <div class="form-group">
-    <label for="id_enterprise">Operacion:</label>
-    <select required class="form-control" name="id_enterprise" id="id_enterprise">
+    <label for="id_operation">Operacion:</label>
+    <select required class="form-control" name="id_operation" id="id_operation">
         <option disabled selected value="">-Seleccionar una opcion-</option>
-        @foreach ($enterprises as $enterprise)
-            @if ((isset($stockcenter->id_enterprise) ? $stockcenter->id_enterprise : old('id_enterprise')) == $enterprise->id)
-                <option selected value="{{ $enterprise->id }}"> {{ $enterprise->name }}</option>
+        @foreach ($operations as $operation)
+            @if ((isset($stockcenter->id_operation) ? $stockcenter->id_operation : old('id_operation')) == $operation->id)
+                <option selected value="{{ $operation->id }}"> {{ $operation->name }}</option>
             @else
-                <option value="{{ $enterprise->id }}"> {{ $enterprise->name }}</option>
+                <option value="{{ $operation->id }}"> {{ $operation->name }}</option>
             @endif
         @endforeach
     </select>
