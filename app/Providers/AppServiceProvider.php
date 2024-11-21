@@ -24,12 +24,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+         // Variable para la operación seleccionada
         View::composer('*', function ($view) {
             $view->with('selected_operation', session('selected_operation'));
         });
+
+        // Variable para las operaciones permitidas
         View::composer('*', function ($view) {
-            $view->with('allowed_operations', session('allowed_operations') ?? auth()->user()->allowedOperations());
+            $allowedOperations = auth()->check() ? auth()->user()->allowedOperations() : collect();
+            $view->with('allowed_operations', session('allowed_operations') ?? $allowedOperations);
         });
     }
 }

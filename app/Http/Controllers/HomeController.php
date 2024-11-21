@@ -110,4 +110,20 @@ class HomeController extends Controller
     {
         return view('home/howtouse')->with('tittle', 'Como Usar');
     }
+
+    public function operationSelect(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'selected_operation' => 'required',
+            ]);
+    
+            // Guardar la operación seleccionada en la sesión
+            session(['selected_operation' => $request->input('selected_operation')]);
+    
+            return redirect('home')->with('success', 'Operación seleccionada correctamente');
+        }
+
+        return view('home/operationSelect')->with('tittle', 'Seleccionar Operacion');
+    }
 }

@@ -21,10 +21,11 @@ class DatabaseSeeder extends Seeder
         // Crear permisos
         Permission::create(['name' => 'pop36']);
         Permission::create(['name' => 'pop20']);
+        Permission::create(['name' => 'administrador']);
 
         // Crear roles y asignar permisos a roles
         Role::create(['name' => 'dispatcher']);
-        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'admin'])->givePermissionTo('administrador');
         Role::create(['name' => 'tecnico']);
 
         // Crear usuarios

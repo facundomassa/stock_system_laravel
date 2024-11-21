@@ -27,7 +27,7 @@ box-sizing: border-box;
 display: flex;
 flex-direction: column;
 min-height: 100vh;">
-@if (Auth::check())
+@if (Auth::check() && Session::has('selected_operation'))
     @include('layouts.newNavbar')
 @endif
 

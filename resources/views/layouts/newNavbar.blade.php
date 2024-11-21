@@ -9,16 +9,20 @@
         <div class="d-flex flex-row">
             <div class="dropdown-center">
                 <button class="btn btn-outline-light me-4 position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Seleccionar Operacion:
+                
+                {{$selected_operation}}
                 </button>
                 <ul class="dropdown-menu">
+                    <form action="{{ url('operation-select') }}" method="POST">
+                        @csrf <!-- Protección CSRF -->
                     @foreach($allowed_operations as $operation)
-                    <li>            
-                        <button onclick="changeOperation({{ $operation->POPid }})">
-                            Cambiar a {{ $operation->name }}
-                        </button>
-                    </li>
-                    @endforeach
+                        <li>            
+                            <button type="submit" class="btn btn-outline-secondary" name="selected_operation" value="{{ $operation->name }}">
+                                Seleccionar Operación: {{ $operation->name }}
+                            </button>
+                        </li>
+                        @endforeach
+                    </form> 
                 </ul>
                 
             </div>
@@ -46,7 +50,7 @@
             </div>
             <a class="navbar-brand" href="/home">Stock System</a>
         </div>
-        <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
+        <div class="offcanvas offcanvas-start bg-black" tabindex="-1" id="offcanvasDarkNavbar"
             aria-labelledby="offcanvasDarkNavbarLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
@@ -55,38 +59,76 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
                     aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-start flex-grow-1 pe-3">
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/home') }}">Dashboard</a>
+            <div class="offcanvas-body p-0">
+                <ul class="navbar-nav justify-content-start flex-grow-1">
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('home') ? 'active' : '' }}" href="{{ url('/home') }}">
+                            <i class='bx bx-tachometer'></i> Dashboard
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/article') }}">Articulos</a>
+                    <!-- Sección: Personas y Direcciones -->
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('person') ? 'active' : '' }}" href="{{ url('/person') }}">
+                            <i class='bx bx-group'></i> Personas
+                        </a>
+                    </li>     
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('direction') ? 'active' : '' }}" href="{{ url('/direction') }}">
+                            <i class='bx bx-map'></i> Direcciones
+                        </a>
+                    </li>   
+                    <!-- Sección: Movimientos -->
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('movement') ? 'active' : '' }}" href="{{ url('/movement') }}">
+                            <i class='bx bx-transfer'></i> Movimientos
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/direction') }}">Direcciones</a>
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('transit') ? 'active' : '' }}" href="{{ url('/transit') }}">
+                            <i class='bx bxs-truck'></i> En Tránsito
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/operation') }}">Operaciones</a>
+                    <!-- Sección: Inventario -->
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('article') ? 'active' : '' }}" href="{{ url('/article') }}">
+                            <i class='bx bx-news'></i> Artículos
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/movement') }}">Movimientos</a>
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('stockcenter') ? 'active' : '' }}" href="{{ url('/stockcenter') }}">
+                            <i class='bx bx-buildings'></i> Centros de Stock
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/transit') }}">En Transito</a>
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('stock') ? 'active' : '' }}" href="{{ url('/stock') }}">
+                            <i class='bx bx-box'></i> Stock
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/person') }}">Personas</a>
+                    <!-- Sección: Documentos -->
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('refer') ? 'active' : '' }}" href="{{ url('/refer') }}">
+                            <i class='bx bx-file'></i> Remitos
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/refer') }}">Remitos</a>
+                    <!-- Sección: Documentos -->
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('refer') ? 'active' : '' }}" href="{{ url('/refer') }}">
+                            <i class='bx bx-line-chart'></i> Reportes
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/stockcenter') }}">Centros de Stock</a>
+                    <!-- Sección para Admin -->
+                    @if ($selected_operation == 'admin')
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('admin/users') ? 'active' : '' }}" href="{{ url('/admin/users') }}">
+                            <i class='bx bx-shield'></i> Usuarios
+                        </a>
                     </li>
-                    <li class="nav-item fs-4">
-                        <a class="nav-link" aria-current="page" href="{{ url('/stock') }}">Stock</a>
+                    <li class="nav-item fs-4 bg-dark">
+                        <a class="nav-link px-3 {{ request()->is('operation') ? 'active' : '' }}" href="{{ url('/operation') }}">
+                            <i class='bx bx-cog'></i> Operaciones
+                        </a>
                     </li>
+                    @endif  
                 </ul>
             </div>
             <div class="offcanvas-header">
