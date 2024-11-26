@@ -9,6 +9,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Activo</th>
                     <th>Nombre</th>
                     <th>Email</th>
                     <th>Rol Actual</th>
@@ -20,6 +21,7 @@
                 @foreach($users as $user)
                     <tr>
                         <td>{{ $user->id }}</td>
+                        <td class="{{$user->is_active ? 'F' : 'C'}}">{{ $user->is_active ? 'Activo' : 'Inactivo' }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->getRoleNames()->join(', ') }}</td>
@@ -31,5 +33,6 @@
                 @endforeach
             </tbody>
         </table>
+        <a class="btn btn-success" href="{{ url('/admin/users/create') }}">Nuevo Usuario</a>
     </div>
 @endsection

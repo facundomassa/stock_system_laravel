@@ -16,8 +16,8 @@
             </div>
 
             <div class="mb-3">
-                <label for="name" class="form-label">Apellido</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ $user->surname }}" required>
+                <label for="surname" class="form-label">Apellido</label>
+                <input type="text" name="surname" id="surname" class="form-control" value="{{ $user->surname }}" required>
             </div>
 
             <div class="mb-3">
@@ -29,6 +29,13 @@
                 <label for="password" class="form-label">Nueva Contraseña (Opcional)</label>
                 <input type="password" name="password" id="password" class="form-control">
                 <small class="text-muted">Déjalo en blanco si no deseas cambiar la contraseña.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="is_active" class="form-label">Activo</label>
+                <input type="hidden" name="is_active" id="is_active" value="0">
+                <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1" {{ $user->is_active ? 'checked' : '' }}>
+                <small class="text-muted">Si está activo, el usuario podrá iniciar sesión.</small>
             </div>
 
             <!-- Roles -->

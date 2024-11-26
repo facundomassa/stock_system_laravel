@@ -38,6 +38,14 @@ class AdminController extends Controller
         return view('admin/user/edit', compact('user', 'roles', 'permissions'));
     }
 
+    public function create()
+    {
+        $roles = Role::all(); // Todos los roles
+        $permissions = Permission::all(); // Todos los permisos
+
+        return view('admin/user/create', compact('roles', 'permissions'));
+    }
+
     public function edit(User $user)
     {
         $roles = Role::all(); // Todos los roles
@@ -56,6 +64,7 @@ class AdminController extends Controller
             'role' => 'required|exists:roles,name',
             'permissions' => 'array',
             'permissions.*' => 'string|exists:permissions,name',
+            'is_active'=>'required|boolean|in:1,0',
         ];
         // Validaciones personalizadas
         $request->merge([
@@ -72,7 +81,7 @@ class AdminController extends Controller
 
         $user = User::findOrFail($id);
         $user->update($dataUser);
-
+        // dd($dataUser);
         // Actualizar roles y permisos
         $user->syncRoles([$request->role]);
         $user->syncPermissions($request->permissions);

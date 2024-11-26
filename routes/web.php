@@ -29,9 +29,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes(['register' => false, 'reset' => false]);
+Auth::routes(['register' => true, 'reset' => false]);
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth','checkIfUserIsActive')->group(function () {
 
     
     Route::get('howtouse', [HomeController::class, 'howtouse']);
@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::get('admin/users', [AdminController::class, 'index'])->name('admin.users.index');
         Route::get('admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
         Route::put('admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+        Route::get('admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
         Route::resource('operation', OperationController::class);
     });
 

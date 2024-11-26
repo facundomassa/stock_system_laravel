@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Operation;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -19,13 +21,17 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // Crear permisos
-        Permission::create(['name' => 'pop36']);
-        Permission::create(['name' => 'pop20']);
-        Permission::create(['name' => 'administrador']);
+        Permission::create(['name' => 'POP36']);
+        Permission::create(['name' => 'POP20']);
+        Permission::create(['name' => 'ADMIN']);
 
+        Operation::create(['name' => 'POP36']);
+        Operation::create(['name' => 'POP20']);
+        Operation::create(['name' => 'ADMIN']);
+        
         // Crear roles y asignar permisos a roles
         Role::create(['name' => 'dispatcher']);
-        Role::create(['name' => 'admin'])->givePermissionTo('administrador');
+        Role::create(['name' => 'admin'])->givePermissionTo('ADMIN');
         Role::create(['name' => 'tecnico']);
 
         // Crear usuarios
@@ -46,12 +52,12 @@ class DatabaseSeeder extends Seeder
             'surname' => 'dispatcher36',
             'email' => 'dispatcher36@dispatcher.com',
             'password' => Hash::make('dispatcher36')
-        ])->assignRole('dispatcher')->givePermissionTo('pop36');
+        ])->assignRole('dispatcher')->givePermissionTo('POP36');
         User::create([
             'name' => 'dispatcher20',
             'surname' => 'dispatcher20',
             'email' => 'dispatcher20@dispatcher.com',
             'password' => Hash::make('dispatcher20')
-        ])->assignRole('dispatcher')->givePermissionTo('pop20');
+        ])->assignRole('dispatcher')->givePermissionTo('POP20');
     }
 }

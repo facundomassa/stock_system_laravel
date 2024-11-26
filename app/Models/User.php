@@ -25,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'surname',
         'email',
         'password',
+        'is_active'
     ];
 
     /**
@@ -59,5 +60,17 @@ class User extends Authenticatable implements JWTSubject
     public function allowedOperations()
     {
         return Operation::whereIn('name', $this->getPermissionNames())->get();
+    }
+
+    // Scope para obtener solo los usuarios activos
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Scope para obtener solo los usuarios inactivos
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
     }
 }
