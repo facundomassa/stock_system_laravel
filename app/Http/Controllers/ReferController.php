@@ -62,11 +62,24 @@ class ReferController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        //
-        $data['stockcenters'] = Stockcenter::get();
+{
+        // Verificar operaciones permitidas del usuario
+        $allowedOperations = auth()->check() 
+            ? auth()->user()->allowedOperations() 
+            : collect(); // Si no está autenticado, usar una colección vacía
+        
+        // Filtrar los `Stockcenter` por operaciones permitidas
+        $data['storigens'] = $allowedOperations->isNotEmpty()
+            ? Stockcenter::OperationSelect($allowedOperations)->get()
+            : collect(); // Si no hay operaciones permitidas, usar una colección vacía
 
-        return view('refer/create')->with('tittle', static::$tittle)->with($data);
+        // Obtener todos los `Stockcenter`
+        $data['stockcenters'] = Stockcenter::all();
+
+        // Devolver la vista
+        return view('refer/create')
+            ->with('tittle', static::$tittle)
+            ->with($data);
     }
 
     /**

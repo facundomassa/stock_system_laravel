@@ -11,7 +11,7 @@ El proyecto actualmente se encuentra en fase de desarrollo pero aquí van las id
  - [ ] Múltiples graficas de control
  - [x] Alertas y notificaciones
  - [ ] Roles y permisos
- - [ ] Inventario intermedio para control
+ - [x] Inventario intermedio para control
  - [ ] Segundad unidad para materiales
 ### Parte tecnica:
 - [ ] Solicitud de materiales
@@ -19,8 +19,10 @@ El proyecto actualmente se encuentra en fase de desarrollo pero aquí van las id
 ### Administración:
 - [ ] Consumo tecnico actual
 - [ ] Movimientos de materiales entre operaciones
-- [ ] Transportes pendientes
+- [ ] Transportes pendientes y costo por peso
 - [ ] Pedidos actuales
+- [ ] Recuentos programados de stock periódicos en almacenes
+- [ ] Pedidos de compras automaticos para stock bajo
 
 ## Como instalar
 ```bash

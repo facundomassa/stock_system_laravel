@@ -59,7 +59,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function allowedOperations()
     {
-        return Operation::whereIn('name', $this->getPermissionNames())->get();
+        // dd($this->getPermissionNames());
+        return Operation::select('name')->whereIn('name', $this->getPermissionNames())->get();
     }
 
     // Scope para obtener solo los usuarios activos

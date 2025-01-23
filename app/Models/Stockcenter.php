@@ -32,6 +32,24 @@ class Stockcenter extends Model
         return $this->Person->name . " " . $this->Person->surname;
     }
 
+    public function scopeOperationSelect($query, $operation)
+    {
+        // Obtener todas las operaciones que coincidan
+        $operationRecords = Operation::whereIn('name', $operation)->get();
+
+        // Verificar si se encontraron operaciones
+        if ($operationRecords->isNotEmpty()) {
+            // Obtener solo los IDs
+            $operationIds = $operationRecords->pluck('id');
+
+            // Filtrar por los IDs de las operaciones
+            return $query->whereIn('id_operation', $operationIds);
+        }
+
+        // Si no hay operaciones coincidentes, no filtrar
+        return $query;
+    }
+
     //validate id of related tables
     public static function ValidateIDRel(Request $request){
         if (!Direction::where('id', '=', $request->id_direction)->exists()) {
