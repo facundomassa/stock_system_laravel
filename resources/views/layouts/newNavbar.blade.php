@@ -10,12 +10,12 @@
             <div class="dropdown-center">
                 <button class="btn btn-outline-light me-4 position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 
-                {{$selected_operation}}
+                {{get_selected_operation()}}
                 </button>
                 <ul class="dropdown-menu">
                     <form action="{{ url('operation-select') }}" method="POST">
                         @csrf <!-- Protección CSRF -->
-                    @foreach($allowed_operations as $operation)
+                    @foreach(get_allowed_operations() as $operation)
                         <li>            
                             <button type="submit" class="btn btn-outline-secondary" name="selected_operation" value="{{ $operation->name }}">
                                 Seleccionar Operación: {{ $operation->name }}
@@ -117,7 +117,7 @@
                         </a>
                     </li>
                     <!-- Sección para Admin -->
-                    @if ($selected_operation == 'admin')
+                    @if (get_selected_operation() == 'admin')
                     <li class="nav-item fs-4 bg-dark">
                         <a class="nav-link px-3 {{ request()->is('admin/users') ? 'active' : '' }}" href="{{ url('/admin/users') }}">
                             <i class='bx bx-shield'></i> Usuarios

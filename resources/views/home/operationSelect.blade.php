@@ -9,7 +9,7 @@
                 <form action="{{ url('operation-select') }}" method="POST">
                     @csrf <!-- Protección CSRF -->
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-                        @foreach($allowed_operations as $operation)
+                        @foreach(get_allowed_operations() as $operation)
                             <button type="submit" class="btn btn-outline-secondary" name="selected_operation" value="{{ $operation->name }}">
                                 Seleccionar Operación: {{ $operation->name }}
                             </button>

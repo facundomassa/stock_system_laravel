@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movement;
 use App\Models\Refer;
+use App\Models\Operation;
 use Illuminate\Http\Request;
 use App\Models\Stockcenter;
 use PDF;
@@ -28,39 +29,39 @@ class ReferController extends Controller
         'max' => 'El :attribute no puedo tener mas de :max caracteres',
         'after' => 'La fecha no puede ser menor al ingreso de hoy'
     ];
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
-
+        if(get_selected_operation() == 'admin'){
+            $stockActive = Stockcenter::all();
+        } else {
+            // Filtrar los `Stockcenter` por operaciones permitidas
+            $selected_operation[] = get_selected_operation();
+            $stockActive = $selected_operation
+                ? Stockcenter::OperationSelect($selected_operation)->get()
+                : collect(); // Si no hay operaciones permitidas, usar una colección vacía
+        }
+        
         $data['stockcenters'] = Stockcenter::all();
         $options = [
             'stockselectorigen' => request()->get('stockselectorigen'),
             'stockselectdestiny' => request()->get('stockselectdestiny'),
             'status' => request()->get('status')
         ];
-        
-        $data['refers'] = Refer::StockCenterOrigin($options['stockselectorigen'])
-            ->StockCenterDestiny($options['stockselectdestiny'])
-            ->Status($options['status'])
-            ->orderBy('id', 'desc')
-            ->paginate(20);
 
+        $data['refers'] = Refer::StockCenterOrigin($options['stockselectorigen'])
+        ->StockCenterInDestiny($stockActive->pluck('id'))
+        ->StockCenterDestiny($options['stockselectdestiny'])
+        ->Status($options['status'])
+        ->orderBy('id', 'desc')
+        ->paginate(20);
+        
         return view('refer/index')
             ->with($data)
             ->with($options)
             ->with('tittle', static::$tittle);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
 {
         // Verificar operaciones permitidas del usuario
@@ -82,12 +83,6 @@ class ReferController extends Controller
             ->with($data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
@@ -111,12 +106,6 @@ class ReferController extends Controller
         return redirect('refer/' . Refer::latest('id')->first()->id)->with('mensaje', 'Remito creado con exito')->with('tittle', static::$tittle);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Refer  $refer
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
