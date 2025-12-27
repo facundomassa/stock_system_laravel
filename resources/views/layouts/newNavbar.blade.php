@@ -40,9 +40,9 @@
                     @if (Auth::user()->notifications->isEmpty())
                     <li><p class="dropdown-item text-wrap text-muted" style="width: 30rem;">No tiene alertas.</p></li>
                     @else
-                    @foreach (Auth::user()->notifications as $notification)
+                    {{-- @foreach (Auth::user()->notifications as $notification)
                         <li><p class="dropdown-item text-wrap" style="width: 30rem;">{{$notification->data['menssage']}}</p></li>
-                    @endforeach
+                    @endforeach --}}
                     @endif
                 </ul>
                 

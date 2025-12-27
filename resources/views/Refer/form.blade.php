@@ -17,17 +17,17 @@
                     <label for="origen_id_stockcenter">Origen:</label>
                     <select required class="form-control" name="origen_id_stockcenter" id="origen_id_stockcenter">
                         <option disabled selected value="">-Seleccionar una opcion-</option>
-                        @foreach ($storigens as $storigen)
-                            @if ((isset($refer->origen_id_stockcenter) ? $refer->origen_id_stockcenter : old('origen_id_stockcenter')) == $storigen->id)
-                                <option selected value="{{ $storigen->id }}"> {{ $storigen->name }}</option>
+                        @foreach ($stockcenters as $stockcenter)
+                            @if ((isset($refer->origen_id_stockcenter) ? $refer->origen_id_stockcenter : old('origen_id_stockcenter')) == $stockcenter->id)
+                                <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
                             @else
-                                <option value="{{ $storigen->id }}"> {{ $storigen->name }}</option>
+                                <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
                             @endif
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="destiny_id_stockcenter">Origen:</label>
+                    <label for="destiny_id_stockcenter">Destino:</label>
                     <select required class="form-control" name="destiny_id_stockcenter" id="destiny_id_stockcenter">
                         <option disabled selected value="">-Seleccionar una opcion-</option>
                         @foreach ($stockcenters as $stockcenter)

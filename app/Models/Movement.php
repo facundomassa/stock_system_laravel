@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Movement extends Model
 {
@@ -12,50 +12,43 @@ class Movement extends Model
 
     protected $fillable = ['quantity', 'id_refer', 'id_article', 'quantity_origen', 'quantity_destiny', 'transit'];
 
-    public function Refer()
+    public function refer(): BelongsTo
     {
         return $this->belongsTo(Refer::class, 'id_refer');
     }
 
-    public function Article()
+    public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class, 'id_article');
     }
 
-    //validate id of related tables
-    public static function ValidateIDRel(Request $request){
-        if (!Refer::where('id', '=', $request->id_refer)->exists()) {
-            $request->merge(['id_refer' => null]);
-        }
-        if (!Article::where('id', '=', $request->id_article)->exists()) {
-            $request->merge(['id_article' => null]);
-        }
-        return $request;
+    public function markAsInTransit(): bool
+    {
+        return $this->update(['transit' => true]);
     }
 
-    public function SetQuaOrigen(){
-        $origen = Refer->origen_id_stockcenter;
-        $this->quantity_origen = Stock::where('id_article', $this->id_article)->where('id_stockcenter', $origen);
-
-        $this->update($this->attributes);
+    public function markAsOutTransit(): bool
+    {
+        return $this->update(['transit' => false]);
     }
 
-    public function SetQuaDestiny(){
-        $destiny = Refer->destiny_id_stockcenter;
-        $this->quantity_destiny = Stock::where('id_article', $this->id_article)->where('id_stockcenter', $destiny);
-
-        $this->update($this->attributes);
+    public function setQuantityOrigen(): bool
+    {
+        $origenStockCenterId = $this->refer->origen_id_stockcenter;
+        $stock = Stock::where('id_article', $this->id_article)
+            ->where('id_stockcenter', $origenStockCenterId)
+            ->first();
+            
+        return $this->update(['quantity_origen' => $stock?->quantity]);
     }
 
-    public function InTransit(){
-        $this->transit = true;
-
-        $this->update($this->attributes);
-    }
-
-    public function OutTransit(){
-        $this->transit = false;
-
-        $this->update($this->attributes);
+    public function setQuantityDestiny(): bool
+    {
+        $destinyStockCenterId = $this->refer->destiny_id_stockcenter;
+        $stock = Stock::where('id_article', $this->id_article)
+            ->where('id_stockcenter', $destinyStockCenterId)
+            ->first();
+            
+        return $this->update(['quantity_destiny' => $stock?->quantity]);
     }
 }

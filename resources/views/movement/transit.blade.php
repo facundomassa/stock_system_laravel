@@ -4,7 +4,7 @@
     <div class="container">
         @include('layouts/alert')
         <div class="d-grid gap-2"">
-            @foreach ($refermovement as $refers => $movements)
+            @foreach ($paginatedResults as $refers => $movements)
             <a class="btn p-0" type="button" data-bs-toggle="collapse" href={{'#refer'.$refers}} role="button" aria-expanded="false" aria-controls={{'refer'.$refers}}">
                 <table class="table table-striped table-hover table-md mb-0">
                     <thead>

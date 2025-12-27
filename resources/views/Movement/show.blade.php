@@ -27,11 +27,11 @@
                 @if (isset($movements))
                     @foreach ($movements as $movement)
                         <tr>
-                            <td>{{ $movement->id_article->id }}</td>
-                            <td>{{ $movement->id_article->code }}</td>
-                            <td>{{ $movement->id_article->name }}</td>
-                            <td>{{ $movement->id_article->unit }}</td>
-                            <td>{{ $movement->id_article->type }}</td>
+                            <td>{{ $movement->article->id }}</td>
+                            <td>{{ $movement->article->code }}</td>
+                            <td>{{ $movement->article->name }}</td>
+                            <td>{{ $movement->article->unit }}</td>
+                            <td>{{ $movement->article->type }}</td>
                             <td>{{ $movement->quantity }}</td>
                         </tr>
                     @endforeach

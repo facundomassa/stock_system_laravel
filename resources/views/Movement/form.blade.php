@@ -13,7 +13,7 @@
             <div class="card-header"->{{ $modo }} Movimiento</div>
 
             <div class="card-body">
-                <input type="hidden" name="id_refer" value="{{ $id_refer }}">
+                <input type="hidden" name="id_refer" value="{{ $refer->id }}">
                 <table class="table table-striped table-hover table-md" id="movement-t">
                     <thead>
                         <tr>
@@ -31,19 +31,19 @@
                         @if (isset($movements))
                             @foreach ($movements as $movement)
                                 <tr>
-                                    <td>{{ $movement->id_article->id }}</td>
-                                    <td>{{ $movement->id_article->code }}</td>
-                                    <td>{{ $movement->id_article->name }}</td>
-                                    <td>{{ $movement->id_article->unitName }}</td>
-                                    <td>{{ $movement->id_article->type }}</td>
-                                    <td><input type="number" name="{{ $movement->id_article->id }}[quantity]"
+                                    <td>{{ $movement->article->id }}</td>
+                                    <td>{{ $movement->article->code }}</td>
+                                    <td>{{ $movement->article->name }}</td>
+                                    <td>{{ $movement->article->unitName }}</td>
+                                    <td>{{ $movement->article->type }}</td>
+                                    <td><input type="number" name="{{ $movement->article->id }}[quantity]"
                                             value="{{ $movement->quantity }}"></td>
-                                    <td>{{ $movement->stock->quantity }}</td>
+                                    <td>{{ $movement->stock->quantity ?? '-' }}</td>
                                     <td class="text-center">
-                                        <input type="hidden" name="{{ $movement->id_article->id }}[id]" value="{{ $movement->id }}">
-                                        <input class="id_article" type="hidden" name="{{ $movement->id_article->id }}[id_article]"
-                                            value="{{ $movement->id_article->id }}">
-                                        <input class="expandCheckbox" type="checkbox" name="{{ $movement->id_article->id }}[delete]">
+                                        <input type="hidden" name="{{ $movement->article->id }}[id]" value="{{ $movement->id }}">
+                                        <input class="id_article" type="hidden" name="{{ $movement->article->id }}[id_article]"
+                                            value="{{ $movement->article->id }}">
+                                        <input class="expandCheckbox" type="checkbox" name="{{ $movement->article->id }}[delete]">
                                     </td>
                                 </tr>
                             @endforeach
@@ -110,11 +110,11 @@
                                                 <td>{{ $article->name }}</td>
                                                 <td>{{ $article->unitName }}</td>
                                                 <td>{{ $article->type }}</td>
-                                                <td>{{ isset($article->stock->quantity) ? $article->stock->quantity : '-' }}</td>
+                                                <td>{{ isset($article->stock_quantity) ? $article->stock_quantity : '-' }}</td>
                                                 <td class="text-center">
                                                     <input class="expandCheckbox" type="checkbox" name="article"
                                                         value="{{ $article->id }}"
-                                                        data-stock="{{ isset($article->stock->quantity) ? $article->stock->quantity : '-' }}">
+                                                        data-stock="{{ isset($article->stock_quantity) ? $article->stock_quantity : '-' }}">
 
                                                 </td>
                                             </tr>
@@ -135,7 +135,7 @@
                     @vite(['resources/js/functions/movement.js'])
                     <script>
                         let route = "{{ url('api/article') }}";
-                        let refer = {{ $id_refer }};
+                        let refer = {{ $refer->id }};
                     </script>
                 @endsection
             </div>
