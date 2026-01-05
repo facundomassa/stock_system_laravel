@@ -46,7 +46,7 @@ class ReferController extends Controller
 
     public function create(): View
     {
-        $allowedOperations = auth()->user()->allowedOperations() ?? collect();
+        $allowedOperations = get_allowed_operations() ?? collect();
         $origins = $this->referService->getAvailableOrigins($allowedOperations);
         $stockcenters = $this->referService->getAllStockcenters();
 
@@ -56,6 +56,7 @@ class ReferController extends Controller
 
     public function store(ReferRequest $request): RedirectResponse
     {
+        $request->prepareForValidation();
         $refer = $this->referService->createRefer($request->validated());
 
         return redirect()->route('refer.show', $refer->id)

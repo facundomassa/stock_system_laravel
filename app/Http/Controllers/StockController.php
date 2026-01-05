@@ -18,6 +18,9 @@ class StockController extends Controller
         $this->stockService = $stockService;
     }
 
+    /**
+     * Generar PDF del stock
+     */
     public function getPdf()
     {
         $stocks = $this->stockService->filterStocks(
@@ -27,17 +30,22 @@ class StockController extends Controller
             code: request('code')
         );
 
-        $pdf = PDF::loadView('stock.pdf', [
-            'stocks' => $stocks,
+        $filters = [
             'stockselect' => request('stockselect'),
             'type' => request('type'),
             'articlename' => request('articlename'),
             'code' => request('code'),
-        ])->setOptions(['defaultFont' => 'sans-serif']);
+        ];
 
-        return $pdf->stream('stock.pdf');
+        $pdf = PDF::loadView('stock.pdf', compact('stocks', 'filters'))
+            ->setOptions(['defaultFont' => 'sans-serif']);
+
+        return $pdf->stream('stock_' . date('Ymd_His') . '.pdf');
     }
 
+    /**
+     * Mostrar lista de stocks con paginación
+     */
     public function index()
     {
         $stockcenters = $this->stockService->getAvailableStockcenters();
@@ -61,6 +69,9 @@ class StockController extends Controller
             ->with('title', $this->title);
     }
 
+    /**
+     * Mostrar detalles de un stock específico
+     */
     public function show(int $id)
     {
         $stock = $this->stockService->findStock($id);
@@ -74,30 +85,29 @@ class StockController extends Controller
             ->with('title', $this->title);
     }
 
+    /**
+     * Actualizar alerta de stock
+     */
     public function update(StockRequest $request, int $id)
     {
         $this->stockService->updateQuantityAlert($id, $request->quantity_alert);
-
         return redirect()->route('stock.index')
             ->with('success', 'Alerta de stock actualizada correctamente')
             ->with('title', $this->title);
     }
 
+    /**
+     * Exportar stock a Excel
+     */
     public function getExcel()
     {
-        return Excel::download(new StocksExport, 'stocks.xlsx');
-    }
+        $filters = [
+            'stockselect' => request('stockselect'),
+            'type' => request('type'),
+            'articlename' => request('articlename'),
+            'code' => request('code'),
+        ];
 
-    /**
-     * Métodos para ajustar stock (serán llamados desde otros servicios/controladores)
-     */
-    public function increaseStock(Refer $refer, Collection $movements): void
-    {
-        $this->stockService->increaseStock($refer, $movements);
-    }
-
-    public function decreaseStock(Refer $refer, Collection $movements): void
-    {
-        $this->stockService->decreaseStock($refer, $movements);
+        return Excel::download(new StocksExport($filters), 'stock_' . date('Ymd_His') . '.xlsx');
     }
 }

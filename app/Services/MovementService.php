@@ -11,9 +11,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class MovementService
 {
+
     public function paginateMovements(int $perPage = 20): LengthAwarePaginator
     {
-        return Movement::with('article')->orderBy('id', 'desc')->paginate($perPage);
+        // Cargar la relación directamente en la consulta
+        return Movement::with(['article', 'refer'])->orderBy('id', 'desc')->paginate($perPage);
     }
 
     public function getMovementsByRefer(int $referId): Collection
@@ -116,9 +118,9 @@ class MovementService
 
     public function enrichMovementsWithArticleInfo(Collection $movements): Collection
     {
-        return $movements->each(function ($movement) {
-            $movement->load('article');
-        });
+        // Carga todos los artículos con una sola consulta
+        $movements->load('article');
+        return $movements;
     }
 
     public function enrichMovementsWithStockInfo(Collection $movements, Refer $refer): Collection

@@ -75,10 +75,11 @@ class ReferService
 
     public function createRefer(array $data): Refer
     {
+
         return DB::transaction(function () use ($data) {
             $data['status'] = 'I'; // Estado inicial: Ingresado
             $data['date_up'] = $data['date_up'] ?? now();
-            
+            $data['id_user'] = auth()->id();
             return Refer::create($data);
         });
     }
@@ -196,7 +197,7 @@ class ReferService
         }
 
         return Stockcenter::query()
-            ->whereHas('operations', function ($query) use ($allowedOperations) {
+            ->whereHas('operation', function ($query) use ($allowedOperations) {
                 $query->whereIn('operations.id', $allowedOperations);
             })
             ->get();

@@ -11,7 +11,8 @@ use App\Http\Controllers\StockcenterController;
 use App\Http\Controllers\ReferController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\HomeController;
-use App\Notifications\NotificationController;
+use App\Http\Controllers\NotificationController;
+// use App\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,11 +34,9 @@ Auth::routes(['register' => true, 'reset' => false]);
 
 Route::middleware('auth','checkIfUserIsActive')->group(function () {
 
-    
-    Route::get('howtouse', [HomeController::class, 'howtouse']);
-    Route::match(['get', 'post'], 'operation-select', [HomeController::class, 'operationSelect']);
+    Route::match(['get', 'post'], '/operation-select', [HomeController::class, 'operationSelect'])->name('operation.select');
 
-    Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.delete');
+    // Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.delete');
     
     Route::group(['middleware' => ['role:admin']], function () { 
         Route::get('admin/users', [AdminController::class, 'index'])->name('admin.users.index');
@@ -48,7 +47,7 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
     });
 
     Route::middleware('checkSelectedOperation')->group(function () {
-        Route::get('home', [HomeController::class, 'index']);
+        Route::get('/home', [HomeController::class, 'index'])->name('home');
         
         Route::resource('person', PersonController::class);
         Route::resource('article', ArticleController::class);
@@ -65,18 +64,24 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         Route::get('movement/create/{refer}', [MovementController::class, 'create']);
         Route::get('movement/{refer}/edit', [MovementController::class, 'create']);
         Route::post('movement', [MovementController::class, 'store']);
-        Route::get('movement/show/{refer}', [MovementController::class, 'show']);
+        Route::get('movement/show/{refer}', [MovementController::class, 'show'])->name('movement.show');;
 
-        Route::get('stock', [StockController::class, 'index']);
-        Route::get('stock/{stock}', [StockController::class, 'show']);
-        Route::put('stock/{stock}', [StockController::class, 'update']);
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');;
+        Route::get('stock/{stock}', [StockController::class, 'show'])->name('stock.show');;
+        Route::put('stock/{stock}', [StockController::class, 'update'])->name('stock.update');
 
         Route::get('stock/get/pdf', [StockController::class, 'getpdf']);
         Route::get('stock/get/excel', [StockController::class, 'getexcel']);
         Route::post('stock', [StockController::class, 'store']);
 
-        Route::get('home/reportRpFyS', [HomeController::class, 'reportRpFyS']);
-        Route::get('home/reportAllMovement', [HomeController::class, 'reportAllMovement']);
+        Route::get('/home/reportRpFyS', [HomeController::class, 'reportRpFyS'])->name('home.reportRpFyS');
+        Route::get('/home/reportAllMovement', [HomeController::class, 'reportAllMovement'])->name('home.reportAllMovement');
+
+        // Notificaciones
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+        Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+        Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
     });
 });
 

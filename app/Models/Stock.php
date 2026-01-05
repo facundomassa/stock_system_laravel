@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class Stock extends Model
 {
@@ -24,35 +25,50 @@ class Stock extends Model
         return $this->belongsTo(Article::class, 'id_article');
     }
 
-    public function scopeStockCenters($query, ?string $stockcenter): void
+    // Scopes mejorados con type hints
+    public function scopeStockCenters(Builder $query, ?string $stockcenter): Builder
     {
         if ($stockcenter && $stockcenter !== '*') {
-            $query->where('id_stockcenter', $stockcenter);
+            return $query->where('id_stockcenter', $stockcenter);
         }
+        return $query;
     }
 
-    public function scopeArticles($query, ?string $articleName): void
+    public function scopeArticles(Builder $query, ?string $articleName): Builder
     {
         if ($articleName) {
             $articleIds = Article::where('name', 'LIKE', "%{$articleName}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
     }
 
-    public function scopeType($query, ?string $type): void
+    public function scopeType(Builder $query, ?string $type): Builder
     {
         if ($type) {
             $articleIds = Article::where('type', 'LIKE', "%{$type}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
     }
 
-    public function scopeCode($query, ?string $code): void
+    public function scopeCode(Builder $query, ?string $code): Builder
     {
         if ($code) {
             $articleIds = Article::where('code', 'LIKE', "%{$code}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
+    }
+
+    public function scopeWithRelations(Builder $query): Builder
+    {
+        return $query->with(['article', 'stockCenter']);
+    }
+
+    public function scopeOrderDefault(Builder $query): Builder
+    {
+        return $query->orderBy('id_stockcenter')->orderBy('id_article');
     }
 
     public function getWarningAttribute(): bool

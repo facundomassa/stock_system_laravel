@@ -23,7 +23,6 @@ class MovementController extends Controller
     public function index(): View
     {
         $movements = $this->movementService->paginateMovements();
-        $movements = $this->movementService->enrichMovementsWithArticleInfo($movements);
         
         return view('movement.index', compact('movements'))->with('title', $this->title);
     }

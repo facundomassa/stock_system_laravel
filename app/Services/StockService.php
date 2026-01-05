@@ -20,30 +20,12 @@ class StockService
         ?string $articleName,
         ?string $code
     ): Collection {
-        $query = Stock::query();
-
-        if ($stockcenterId && $stockcenterId !== '*') {
-            $query->where('id_stockcenter', $stockcenterId);
-        }
-
-        if ($articleName) {
-            $articleIds = Article::where('name', 'LIKE', "%{$articleName}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        if ($type) {
-            $articleIds = Article::where('type', 'LIKE', "%{$type}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        if ($code) {
-            $articleIds = Article::where('code', 'LIKE', "%{$code}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        return $query->with(['article', 'stockCenter'])
-            ->orderBy('id_stockcenter')
-            ->orderBy('id_article')
+        return Stock::stockCenters($stockcenterId)
+            ->type($type)
+            ->articles($articleName)
+            ->code($code)
+            ->withRelations()
+            ->orderDefault()
             ->get();
     }
 
@@ -54,30 +36,12 @@ class StockService
         ?string $code,
         int $perPage = 20
     ): LengthAwarePaginator {
-        $query = Stock::query();
-
-        if ($stockcenterId && $stockcenterId !== '*') {
-            $query->where('id_stockcenter', $stockcenterId);
-        }
-
-        if ($articleName) {
-            $articleIds = Article::where('name', 'LIKE', "%{$articleName}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        if ($type) {
-            $articleIds = Article::where('type', 'LIKE', "%{$type}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        if ($code) {
-            $articleIds = Article::where('code', 'LIKE', "%{$code}%")->pluck('id');
-            $query->whereIn('id_article', $articleIds);
-        }
-
-        return $query->with(['article', 'stockCenter'])
-            ->orderBy('id_stockcenter')
-            ->orderBy('id_article')
+        return Stock::stockCenters($stockcenterId)
+            ->type($type)
+            ->articles($articleName)
+            ->code($code)
+            ->withRelations()
+            ->orderDefault()
             ->paginate($perPage);
     }
 

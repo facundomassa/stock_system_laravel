@@ -13,6 +13,17 @@ class StockRequest extends FormRequest
 
     public function rules(): array
     {
+        // Determinar si es una actualización (PUT, PATCH)
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+
+        if ($isUpdate) {
+            // Solo validar quantity_alert en actualizaciones
+            return [
+                'quantity_alert' => 'nullable|integer|min:0',
+            ];
+        }
+
+        // Validación para creación
         return [
             'id_stockcenter' => 'required|integer|exists:stockcenters,id',
             'id_article' => 'required|integer|exists:articles,id',
