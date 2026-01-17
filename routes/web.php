@@ -78,6 +78,8 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         Route::get('/home/reportAllMovement', [HomeController::class, 'reportAllMovement'])->name('home.reportAllMovement');
 
         // Notificaciones
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
         Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');

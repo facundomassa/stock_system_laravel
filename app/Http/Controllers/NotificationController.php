@@ -63,4 +63,15 @@ class NotificationController extends Controller
         
         return back()->with('info', 'No hay notificaciones para eliminar');
     }
+
+    public function count()
+    {
+        $unreadCount = auth()->user()->unreadNotifications()->count();
+        $totalCount = auth()->user()->notifications()->count();
+        
+        return response()->json([
+            'unread_count' => $unreadCount,
+            'total_count' => $totalCount
+        ]);
+    }
 }

@@ -26,28 +26,7 @@
                 </ul>
                 
             </div>
-            <div class="dropdown-center">
-                <button class="btn btn-outline-light rounded-circle me-4 position-relative" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class='bi bi-bell-fill'></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{Auth::user()->unreadNotifications->count();}}
-                        
-                        <span class="visually-hidden">unread messages</span>
-                    </span>
-                </button>
-                    
-                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
-                    @if (Auth::user()->notifications->isEmpty())
-                    <li><p class="dropdown-item text-wrap text-muted" style="width: 30rem;">No tiene alertas.</p></li>
-                    @else
-                    @foreach (Auth::user()->notifications as $notification)
-                        <li><p class="dropdown-item text-wrap" style="width: 30rem;">{{$notification->data['message']}}</p></li>
-                    @endforeach
-                    @endif
-                </ul>
-                
-                
-            </div>
+            @include('layouts.notificationbox')
             <a class="navbar-brand" href="/home">Stock System</a>
         </div>
         <div class="offcanvas offcanvas-start bg-black" tabindex="-1" id="offcanvasDarkNavbar"

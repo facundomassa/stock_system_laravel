@@ -8,6 +8,7 @@ use App\Models\Movement;
 use App\Models\Article;
 use App\Models\Stockcenter;
 use App\Notifications\Notificationalert;
+use App\Events\StockAlertUpdated;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -62,13 +63,15 @@ class StockService
             ->paginate($perPage);
     }
 
-    public function updateQuantityAlert(int $stockId, int $quantityAlert): Stock
+    public function updateQuantityAlert(int $stockId, ?int $quantityAlert): Stock
     {
         $stock = Stock::findOrFail($stockId);
-        $stock->quantity_alert = $quantityAlert;
-        $stock->save();
+        $oldAlert = $stock->quantity_alert;
+        
+        $stock->update(['quantity_alert' => $quantityAlert]);
 
-        $this->updateStockAlert($stock);
+        // Disparar evento de actualización de alerta
+        event(new StockAlertUpdated($stock, null, null, $oldAlert, $quantityAlert, 'alert'));
 
         return $stock;
     }
@@ -92,6 +95,8 @@ class StockService
                 'id_article' => $movement->id_article,
             ]);
 
+            $oldQuantity = $stock->quantity ?? 0;
+
             if ($increase) {
                 $stock->quantity += $movement->quantity;
             } else {
@@ -104,50 +109,51 @@ class StockService
 
             $stock->save();
 
-            // Actualizar alertas
-            $this->updateStockAlert($stock, !$increase);
+            // Disparar evento de actualización de cantidad
+            // dd($stock->quantity);
+            event(new StockAlertUpdated($stock, $oldQuantity, $stock->quantity, null, null, 'quantity'));
         }
     }
 
-    public function updateStockAlert(Stock $stock, bool $decreaseMode = false): void
-    {
-        $user = Auth::user();
+    // public function updateStockAlert(Stock $stock, bool $decreaseMode = false): void
+    // {
+    //     $user = Auth::user();
         
-        if (!$user) {
-            return;
-        }
+    //     if (!$user) {
+    //         return;
+    //     }
 
-        // Buscar notificaciones existentes
-        $existingNotification = $user->notifications->first(function ($notification) use ($stock) {
-            $data = $notification->data;
-            return isset($data['stockcenter_id']) && 
-                   isset($data['article_id']) &&
-                   $data['stockcenter_id'] == $stock->id_stockcenter && 
-                   $data['article_id'] == $stock->id_article;
-        });
+    //     // Buscar notificaciones existentes
+    //     $existingNotification = $user->notifications->first(function ($notification) use ($stock) {
+    //         $data = $notification->data;
+    //         return isset($data['stockcenter_id']) && 
+    //                isset($data['article_id']) &&
+    //                $data['stockcenter_id'] == $stock->id_stockcenter && 
+    //                $data['article_id'] == $stock->id_article;
+    //     });
 
-        // Si el stock está por encima de la alerta y hay notificación, eliminarla
-        if ($stock->quantity > $stock->quantity_alert && $existingNotification) {
-            $existingNotification->delete();
-            return;
-        }
+    //     // Si el stock está por encima de la alerta y hay notificación, eliminarla
+    //     if ($stock->quantity > $stock->quantity_alert && $existingNotification) {
+    //         $existingNotification->delete();
+    //         return;
+    //     }
 
-        // Si el stock está por debajo de la alerta y no hay notificación, crearla
-        if ($stock->quantity_alert > 0 && 
-            $stock->quantity <= $stock->quantity_alert && 
-            !$existingNotification) {
+    //     // Si el stock está por debajo de la alerta y no hay notificación, crearla
+    //     if ($stock->quantity_alert > 0 && 
+    //         $stock->quantity <= $stock->quantity_alert && 
+    //         !$existingNotification) {
             
-            $data = [
-                'message' => "El material {$stock->article->name} se encuentra por debajo del nivel de stock",
-                'article_id' => $stock->id_article,
-                'stockcenter_id' => $stock->id_stockcenter,
-                'current_quantity' => $stock->quantity,
-                'alert_quantity' => $stock->quantity_alert,
-            ];
+    //         $data = [
+    //             'message' => "El material {$stock->article->name} se encuentra por debajo del nivel de stock",
+    //             'article_id' => $stock->id_article,
+    //             'stockcenter_id' => $stock->id_stockcenter,
+    //             'current_quantity' => $stock->quantity,
+    //             'alert_quantity' => $stock->quantity_alert,
+    //         ];
             
-            $user->notify(new Notificationalert($data));
-        }
-    }
+    //         $user->notify(new Notificationalert($data));
+    //     }
+    // }
 
     public function getAvailableStockcenters(): Collection
     {
