@@ -3,41 +3,9 @@
 @section('content')
 <div class="container-fluid">
     @include('layouts.alert')
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i> Acciones Rápidas</h5>
-        </div>
-        <div class="card-body">
-            <div class="row g-2">
-                <div class="col-6 col-md-3">
-                    <a href="{{ route('refer.create') }}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                        <i class="fas fa-plus-circle fa-2x mb-2"></i>
-                        <span>Nuevo Remito</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="/" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                        <i class="fas fa-sliders-h fa-2x mb-2"></i>
-                        <span>Ajuste de Stock</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="/" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                        <i class="fas fa-clipboard-check fa-2x mb-2"></i>
-                        <span>Inventario</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-3">
-                    <a href="/" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
-                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                        <span>Reporte Personalizado</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    
     <!-- Sección de Prioridad Alta: Stock Negativo -->
-    @if($negativeStocks->isNotEmpty())
+    @if($negative_stocks->isNotEmpty())
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -46,7 +14,7 @@
                 </h5>
                 <p class="mb-1">Los siguientes artículos tienen stock negativo:</p>
                 <div class="row mt-2">
-                    @foreach($negativeStocks as $stock)
+                    @foreach($negative_stocks as $stock)
                     <div class="col-md-4 mb-2">
                         <div class="card bg-danger text-white">
                             <div class="card-body py-2">
@@ -77,66 +45,109 @@
     </div>
     @endif
     
-    <!-- Resumen del Dashboard -->
+    <!-- Nuevos KPIs -->
     <div class="row mb-4">
+        <!-- Tasa de Rotación -->
         <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card bg-primary text-white">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Artículos</h6>
-                            <h3 class="mb-0">{{ $summary['total_articles'] ?? 0 }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tasa de Rotación
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ $rotation['rotation_rate'] }} veces
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="{{ $rotation['trend'] > 0 ? 'text-success' : ($rotation['trend'] < 0 ? 'text-danger' : 'text-muted') }} mr-2">
+                                    <i class="fas fa-arrow-{{ $rotation['trend'] > 0 ? 'up' : ($rotation['trend'] < 0 ? 'down' : 'right') }}"></i> 
+                                    {{ abs($rotation['trend']) }}%
+                                </span>
+                                <span>vs mes anterior</span>
+                            </div>
                         </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-boxes fa-2x opacity-75"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-sync-alt fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Eficiencia de Despacho -->
         <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card bg-success text-white">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Stock Total</h6>
-                            <h3 class="mb-0">{{ $summary['total_stock_value'] ?? 0 }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Eficiencia Despacho
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ $dispatch_efficiency['avg_dispatch_time'] }}h
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="{{ $dispatch_efficiency['trend'] > 0 ? 'text-success' : ($dispatch_efficiency['trend'] < 0 ? 'text-danger' : 'text-muted') }} mr-2">
+                                    <i class="fas fa-arrow-{{ $dispatch_efficiency['trend'] > 0 ? 'down' : ($dispatch_efficiency['trend'] < 0 ? 'up' : 'right') }}"></i> 
+                                    {{ abs($dispatch_efficiency['trend']) }}%
+                                </span>
+                                <span>vs mes anterior</span>
+                            </div>
                         </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-database fa-2x opacity-75"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Stock Muerto -->
         <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card bg-warning text-dark">
+            <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Alertas Activas</h6>
-                            <h3 class="mb-0">{{ $summary['alert_stocks'] ?? 0 }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Stock Sin Movimiento
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ $dead_stock->count() }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span>Últimos 6 meses</span>
+                            </div>
                         </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-bell fa-2x opacity-75"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-skull-crossbones fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Resumen del Resumen Existente -->
         <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card bg-info text-white">
+            <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="card-title">Remitos Pendientes</h6>
-                            <h3 class="mb-0">{{ $summary['pending_refers'] ?? 0 }}</h3>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Alertas Activas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ $summary['alert_stocks'] ?? 0 }}
+                            </div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-danger mr-2">
+                                    <i class="fas fa-exclamation-circle"></i> 
+                                    {{ $negative_stocks->count() }} negativos
+                                </span>
+                            </div>
                         </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-truck-loading fa-2x opacity-75"></i>
+                        <div class="col-auto">
+                            <i class="fas fa-bell fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -145,6 +156,102 @@
     </div>
     
     <!-- Contenido Principal -->
+    <div class="row">
+        <!-- Sección de Recomendaciones -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2 text-warning"></i> 
+                        Recomendaciones del Sistema
+                    </h5>
+                    <span class="badge bg-warning">{{ count($recommendations) }}</span>
+                </div>
+                <div class="card-body">
+                    @if(empty($recommendations))
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="text-muted mb-0">¡Todo en orden! No hay recomendaciones pendientes.</p>
+                    </div>
+                    @else
+                    <div class="list-group">
+                        @foreach($recommendations as $rec)
+                        <div class="list-group-item list-group-item-{{ $rec['type'] }} mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-{{ $rec['icon'] }} fa-2x me-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ $rec['title'] }}</h6>
+                                    <p class="mb-2">{{ $rec['message'] }}</p>
+                                    @if($rec['action'])
+                                    <a href="{{ $rec['action_url'] }}" class="btn btn-sm btn-{{ $rec['type'] }}">
+                                        {{ $rec['action'] }}
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de Stock Muerto -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-skull-crossbones me-2 text-danger"></i> 
+                        Stock Sin Movimiento (Últimos 6 meses)
+                    </h5>
+                    <span class="badge bg-danger">{{ $dead_stock->count() }}</span>
+                </div>
+                <div class="card-body">
+                    @if($dead_stock->isEmpty())
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="text-muted mb-0">¡Excelente! No hay stock sin movimiento.</p>
+                    </div>
+                    @else
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Artículo</th>
+                                    <th>Centro</th>
+                                    <th>Cantidad</th>
+                                    <th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($dead_stock as $stock)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('article.show', $stock->article->id ?? '#') }}" 
+                                           class="text-decoration-none">
+                                            {{ $stock->article->name ?? 'N/A' }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $stock->stockCenter->name ?? 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ $stock->quantity }}</span>
+                                    </td>
+                                    <td>{{ $stock->article->type ?? '-' }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Segunda Fila: Alertas y Reportes -->
     <div class="row">
         <!-- Sección de Alertas -->
         <div class="col-lg-6 mb-4">
@@ -156,15 +263,14 @@
                         <form action="{{ route('notifications.markAllRead') }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-outline-secondary" 
-                                onclick="return confirm('¿Marcar todas como leídas?')">
+                                   onclick="return confirm('¿Marcar todas como leídas?')">
                                 <i class="fas fa-check-double"></i> Marcar todas
                             </button>
                         </form>
                         <form action="{{ route('notifications.clearAll') }}" method="POST" class="d-inline">
                             @csrf
-                            @method('DELETE')
                             <button type="submit" class="btn btn-outline-danger" 
-                                onclick="return confirm('¿Eliminar todas las notificaciones?')">
+                                   onclick="return confirm('¿Eliminar todas las notificaciones?')">
                                 <i class="fas fa-trash"></i> Limpiar
                             </button>
                         </form>
@@ -217,9 +323,20 @@
     .card:hover {
         transform: translateY(-2px);
     }
-    .negative-stock-item {
-        border-left: 4px solid #dc3545;
-        padding-left: 1rem;
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .shadow {
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
     }
 </style>
 @endpush
@@ -280,37 +397,6 @@
                 this.form.submit();
             });
         });
-
-        // Manejar envío de formularios de notificaciones con confirmación
-        const notificationForms = document.querySelectorAll('form[action*="notifications"]');
-        
-        notificationForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const action = this.getAttribute('action');
-                
-                if (action.includes('markAsRead') || action.includes('mark-all-read')) {
-                    // Para marcar como leído, no necesitamos confirmación adicional
-                    // a menos que ya esté especificada en el botón
-                    return true;
-                }
-                
-                // Para eliminar, ya tenemos confirmación en el botón
-                return true;
-            });
-        });
-        
-        // Mostrar mensajes de éxito/error
-        @if(session('success') || session('error') || session('info'))
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const alertInstance = new bootstrap.Alert(alert);
-                setTimeout(() => {
-                    alertInstance.close();
-                }, 5000);
-            });
-        }, 1000);
-        @endif
     });
 </script>
 @endpush

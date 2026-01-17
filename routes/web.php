@@ -82,6 +82,19 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
         Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
+
+        // Rutas con filtros predefinidos para el dashboard
+        Route::get('/stock/negative', [StockController::class, 'index'])->name('stock.negative')
+            ->defaults('filter', 'negative');
+            
+        Route::get('/stock/dead', [StockController::class, 'index'])->name('stock.dead')
+            ->defaults('filter', 'dead');
+            
+        Route::get('/stock/alerts', [StockController::class, 'index'])->name('stock.alerts')
+            ->defaults('filter', 'alerts');
+            
+        Route::get('/refer/pending', [ReferController::class, 'index'])->name('refer.pending')
+            ->defaults('status', 'E');
     });
 });
 

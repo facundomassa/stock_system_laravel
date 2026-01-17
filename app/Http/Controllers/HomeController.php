@@ -24,11 +24,12 @@ class HomeController extends Controller
     {
         $user = auth()->user();
         
-        // Obtener datos del dashboard
-        $negativeStocks = $this->dashboardService->getNegativeStocks();
+        // Obtener todas las métricas del dashboard
+        $metrics = $this->dashboardService->getDashboardMetrics();
+        
+        // Obtener datos adicionales
         $notifications = $this->dashboardService->getUserNotifications($user);
         $stockcenters = $this->dashboardService->getStockCenters();
-        $summary = $this->dashboardService->getDashboardSummary();
         
         // Obtener movimientos recientes con filtros
         $recentMovements = $this->dashboardService->getRecentMovements([
@@ -44,13 +45,11 @@ class HomeController extends Controller
             'data' => array_values($recentMovements),
         ];
         
-        return view('home', compact(
-            'negativeStocks',
-            'notifications',
-            'stockcenters',
-            'summary',
-            'chartData'
-        ));
+        return view('home', array_merge($metrics, [
+            'notifications' => $notifications,
+            'stockcenters' => $stockcenters,
+            'chartData' => $chartData,
+        ]));
     }
 
     public function reportRpFyS(Request $request)

@@ -50,20 +50,37 @@ class StockController extends Controller
     {
         $stockcenters = $this->stockService->getAvailableStockcenters();
         
-        $stocks = $this->stockService->paginateStocks(
-            stockcenterId: request('stockselect'),
-            type: request('type'),
-            articleName: request('articlename'),
-            code: request('code'),
-            perPage: 20
-        );
-
+        // Manejar filtros predefinidos del dashboard
         $filters = [
             'stockselect' => request('stockselect'),
             'type' => request('type'),
             'articlename' => request('articlename'),
             'code' => request('code'),
         ];
+        
+        // Aplicar filtro predefinido si viene del dashboard
+        if ($filterType = request('filter')) {
+            switch ($filterType) {
+                case 'negative':
+                    $filters['negative'] = true;
+                    break;
+                case 'dead':
+                    // Aquí podrías añadir lógica para filtrar stock muerto
+                    // Necesitarías modificar el StockService para aceptar este filtro
+                    break;
+                case 'alerts':
+                    $filters['alerts'] = true;
+                    break;
+            }
+        }
+        
+        $stocks = $this->stockService->paginateStocks(
+            stockcenterId: $filters['stockselect'],
+            type: $filters['type'],
+            articleName: $filters['articlename'],
+            code: $filters['code'],
+            perPage: 20
+        );
 
         return view('stock.index', compact('stockcenters', 'stocks', 'filters'))
             ->with('title', $this->title);
