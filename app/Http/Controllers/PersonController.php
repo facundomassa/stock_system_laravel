@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PersonController extends Controller
 {
-    protected static $tittle = 'Personas';
+    protected static $tittle = 'Tecnicos';
 
     private static $data = [
         'name' => 'required|string|max:100',

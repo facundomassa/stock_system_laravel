@@ -80,7 +80,7 @@ class MovementController extends Controller
         foreach ($paginatedResults as $referId => $movements) {
             $refer[$referId] = $this->referService->findRefer($referId);
         }
-        // dd($paginatedResults);
+        
         return view('movement.transit', compact('paginatedResults', 'refer'))
             ->with('title', 'Movimientos en Tránsito');
     }
