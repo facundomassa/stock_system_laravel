@@ -2,158 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Movement;
-use App\Models\Refer;
-use App\Models\Article;
-use App\Models\Stock;
+use App\Services\MovementService;
+use App\Services\ReferService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class MovementController extends Controller
 {
-    protected static $tittle = 'Movimientos';
+    protected string $title = 'Movimientos';
+    protected MovementService $movementService;
+    protected ReferService $referService;
 
-    private static $rules = [
-        'id_refer' => 'required|digits_between:0,10|integer',
-        'id_article' => 'required|digits_between:0,10|integer',
-        'quantity' => 'required|digits_between:0,11|integer',
-    ];
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(MovementService $movementService, ReferService $referService)
     {
-        //
-        $data['movements'] = Movement::orderBy('id', 'desc')->paginate(20);
-
-        foreach ($data['movements'] as $key => $value) {
-            $data['movements'][$key]->id_article = $value->Article->name;
-        }
-
-        return view('movement/index')->with($data)->with('tittle', static::$tittle);
+        $this->movementService = $movementService;
+        $this->referService = $referService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create($id)
+    public function index(): View
     {
-        //
-        $refer = Refer::findOrFail($id);
+        $movements = $this->movementService->paginateMovements();
+        
+        return view('movement.index', compact('movements'))->with('title', $this->title);
+    }
 
-        $data['movements'] = Movement::where('id_refer', '=', $id)->get();
-        $data['id_refer'] = $id;
+    public function create(int $id): View
+    {
+        $refer = $this->referService->findRefer($id);
+        $movements = $this->movementService->getMovementsByRefer($id);
+        $movements = $this->movementService->enrichMovementsWithStockInfo($movements, $refer);
+        $movements = $this->movementService->enrichMovementsWithArticleInfo($movements);
+        
+        $articles = $this->referService->getArticlesWithStockInfo($id);
+        // dd($articles->first());
+        return view('movement.create', compact('refer', 'movements', 'articles'))
+            ->with('title', $this->title);
+    }
 
-        foreach ($data['movements'] as $key => $value) {
-            $data['movements'][$key]->stock = Stock::where('id_stockcenter', $refer->origen_id_stockcenter)
-            ->where('id_article', $data['movements'][$key]->id_article)->first();
-            $data['movements'][$key]->id_article = $value->Article;
-            
-        }
+    public function store(Request $request): RedirectResponse
+    {
+        $id_refer = $request->id_refer;
+        $data = $request->except(['_token', 'id_refer']);
+        
+        $results = $this->movementService->processBatchMovements($data, $id_refer);
+        
+        $message = $this->generateResultMessage($results);
 
-        $data['articles'] = Article::get();
-        foreach ($data['articles'] as $key => $value) {
-            $data['articles'][$key]->StockQuantity($refer);
-            // dd($data['articles'][$key]);
+        return redirect()->route('refer.show', $id_refer)
+            ->with('mensaje', $message)
+            ->with('title', $this->title);
+    }
+
+    public function show(int $id_refer): View
+    {
+        $refer = $this->referService->findRefer($id_refer);
+        $movements = $this->movementService->getMovementsByRefer($id_refer);
+        $movements = $this->movementService->enrichMovementsWithArticleInfo($movements);
+        
+        return view('movement.show', compact('refer', 'movements'))->with('title', $this->title);
+    }
+
+    public function destroy(int $id): RedirectResponse
+    {
+        $this->movementService->deleteMovement($id);
+        
+        return redirect()->route('movement.index')
+            ->with('mensaje', 'Movimiento eliminado correctamente')
+            ->with('title', $this->title);
+    }
+
+    public function transit(): View
+    {
+        $paginatedResults = $this->movementService->getTransitMovements();
+        
+        $refer = [];
+        foreach ($paginatedResults as $referId => $movements) {
+            $refer[$referId] = $this->referService->findRefer($referId);
         }
         
-        return view('movement/create')->with('tittle', static::$tittle)->with($data);
+        return view('movement.transit', compact('paginatedResults', 'refer'))
+            ->with('title', 'Movimientos en Tránsito');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    private function generateResultMessage(array $results): string
     {
-        //
-        $deleteTotal = $delete = $createTotal = $create = $updateTotal = $update = 0;
-        $id_refer = $request->id_refer;
-        $data = request()->except(['_token', 'id_refer']);
-
-        foreach ($data as $key => $value) {
-            $data[$key]['id_refer'] = $id_refer;
-
-            if (isset($value['delete']) && $value['delete'] == 'on') {
-                $deleteTotal++;
-
-                if ($value['id'] != null) {
-                    MovementController::destroy($value['id']) ? $delete++ : $delete;
-                }
-            } elseif (isset($value['id'])) {
-                $updateTotal++;
-                
-                $validator = $this->validates($data[$key]);
-                if ($validator->fails()) {
-                    continue;
-                } else {
-                    Movement::where('id', '=', $value['id'])->update($data[$key]);
-                    $update++;
-                }
-            } else {
-                $createTotal++;
-                
-                $validator = $this->validates($data[$key]);
-                if ($validator->fails()) {
-                    continue;
-                } else {
-                    Movement::insert($data[$key]);
-                    $create++;
-                }
-                
-            }
+        
+        $message = "Se eliminaron {$results['deleted']} de un total de {$results['deleted_total']} - " .
+                   "Se actualizaron {$results['updated']} de un total de {$results['updated_total']} - " .
+                   "Se crearon {$results['created']} de un total de {$results['created_total']}";
+        
+        if (!empty($results['errors'])) {
+            $message .= "<br>Errores encontrados:<br>" . implode('<br>', $results['errors']);
         }
-        return redirect('refer/'.$id_refer)->with('mensaje', 
-        "Se eliminaron " . $delete . " de un total de " . $deleteTotal . "<br>" .
-        "Se actualizo " . $update . " de un total de " . $updateTotal . "<br>" .
-        "Se crearon " . $create . " de un total de " . $createTotal . "<br>")->with('tittle', static::$tittle);
+        // dd($message);
+        return $message;
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Movement  $movement
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id_refer)
-    {
-        //
-        $data['refer'] = Refer::findOrFail($id_refer);
-
-        $data['movements'] = Movement::where('id_refer', '=', $id_refer)->get();
-        foreach ($data['movements'] as $key => $value) {
-            $data['movements'][$key]->id_article = $value->Article;
-        }
-
-        return view('movement.show')->with($data)->with('tittle', static::$tittle);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Movement  $movement
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-        $movement = Movement::findOrFail($id);
-
-        Movement::destroy($id);
-
-        return true;
-    }
-
-    public function validates($data)
-    {
-        return Validator::make($data, static::$rules);
-    }
-
-    
 }

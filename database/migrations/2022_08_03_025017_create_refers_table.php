@@ -17,6 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('origen_id_stockcenter');
             $table->unsignedInteger('destiny_id_stockcenter');
+            $table->dateTime('date_up')->nullable();
             $table->dateTime('date_ended')->nullable();
             $table->unsignedInteger('id_user');
             $table->string('status', 1)->default('I');

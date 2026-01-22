@@ -17,6 +17,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -26,7 +27,9 @@ box-sizing: border-box;
 display: flex;
 flex-direction: column;
 min-height: 100vh;">
-    @include('layouts/newNavbar')
+@if (Auth::check() && Session::has('selected_operation'))
+    @include('layouts.newNavbar')
+@endif
 
     <main class="py-2 fs-6" style="flex: 1;">
         <div>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('id_stockcenter');
             $table->unsignedInteger('id_article');
             $table->integer('quantity')->default(0);
+            $table->integer('quantity_alert')->nullable();
             $table->foreign('id_stockcenter')->references('id')->on('stockcenters')->onDelete('cascade');
             $table->foreign('id_article')->references('id')->on('articles')->onDelete('cascade');
             $table->timestamps();

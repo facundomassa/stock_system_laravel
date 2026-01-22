@@ -2,154 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
-use App\Models\Refer;
-use Illuminate\Http\Request;
+use App\Http\Requests\ArticleRequest;
+use App\Services\ArticleService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
-    protected static $tittle = 'Articulos';
+    protected string $title = 'Artículos';
+    protected ArticleService $articleService;
 
-    private static $rules = array(
-        'name' => 'required|string|max:60',
-        'unit' => 'required|string|max:1',
-        'type' => 'nullable|string|max:30',
-        'code' => 'nullable|string|max:16'
-    );
-    private static $message = array(
-        'required' => 'El :attribute es requerido',
-        'max' => 'El :attribute no puedo tener mas de :max caracteres'
-    );
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(ArticleService $articleService)
     {
-        //
-        $data['articles'] = Article::paginate(20);
-        return view('article/index')->with($data)->with('tittle', static::$tittle);
+        $this->articleService = $articleService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(): View
     {
-        //
-        return view('article/create')->with('tittle', static::$tittle);
+        $articles = $this->articleService->paginateArticles();
+        return view('article.index', compact('articles'))->with('title', $this->title);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function create(): View
     {
-        //
-        $request['unit'] = Article::validateUnit($request['unit']);
-
-        $this->validate($request, static::$rules, static::$message);
-
-        $dataArticle = request()->except('_token');
-
-        Article::create($dataArticle);
-        return redirect('article')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
+        return view('article.create')->with('title', $this->title);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function store(ArticleRequest $request): RedirectResponse
     {
-        //
-        $article = Article::findOrFail($id);
-        return view('article.show', compact('article'))->with('tittle', static::$tittle);
+        $this->articleService->createArticle($request->validated());
+        return redirect()->route('article.index')
+            ->with('success', 'Artículo agregado con éxito')
+            ->with('title', $this->title);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function show(int $id): View
     {
-        //
-        $article = Article::findOrFail($id);
-        return view('article.edit', compact('article'))->with('tittle', static::$tittle);
+        $article = $this->articleService->findArticle($id);
+        return view('article.show', compact('article'))->with('title', $this->title);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function edit(int $id): View
     {
-        //
-        $request['unit'] = Article::validateUnit($request['unit']);
-
-        $this->validate($request, static::$rules, static::$message);
-
-        $dataArticle = request()->except(['_token', '_method']);
-
-        Article::find($id)->update($dataArticle);
-        return redirect('article')->with('mensaje', 'Articulo editado con exito')->with('tittle', static::$tittle);
+        $article = $this->articleService->findArticle($id);
+        return view('article.edit', compact('article'))->with('title', $this->title);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function update(ArticleRequest $request, int $id): RedirectResponse
     {
-        //
-        $article = Article::findOrFail($id);
-
-        Article::destroy($id);
-
-        return redirect('article')->with('mensaje', 'Articulo eliminada')->with('tittle', static::$tittle);
+        $this->articleService->updateArticle($id, $request->validated());
+        return redirect()->route('article.index')
+            ->with('success', 'Artículo editado con éxito')
+            ->with('title', $this->title);
     }
 
-    public function filters()
+    public function destroy(int $id): RedirectResponse
     {
-        //
-        $referId = request()->get('refer');
-        $refer = Refer::where('id',$referId)->first();
-        $nameTx = request()->get('nameTx');
-        $typeTx = request()->get('typeTx');
-        $codeTx = request()->get('codeTx');
+        $this->articleService->deleteArticle($id);
+        return redirect()->route('article.index')
+            ->with('success', 'Artículo eliminado')
+            ->with('title', $this->title);
+    }
 
-        $dataArticle = Article::Name($nameTx)
-            ->Type($typeTx)
-            ->Code($codeTx)
-            ->orderBy('name', 'asc')
-            ->get();
+    public function filters(): JsonResponse
+    {
+        $articles = $this->articleService->filterArticles(
+            referId: request('refer'),
+            name: request('nameTx'),
+            type: request('typeTx'),
+            code: request('codeTx')
+        );
 
-        foreach ($dataArticle as $key => $value) {
-            $dataArticle[$key]->UnitName;
-            $dataArticle[$key]->StockQuantity($refer);
-            if(isset($dataArticle[$key]->stock->quantity)){
-                $dataArticle[$key]->stock = $dataArticle[$key]->stock->quantity;
-            } else {
-                $dataArticle[$key]->stock = "-";
-            }
-        }
-        // $data->UnitName();
-        return with($dataArticle);
+        return response()->json($articles);
     }
 }

@@ -5,7 +5,7 @@
         <p>{{$stockcenter->id }}</p>
         <div class="form-group">
             <label for="code">Operacion:</label>
-            <p>{{$stockcenter->id_enterprise }}</p>
+            <p>{{$stockcenter->id_operation }}</p>
         </div>
         <div class="form-group">
             <label for="name">Nombre:</label>

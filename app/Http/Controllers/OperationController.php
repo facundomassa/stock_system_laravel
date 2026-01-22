@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Enterprise;
+use App\Models\Operation;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
-class EnterpriseController extends Controller
+class OperationController extends Controller
 {
     protected static $tittle = 'Operacion';
 
@@ -25,8 +26,8 @@ class EnterpriseController extends Controller
     public function index()
     {
         //
-        $data['enterprises'] = Enterprise::paginate(20);
-        return view('enterprise/index')->with($data)->with('tittle', static::$tittle);
+        $data['operations'] = Operation::paginate(20);
+        return view('operation/index')->with($data)->with('tittle', static::$tittle);
     }
 
     /**
@@ -37,7 +38,7 @@ class EnterpriseController extends Controller
     public function create()
     {
         //
-        return view('enterprise/create')->with('tittle', static::$tittle);
+        return view('operation/create')->with('tittle', static::$tittle);
     }
 
     /**
@@ -51,43 +52,52 @@ class EnterpriseController extends Controller
         //
         $this->validate($request, static::$data, static::$message);
 
-        $dataEnterprise = request()->except('_token');
+        $dataOperation = request()->except('_token');
 
-        Enterprise::create($dataEnterprise);
-        return redirect('enterprise')->with('mensaje', 'Operacion agregada con exito')->with('tittle', static::$tittle);
+        $operation = Operation::create($dataOperation);
+
+        // Crear un permiso basado en la operación
+        $permissionName = $operation->name; 
+        
+        // Verifica si el permiso ya existe antes de crearlo
+        if (!Permission::where('name', $permissionName)->exists()) {
+            Permission::create(['name' => $permissionName]);
+        }
+
+        return redirect('operation')->with('mensaje', 'Operacion agregada con exito')->with('tittle', static::$tittle);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Enterprise  $enterprise
+     * @param  \App\Models\Operation  $operation
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         //
-        $enterprise = Enterprise::findOrFail($id);
-        return view('enterprise.show', compact('enterprise'))->with('tittle', static::$tittle);
+        $operation = Operation::findOrFail($id);
+        return view('operation.show', compact('operation'))->with('tittle', static::$tittle);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Enterprise  $enterprise
+     * @param  \App\Models\Operation  $operation
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         //
-        $enterprise = Enterprise::findOrFail($id);
-        return view('enterprise.edit', compact('enterprise'))->with('tittle', static::$tittle);
+        $operation = Operation::findOrFail($id);
+        return view('operation.edit', compact('operation'))->with('tittle', static::$tittle);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Enterprise  $enterprise
+     * @param  \App\Models\Operation  $operation
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -95,26 +105,26 @@ class EnterpriseController extends Controller
         //
         $this->validate($request, static::$data, static::$message);
 
-        $dataEnterprise = request()->except(['_token', '_method']);
+        $dataOperation = request()->except(['_token', '_method']);
 
-        Enterprise::find($id)->update($dataEnterprise);
+        Operation::find($id)->update($dataOperation);
 
-        return redirect('enterprise')->with('mensaje', 'Operacion editada con exito')->with('tittle', static::$tittle);
+        return redirect('operation')->with('mensaje', 'Operacion editada con exito')->with('tittle', static::$tittle);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Enterprise  $enterprise
+     * @param  \App\Models\Operation  $operation
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
-        $enterprise = Enterprise::findOrFail($id);
+        $operation = Operation::findOrFail($id);
 
-        Enterprise::destroy($id);
+        Operation::destroy($id);
 
-        return redirect('enterprise')->with('mensaje', 'Operacion eliminada')->with('tittle', static::$tittle);
+        return redirect('operation')->with('mensaje', 'Operacion eliminada')->with('tittle', static::$tittle);
     }
 }

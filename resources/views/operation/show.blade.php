@@ -2,15 +2,15 @@
 
 @section('content')
     <div class="container">
-        <p>{{$enterprise->id }}</p>
+        <p>{{$operation->id }}</p>
         <div class="form-group">
             <label for="name">Nombre:</label>
-            <p>{{$enterprise->name }}</p>
+            <p>{{$operation->name }}</p>
         </div>
         <br>
-        <a class="btn btn-success" href="{{ url('enterprise/' . $enterprise->id . '/edit') }}">Editar</a>
-        <a class="btn btn-primary" href="{{ url('enterprise/') }}">Regresar</a>
-        <form class="d-inline" action="{{ url('/enterprise/' . $enterprise->id) }}" method="post">
+        <a class="btn btn-success" href="{{ url('operation/' . $operation->id . '/edit') }}">Editar</a>
+        <a class="btn btn-primary" href="{{ url('operation/') }}">Regresar</a>
+        <form class="d-inline" action="{{ url('/operation/' . $operation->id) }}" method="post">
             @csrf
             {{ method_field('DELETE') }}
             <input class="btn btn-danger" type="submit" onclick="return confirm('¿Quieres borrar?')"

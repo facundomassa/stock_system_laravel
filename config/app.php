@@ -189,6 +189,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         ConsoleTVs\Charts\ChartsServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
         //Git version controller
         Tremby\LaravelGitVersion\GitVersionServiceProvider::class,

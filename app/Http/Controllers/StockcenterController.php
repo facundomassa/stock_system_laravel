@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stockcenter;
-use App\Models\Enterprise;
+use App\Models\Operation;
 use App\Models\Direction;
 use App\Models\Person;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class StockcenterController extends Controller
 
         foreach ($data['stockcenters'] as $key => $value) {
 
-            $data['stockcenters'][$key]->id_enterprise = $value->Enterprise->name;
+            $data['stockcenters'][$key]->id_operation = $value->operation->name;
 
             $direction = $value->Direction;
             $data['stockcenters'][$key]->id_direction = $direction ? $direction->street . " " . $direction->number : "";
@@ -45,7 +45,7 @@ class StockcenterController extends Controller
     public function create()
     {
         //
-        $data['enterprises'] = Enterprise::get();
+        $data['operations'] = Operation::get();
         $data['directions'] = Direction::get();
         $data['persons'] = Person::get();
 
@@ -64,7 +64,7 @@ class StockcenterController extends Controller
         $request = Stockcenter::ValidateIDRel($request);
 
         $data = [
-            'id_enterprise' => 'required|integer|digits_between:0,10',
+            'id_operation' => 'required|integer|digits_between:0,10',
             'name' => 'required|string|max:60',
             'type' => 'required|string|max:1',
             'id_direction' => 'required|integer|digits_between:0,10',
@@ -96,7 +96,7 @@ class StockcenterController extends Controller
 
         $stockcenter = Stockcenter::findOrFail($id);
 
-        $stockcenter->id_enterprise = $stockcenter->Enterprise->name;
+        $stockcenter->id_operation = $stockcenter->operation->name;
 
         $direction = $stockcenter->Direction;
         $stockcenter->id_direction = $direction ? $direction->street . " " . $direction->number : "";
@@ -118,7 +118,7 @@ class StockcenterController extends Controller
     public function edit($id)
     {
         //
-        $data['enterprises'] = Enterprise::get();
+        $data['operations'] = Operation::get();
         $data['directions'] = Direction::get();
         $data['persons'] = Person::get();
 
@@ -140,7 +140,7 @@ class StockcenterController extends Controller
         $request = Stockcenter::ValidateIDRel($request);
 
         $data = [
-            'id_enterprise' => 'required|integer|digits_between:0,10',
+            'id_operation' => 'required|integer|digits_between:0,10',
             'name' => 'required|string|max:60',
             'type' => 'required|string|max:1',
             'id_direction' => 'required|integer|digits_between:0,10',

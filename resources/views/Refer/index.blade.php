@@ -12,7 +12,7 @@
                         onchange="this.form.submit()">
                         <option selected value="*">-Todos-</option>
                         @foreach ($stockcenters as $stockcenter)
-                            @if ($stockselectorigen == $stockcenter->id)
+                            @if ($filters['stockselectorigen'] == $stockcenter->id)
                                 <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
                             @else
                                 <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
@@ -26,7 +26,7 @@
                         onchange="this.form.submit()">
                         <option selected value="*">-Todos-</option>
                         @foreach ($stockcenters as $stockcenter)
-                            @if ($stockselectdestiny == $stockcenter->id)
+                            @if ($filters['stockselectdestiny'] == $stockcenter->id)
                                 <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
                             @else
                                 <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
@@ -39,10 +39,10 @@
                     <select required class="form-control" name="status" maxlength="60" id="status"
                         onchange="this.form.submit()">
                         <option selected value="*">-Todos-</option>
-                        <option {{$status == "I" ? "selected" : ""}} value="I"> Ingresado</option>
-                        <option {{$status == "E" ? "selected" : ""}} value="E"> Emitido</option>
-                        <option {{$status == "C" ? "selected" : ""}} value="C"> Cancelado</option>
-                        <option {{$status == "F" ? "selected" : ""}} value="F"> Finalizado</option>
+                        <option {{$filters['status'] == "I" ? "selected" : ""}} value="I"> Ingresado</option>
+                        <option {{$filters['status'] == "E" ? "selected" : ""}} value="E"> Emitido</option>
+                        <option {{$filters['status'] == "C" ? "selected" : ""}} value="C"> Cancelado</option>
+                        <option {{$filters['status'] == "F" ? "selected" : ""}} value="F"> Finalizado</option>
                     </select>
                 </div>
                 <div class="col-auto ms-auto">
@@ -126,9 +126,9 @@
             </tbody>
 
         </table>
-        {!! $refers->appends(['stockselectorigen' => $stockselectorigen,
-                                'stockselectdestiny' => $stockselectdestiny,
-                                'status' => $status])
+        {!! $refers->appends(['stockselectorigen' => $filters['stockselectorigen'],
+                                'stockselectdestiny' => $filters['stockselectdestiny'],
+                                'status' => $filters['status']])
                                 ->links('vendor.pagination.bootstrap-5') !!}
         <a class="btn btn-success" href="{{ url('/refer/create') }}">Nuevo ingreso</a>
     </div>

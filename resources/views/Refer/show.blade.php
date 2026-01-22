@@ -38,7 +38,7 @@
                 </div>
                 <br>
                 @if ($refer->status == 'I')
-                    <a class="btn btn-primary me-1" href="{{ url('refer/' . $refer->id . '/edit') }}">Emitir</a>
+                    <a class="btn btn-primary me-1" href="{{ url('refer/emited/' . $refer->id) }}">Emitir</a>
                 @endif
                 @if ($refer->status == 'I' || $refer->status == 'E')
                     <a class="btn btn-warning me-1" href="{{ url('refer/' . $refer->id . '/edit') }}">Editar</a>

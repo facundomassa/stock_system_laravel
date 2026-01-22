@@ -4,12 +4,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
-@if (count($errors) > 0)
+@if (count($errors) > 0 )
     <div class="alert alert-danger" role="alert">
         <ul>
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
         </ul>
+    </div>
+@endif 
+@if (Session::has('error'))
+    <div class="alert alert-danger" role="alert">
+        <strong>{{ Session::get('error') }}</strong>
     </div>
 @endif

@@ -8,10 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\Operation;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'surname',
         'email',
         'password',
+        'is_active'
     ];
 
     /**
@@ -52,5 +55,23 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function allowedOperations()
+    {
+        // dd($this->getPermissionNames());
+        return Operation::select('name')->whereIn('name', $this->getPermissionNames())->get();
+    }
+
+    // Scope para obtener solo los usuarios activos
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Scope para obtener solo los usuarios inactivos
+    public function scopeInactive($query)
+    {
+        return $query->where('is_active', false);
     }
 }

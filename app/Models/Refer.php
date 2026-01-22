@@ -2,172 +2,173 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\StockController;
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Refer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['origen_id_stockcenter', 'destiny_id_stockcenter', 'date_up', 'status', 'date_ended', 'id_user', 'observation'];
+    protected $fillable = [
+        'origen_id_stockcenter', 
+        'destiny_id_stockcenter', 
+        'date_up', 
+        'status', 
+        'date_ended', 
+        'id_user', 
+        'observation'
+    ];
 
-    public function Origin()
+    protected $appends = [
+        'status_name',
+        'full_name_user',
+        'name_origin',
+        'name_destiny',
+        'created_at_formatted',
+        'date_ended_formatted',
+        'date_up_formatted'
+    ];
+
+    public function origin(): BelongsTo
     {
         return $this->belongsTo(Stockcenter::class, 'origen_id_stockcenter');
     }
 
-    public function Destiny()
+    public function destiny(): BelongsTo
     {
         return $this->belongsTo(Stockcenter::class, 'destiny_id_stockcenter');
     }
 
-    public function User()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    //validate id of related tables
-    public static function ValidateIDRel(Request $request)
+    public function movements(): HasMany
     {
-        if (!Stockcenter::find($request->origen_id_stockcenter)->exists()) {
-            $request['origen_id_stockcenter'] = null;
-        }
-        if (!Stockcenter::find($request->destiny_id_stockcenter)->exists()) {
-            $request['destiny_id_stockcenter'] = null;
-        }
-        if (!User::find($request->id_user)->exists()) {
-            $request['id_user'] = null;
-        }
-        return $request;
+        return $this->hasMany(Movement::class, 'id_refer');
     }
 
-    public function setDate_endedAttribute($value)
+    protected function statusName(): Attribute
     {
-        $this->attributes['date_ended'] = str_replace("T", " ", $value);
+        return Attribute::make(
+            get: fn () => match($this->status) {
+                'I' => 'INGRESADO',
+                'E' => 'EMITIDO',
+                'F' => 'FINALIZADO',
+                'C' => 'CANCELADO',
+                default => $this->status,
+            }
+        );
     }
 
-    public function setDate_upAttribute($value)
+    protected function fullNameUser(): Attribute
     {
-        $this->attributes['date_up'] = str_replace("T", " ", $value);
+        return Attribute::make(
+            get: fn () => $this->user ? $this->user->name . ' ' . $this->user->surname : ''
+        );
     }
 
-    public function setIdUserAttribute()
+    protected function nameOrigin(): Attribute
     {
-        $this->attributes['id_user'] = auth()->user()->id;
+        return Attribute::make(
+            get: fn () => $this->origin ? $this->origin->name : ''
+        );
     }
 
-    //convert nombre of status
-    public function getStatusNameAttribute()
+    protected function nameDestiny(): Attribute
     {
-        $status = $this->status;
-        switch ($status) {
-            case 'I':
-                return $this->statusName = 'INGRESADO';
-                break;
-            case 'E':
-                return $this->statusName = 'EMITIDO';
-                break;
-            case 'F':
-                return $this->statusName = 'FINALIZADO';
-                break;
-            case 'C':
-                return $this->statusName = 'CANCELADO';
-                break;
-        }
+        return Attribute::make(
+            get: fn () => $this->destiny ? $this->destiny->name : ''
+        );
     }
 
-    public function getFullNameUserAttribute()
+    protected function createdAtFormatted(): Attribute
     {
-        return $this->User->name . " " . $this->User->surname;
+        return Attribute::make(
+            get: fn () => $this->created_at ? $this->created_at->format('d/m/Y') : ''
+        );
     }
 
-    public function getNameOriginAttribute()
+    protected function dateEndedFormatted(): Attribute
     {
-        return $this->Origin->name;
+        return Attribute::make(
+            get: function () {
+                if (!$this->date_ended) {
+                    return null;
+                }
+                
+                try {
+                    return \Carbon\Carbon::parse($this->date_ended)->format('d/m/Y');
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }
+        );
     }
 
-    public function getNameDestinyAttribute()
+    protected function dateUpFormatted(): Attribute
     {
-        return $this->Destiny->name;
+        return Attribute::make(
+            get: function () {
+                if (!$this->date_up) {
+                    return null;
+                }
+                
+                try {
+                    return \Carbon\Carbon::parse($this->date_up)->format('d/m/Y');
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }
+        );
     }
 
-    public function getCreatedAtFormattedAttribute()
+    // Scopes
+    public function scopeStockCenterOrigin($query, ?string $stockcenter): void
     {
-        return $this->created_at->format('d/m/Y');
-    }
-
-    public function getDateEndedFormattedAttribute($value)
-    {
-        if($this->date_ended != null){
-            $timestamp = strtotime($this->date_ended); 
-            return date('d/m/Y', $timestamp );
-        }
-    }
-
-    public function getDateUpFormattedAttribute($value)
-    {
-        if($this->date_up != null){
-            $timestamp = strtotime($this->date_up); 
-            return date('d/m/Y', $timestamp );
-        }
-    }
-
-    public function canceled(){
-        $this->status = 'C';
-
-        $this->update($this->attributes);
-    }
-
-    public function emited(){
-        $this->status = 'E';
-        if($this->Origin->type != 'P'){
-            $movements = Movement::where('id_refer', $this->id)->get();
-            StockController::discount($this->attributes, $movements);
-        }
-
-        $this->update($this->attributes);
-    }
-
-    public function finalized(){
-        $this->status = 'F';
-        if($this->Destiny->type != 'C'){
-            $movements = Movement::where('id_refer', $this->id)->get();
-            StockController::increase($this->attributes, $movements);
-        }
-
-        $this->update($this->attributes);
-    }
-
-    public function scopeStockCenterOrigin($query, $stockcenter)
-    {
-        if ($stockcenter && $stockcenter != '*') {
-            return $query->whereIn('origen_id_stockcenter', $stockcenter);
+        if ($stockcenter && $stockcenter !== '*') {
+            $query->where('origen_id_stockcenter', $stockcenter);
         }
     }
 
-    public function scopeStockCenterDestiny($query, $stockcenter)
+    public function scopeStockCenterDestiny($query, ?string $stockcenter): void
     {
-        if ($stockcenter && $stockcenter != '*') {
-            return $query->whereIn('destiny_id_stockcenter', $stockcenter);
+        if ($stockcenter && $stockcenter !== '*') {
+            $query->where('destiny_id_stockcenter', $stockcenter);
         }
     }
 
-    public function scopeStatus($query, $status)
+    public function scopeStockCenterInDestiny($query, ?iterable $stockcenters): void
     {
-        if ($status && $status != '*') {
-            return $query->where('status', $status);
+        if ($stockcenters && !empty($stockcenters)) {
+            $query->whereIn('destiny_id_stockcenter', $stockcenters);
         }
     }
 
-    public function scopeFechaCreado($query, $dateStart = '0000-00-00', $dateEnd = '2099-01-01')
+    public function scopeStatus($query, ?string $status): void
     {
-        return $query->whereBetween('date_up', [$dateStart,$dateEnd]);
+        if ($status && $status !== '*') {
+            $query->where('status', $status);
+        }
     }
 
-    public function scopeFechaFinalizado($query, $dateStart = 0, $dateEnd = 0)
+    public function scopeFechaCreado($query, ?string $dateStart = null, ?string $dateEnd = null): void
     {
-        return $query->whereBetween('date_ended', [$dateStart,$dateEnd]);
+        if ($dateStart && $dateEnd) {
+            $query->whereBetween('date_up', [$dateStart, $dateEnd]);
+        }
     }
+
+    public function scopeFechaFinalizado($query, ?string $dateStart = null, ?string $dateEnd = null): void
+    {
+        if ($dateStart && $dateEnd) {
+            $query->whereBetween('date_ended', [$dateStart, $dateEnd]);
+        }
+    }
+
+    // Nota: Los métodos canceled(), emited() y finalized() fueron movidos al servicio
 }

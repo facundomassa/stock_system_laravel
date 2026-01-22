@@ -11,38 +11,46 @@
                     <label for="stockselect">Centro de Stock:</label>
                     <select required class="form-control" name="stockselect" maxlength="60" id="stockselect"
                         onchange="this.form.submit()">
-                        <option selected value="*">-Todos-</option>
+                        <option value="*" {{ (request('stockselect') ?? '*') == '*' ? 'selected' : '' }}>-Todos-</option>
                         @foreach ($stockcenters as $stockcenter)
-                            @if ($stockselect == $stockcenter->id)
-                                <option selected value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
-                            @else
-                                <option value="{{ $stockcenter->id }}"> {{ $stockcenter->name }}</option>
-                            @endif
+                            <option value="{{ $stockcenter->id }}" {{ (request('stockselect') ?? '') == $stockcenter->id ? 'selected' : '' }}>
+                                {{ $stockcenter->name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
                 <div class="col-auto">
                     <label for="code">Codigo:</label>
                     <input class="form-control" type="text" name="code" maxlength="40"
-                        value="{{ isset($code) ? $code : old('code') }}" id="code" onchange="this.form.submit()">
+                        value="{{ request('code') ?? old('code') }}" id="code" onchange="this.form.submit()">
                 </div>
                 <div class="col-auto">
                     <label for="articlename">Articulo:</label>
                     <input class="form-control" type="text" name="articlename" maxlength="40"
-                        value="{{ isset($articlename) ? $articlename : old('articlename') }}" id="articlename"
+                        value="{{ request('articlename') ?? old('articlename') }}" id="articlename"
                         onchange="this.form.submit()">
                 </div>
                 <div class="col-auto">
                     <label for="type">Tipo:</label>
                     <input class="form-control" type="text" name="type" maxlength="40"
-                        value="{{ isset($type) ? $type : old('type') }}" id="type" onchange="this.form.submit()">
+                        value="{{ request('type') ?? old('type') }}" id="type" onchange="this.form.submit()">
                 </div>
                 <div class="col-auto ms-auto">
-                    <a class="btn btn-outline-primary py-0 " title="Generar Pdf" onclick="openPdf('{{ url('stock/get/pdf?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}')">
-                    <i class="bi bi-file-pdf"></i></a>
-                    <a class="btn btn-outline-success py-0 " title="Generar Excel" 
-                    href="{{ url('stock/get/excel?stockselect='.$stockselect.'&code='.$code.'&articlename='.$articlename.'&type='.$type) }}">
-                    <i class="bi bi-file-earmark-spreadsheet"></i></a>
+                    @php
+                        $queryParams = [
+                            'stockselect' => request('stockselect'),
+                            'code' => request('code'),
+                            'articlename' => request('articlename'),
+                            'type' => request('type')
+                        ];
+                    @endphp
+                    <a class="btn btn-outline-primary py-0" title="Generar Pdf" onclick="openPdf('{{ url('stock/get/pdf?' . http_build_query($queryParams)) }}')">
+                        <i class="bi bi-file-pdf"></i>
+                    </a>
+                    <a class="btn btn-outline-success py-0" title="Generar Excel" 
+                        href="{{ url('stock/get/excel?' . http_build_query($queryParams)) }}">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                    </a>
                 </div>
             </div>
         </form>
@@ -64,22 +72,23 @@
                 @foreach ($stocks as $stock)
                     <tr {{ $stock->warning ? "class=table-alert" : "class=bg-light"}}>
                         <td>{{ $stock->id }}</td>
-                        <td>{{ $stock->StockCenter->name }}</td>
-                        <td>{{ $stock->Article->code }}</td>
-                        <td>{{ $stock->Article->name }}</td>
-                        <td>{{ $stock->Article->UnitName }}</td>
-                        <td>{{ $stock->Article->type }}</td>
+                        <td>{{ $stock->stockCenter->name ?? 'N/A' }}</td>
+                        <td>{{ $stock->article->code ?? '-' }}</td>
+                        <td>{{ $stock->article->name ?? 'N/A' }}</td>
+                        <td>{{ $stock->article->unit_name ?? '-' }}</td>
+                        <td>{{ $stock->article->type ?? '-' }}</td>
                         <td>{{ $stock->quantity }}</td>
-                        <td>{{ isset($stock->quantity_alert) ? $stock->quantity_alert : "-" }}</td>
+                        <td>{{ $stock->quantity_alert ? $stock->quantity_alert : "-" }}</td>
                         <td>
-                            <a class="btn btn-outline-dark py-0" href="{{ url('/stock/' . $stock->id) }}"><i
-                                    class="bi bi-eye-fill"></i></a>
+                            <a class="btn btn-outline-dark py-0" href="{{ url('/stock/' . $stock->id) }}">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        {!! $stocks->appends(['stockselect' => $stockselect, 'code' => $code, 'articlename' => $articlename, 'type' => $type])->links('vendor.pagination.bootstrap-5') !!}
+        {!! $stocks->appends(request()->query())->links('vendor.pagination.bootstrap-5') !!}
         
         <!-- Modal -->
         <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">

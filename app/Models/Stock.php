@@ -4,115 +4,79 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use App\Notifications\Notificationalert;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class Stock extends Model
 {
     use HasFactory;
 
     protected $fillable = ['quantity', 'id_stockcenter', 'id_article', 'quantity_alert'];
+    
+    protected $appends = ['warning'];
 
-    public function StockCenter()
+    public function stockCenter(): BelongsTo
     {
         return $this->belongsTo(Stockcenter::class, 'id_stockcenter');
     }
 
-    public function Article()
+    public function article(): BelongsTo
     {
-        return $this->belongsTo(Article::class, 'id_article')->orderBy('name', 'asc');
+        return $this->belongsTo(Article::class, 'id_article');
     }
 
-    public function scopeStockCenters($query, $stockcenter)
+    // Scopes mejorados con type hints
+    public function scopeStockCenters(Builder $query, ?string $stockcenter): Builder
     {
-        if ($stockcenter && $stockcenter != '*') {
-            return $query->where('id_stockcenter', '=', $stockcenter);
+        if ($stockcenter && $stockcenter !== '*') {
+            return $query->where('id_stockcenter', $stockcenter);
         }
+        return $query;
     }
 
-    public function scopeArticles($query, $articleTX)
+    public function scopeArticles(Builder $query, ?string $articleName): Builder
     {
-        if ($articleTX && $articleTX != '') {
-            $articles  = Article::select('id')->where('name', 'LIKE', '%' . $articleTX . '%')->get();
-            $article = [];
-            foreach ($articles as $key => $value) {
-                $article[] = $value->id;
-            }
-            // dd($article);
-            return $query->whereIn('id_article', $article );
+        if ($articleName) {
+            $articleIds = Article::where('name', 'LIKE', "%{$articleName}%")->pluck('id');
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
     }
 
-    public function scopeType($query, $typeTx)
+    public function scopeType(Builder $query, ?string $type): Builder
     {
-        if ($typeTx && $typeTx != '') {
-            $articles  = Article::select('id')->where('type', 'LIKE', '%' . $typeTx . '%')->get();
-            $article = [];
-            
-            foreach ($articles as $key => $value) {
-                $article[] = $value->id;
-            }
-            // dd($article);
-            return $query->whereIn('id_article', $article );
+        if ($type) {
+            $articleIds = Article::where('type', 'LIKE', "%{$type}%")->pluck('id');
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
     }
 
-    public function scopeCode($query, $codeTx)
+    public function scopeCode(Builder $query, ?string $code): Builder
     {
-        if ($codeTx && $codeTx != '') {
-            $articles  = Article::select('id')->where('code', 'LIKE', '%' . $codeTx . '%')->get();
-            $article = [];
-            foreach ($articles as $key => $value) {
-                $article[] = $value->id;
-            }
-            // dd($article);
-            return $query->whereIn('id_article', $article );
+        if ($code) {
+            $articleIds = Article::where('code', 'LIKE', "%{$code}%")->pluck('id');
+            return $query->whereIn('id_article', $articleIds);
         }
+        return $query;
     }
 
-    public function getWarningAttribute(){
-        // if ($this->quantity_alert == 0) return;
-        return $this->quantity_alert >= $this->quantity ? true : false;
-
+    public function scopeWithRelations(Builder $query): Builder
+    {
+        return $query->with(['article', 'stockCenter']);
     }
 
-    public function updateAlert($type){
-        // type = true suman objetos se eliminar alerta
-        // type = false restan objetos se crea la alerta
-        $user = Auth::user();
-        if($user->notifications->count()){
-            $user->notifications->each(function ($notificacion) use ($type, $user) {
-                // Acceder al campo "data" de la notificación
-                $datosNotificacion = $notificacion->data;
+    public function scopeOrderDefault(Builder $query): Builder
+    {
+        return $query->orderBy('id_stockcenter')->orderBy('id_article');
+    }
 
-                // Verificar si el campo "article_id" y "stockcenter_id" son iguales
-                if ($datosNotificacion['stockcenter_id'] == $this->id_stockcenter && 
-                    $datosNotificacion['article_id'] == $this->id_article) {
-                    
-                    // Eliminar notificacion si se elimina la alerta
-                    if ($this->quantity_alert < $this->quantity && $type){
-                    $notificacion->delete();
-                    }
-                } else if ($this->quantity_alert >= $this->quantity && !$type){
-                    // Crear alerta si no existe una creada
-                    $data = [
-                        'menssage' => 'El material '. $this->Article->name . ' se encuentra por debajo del nivel de stock',
-                        'article_id' => $this->id_article,
-                        'stockcenter_id' => $this->id_stockcenter
-                    ];
-                    
-                    $user->notify(new Notificationalert($data));
-                }
-            }
-        );} else{
-            // Crear alerta si no existe una creada
-            $data = [
-                'menssage' => 'El material '. $this->Article->name . ' se encuentra por debajo del nivel de stock',
-                'article_id' => $this->id_article,
-                'stockcenter_id' => $this->id_stockcenter
-            ];
-            
-            $user->notify(new Notificationalert($data));
+    public function getWarningAttribute(): bool
+    {
+        if ($this->quantity_alert == 0) {
+            return false;
         }
+        
+        return $this->quantity <= $this->quantity_alert;
     }
 }

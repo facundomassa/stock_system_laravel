@@ -2,145 +2,129 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stock;
-use App\Models\Stockcenter;
-use Illuminate\Http\Request;
+use App\Http\Requests\StockRequest;
+use App\Services\StockService;
 use App\Exports\StocksExport;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 
 class StockController extends Controller
 {
-    protected static $tittle = 'Stock';
+    protected string $title = 'Stock';
+    protected StockService $stockService;
 
-    private static $rules = array(
-        'id_stockcenter' => 'required|digits_between:0,10|integer',
-        'id_article' => 'required|digits_between:0,10|integer',
-        'quantity' => 'required|digits_between:0,11|integer',
-        'limit' => 'nullable|digits_between:0,11|integer',
-    );
-    private static $message = array(
-        'required' => 'El :attribute es requerido',
-        'digits_between' => 'El :attribute debe tener entre 0 y 11 digitos'
-    );
-
-    public function getpdf(){
-
-        $data['stockselect'] = request()->get('stockselect');
-        $data['type'] = request()->get('type');
-        $data['articlename'] = request()->get('articlename');
-        $data['code'] = request()->get('code');
-
-        $data['stocks'] = Stock::StockCenters($data['stockselect'])
-            ->Type($data['type'])
-            ->Articles($data['articlename'])
-            ->Code($data['code'])
-            ->orderBy('id_stockcenter', 'asc')
-            ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
-            ->orderBy('articles.name', 'asc')
-            ->get();
-            
-        $pdf = PDF::loadView('stock/pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
-        return $pdf->stream('archivo-pdf.pdf');
+    public function __construct(StockService $stockService)
+    {
+        $this->stockService = $stockService;
     }
 
     /**
-     * Display a listing of the resource.s
-     *
-     * @return \Illuminate\Http\Response
+     * Generar PDF del stock
+     */
+    public function getPdf()
+    {
+        $stocks = $this->stockService->filterStocks(
+            stockcenterId: request('stockselect'),
+            type: request('type'),
+            articleName: request('articlename'),
+            code: request('code')
+        );
+
+        $filters = [
+            'stockselect' => request('stockselect'),
+            'type' => request('type'),
+            'articlename' => request('articlename'),
+            'code' => request('code'),
+        ];
+
+        $pdf = PDF::loadView('stock.pdf', compact('stocks', 'filters'))
+            ->setOptions(['defaultFont' => 'sans-serif']);
+
+        return $pdf->stream('stock_' . date('Ymd_His') . '.pdf');
+    }
+
+    /**
+     * Mostrar lista de stocks con paginación
      */
     public function index()
     {
-        //
-        $data['stockcenters'] = Stockcenter::whereNotIn('type', ['P', 'C'])->get();
-        $options = [
-            'stockselect' => request()->get('stockselect'),
-            'type' => request()->get('type'),
-            'articlename' => request()->get('articlename'),
-            'code' => request()->get('code')
+        $stockcenters = $this->stockService->getAvailableStockcenters();
+        
+        // Manejar filtros predefinidos del dashboard
+        $filters = [
+            'stockselect' => request('stockselect'),
+            'type' => request('type'),
+            'articlename' => request('articlename'),
+            'code' => request('code'),
         ];
+        
+        // Aplicar filtro predefinido si viene del dashboard
+        if ($filterType = request('filter')) {
+            switch ($filterType) {
+                case 'negative':
+                    $filters['negative'] = true;
+                    break;
+                case 'dead':
+                    // Aquí podrías añadir lógica para filtrar stock muerto
+                    // Necesitarías modificar el StockService para aceptar este filtro
+                    break;
+                case 'alerts':
+                    $filters['alerts'] = true;
+                    break;
+            }
+        }
+        
+        $stocks = $this->stockService->paginateStocks(
+            stockcenterId: $filters['stockselect'],
+            type: $filters['type'],
+            articleName: $filters['articlename'],
+            code: $filters['code'],
+            perPage: 20
+        );
 
-        $data['stocks'] = Stock::StockCenters($options['stockselect'])
-            ->Type($options['type'])
-            ->Articles($options['articlename'])
-            ->Code($options['code'])
-            ->orderBy('id_stockcenter', 'asc')
-            // ->leftJoin('articles', 'stocks.id_article', '=', 'articles.id')
-            // ->orderBy('articles.name', 'asc')
-            ->paginate(20);
-        return view('stock/index')
-            ->with($data)
-            ->with($options)
-            ->with('tittle', static::$tittle);
+        return view('stock.index', compact('stockcenters', 'stocks', 'filters'))
+            ->with('title', $this->title);
     }
-
-   
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Stock  $stock
-     * @return \Illuminate\Http\Response
+     * Mostrar detalles de un stock específico
      */
-    public function show($id)
+    public function show(int $id)
     {
-        //
-        $stock = Stock::findOrFail($id);
-        return view('stock.show', compact('stock'))->with('tittle', static::$tittle);
+        $stock = $this->stockService->findStock($id);
+        $movements = $this->stockService->getStockMovements(
+            articleId: $stock->id_article,
+            stockcenterId: $stock->id_stockcenter,
+            perPage: 20
+        );
+
+        return view('stock.show', compact('stock', 'movements'))
+            ->with('title', $this->title);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Actualizar alerta de stock
+     */
+    public function update(StockRequest $request, int $id)
     {
-        $stock = Stock::find($id);
-        $stock->quantity_alert = request()->quantity_alert;
-        $stock->update();
-        return redirect('stock')->with('mensaje', 'Stock editado con exito')->with('tittle', static::$tittle);
+        $this->stockService->updateQuantityAlert($id, $request->quantity_alert);
+        return redirect()->route('stock.index')
+            ->with('success', 'Alerta de stock actualizada correctamente')
+            ->with('title', $this->title);
     }
 
-    public static function discount($refer, $movements)
+    /**
+     * Exportar stock a Excel
+     */
+    public function getExcel()
     {
-        //
-        foreach ($movements as $movement) {
-            $stockQuery = Stock::where("id_stockcenter", $refer['origen_id_stockcenter'])->where('id_article', $movement->id_article);
-            if ($stockQuery->exists()) {
-                $dataStock = $stockQuery->first()->getAttributes();
-                $dataStock['quantity'] -= $movement->quantity;
-                $stock = Stock::find($dataStock['id']);
-                $stock->update($dataStock);
-                $stock->updateAlert(false);
-            } else {
-                $dataStock['id_stockcenter'] = $refer['origen_id_stockcenter'];
-                $dataStock['id_article'] = $movement->id_article;
-                $dataStock['quantity'] = -$movement->quantity;
-                Stock::create($dataStock);
-            }
-        }
-    }
+        $filters = [
+            'stockselect' => request('stockselect'),
+            'type' => request('type'),
+            'articlename' => request('articlename'),
+            'code' => request('code'),
+        ];
 
-    public static function increase($refer, $movements)
-    {
-        //
-        foreach ($movements as $movement) {
-            $stockQuery = Stock::where("id_stockcenter", $refer['destiny_id_stockcenter'])->where('id_article', $movement->id_article);
-            if ($stockQuery->exists()) {
-                $dataStock = $stockQuery->first()->getAttributes();
-                $dataStock['quantity'] += $movement->quantity;
-                $stock = Stock::find($dataStock['id']);
-                $stock->update($dataStock);
-                $stock->updateAlert(true);
-            } else {
-                $dataStock['id_stockcenter'] = $refer['destiny_id_stockcenter'];
-                $dataStock['id_article'] = $movement->id_article;
-                $dataStock['quantity'] = $movement->quantity;
-                Stock::create($dataStock);
-            }
-        }
-    }
-
-    
-
-    public function getexcel(){
-        
-        return Excel::download(new StocksExport, 'stocks.xlsx');
+        return Excel::download(new StocksExport($filters), 'stock_' . date('Ymd_His') . '.xlsx');
     }
 }

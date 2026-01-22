@@ -11,9 +11,9 @@ class Stockcenter extends Model
 {
     use HasFactory;
 
-    public function Enterprise()
+    public function Operation()
     {
-        return $this->belongsTo(Enterprise::class, 'id_enterprise');
+        return $this->belongsTo(Operation::class, 'id_operation');
         
     }
 
@@ -32,13 +32,31 @@ class Stockcenter extends Model
         return $this->Person->name . " " . $this->Person->surname;
     }
 
+    public function scopeOperationSelect($query, $operation)
+    {
+        // Obtener todas las operaciones que coincidan
+        $operationRecords = Operation::whereIn('name', $operation)->get();
+
+        // Verificar si se encontraron operaciones
+        if ($operationRecords->isNotEmpty()) {
+            // Obtener solo los IDs
+            $operationIds = $operationRecords->pluck('id');
+
+            // Filtrar por los IDs de las operaciones
+            return $query->whereIn('id_operation', $operationIds);
+        }
+
+        // Si no hay operaciones coincidentes, no filtrar
+        return $query;
+    }
+
     //validate id of related tables
     public static function ValidateIDRel(Request $request){
         if (!Direction::where('id', '=', $request->id_direction)->exists()) {
             $request->merge(['id_direction' => null]);
         }
-        if (!Enterprise::where('id', '=', $request->id_enterprise)->exists()) {
-            $request->merge(['id_enterprise' => null]);
+        if (!Operation::where('id', '=', $request->id_operation)->exists()) {
+            $request->merge(['id_operation' => null]);
         }
         if (!Person::where('id', '=', $request->id_person)->exists()) {
             $request->merge(['id_person' => null]);
