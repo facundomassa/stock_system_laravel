@@ -23,23 +23,41 @@ class StockController extends Controller
      */
     public function getPdf()
     {
-        $stocks = $this->stockService->filterStocks(
-            stockcenterId: request('stockselect'),
-            type: request('type'),
-            articleName: request('articlename'),
-            code: request('code')
-        );
-
         $filters = [
             'stockselect' => request('stockselect'),
             'type' => request('type'),
             'articlename' => request('articlename'),
             'code' => request('code'),
         ];
-
-        $pdf = PDF::loadView('stock.pdf', compact('stocks', 'filters'))
-            ->setOptions(['defaultFont' => 'sans-serif']);
-
+        
+        $stocks = $this->stockService->filterStocks(
+            stockcenterId: $filters['stockselect'],
+            type: $filters['type'],
+            articleName: $filters['articlename'],
+            code: $filters['code']
+        );
+        
+        // Estadísticas rápidas
+        $stats = [
+            'total' => $stocks->count(),
+            'alerta' => $stocks->where('warning', true)->count(),
+            'agotado' => $stocks->where('quantity', '<=', 0)->count(),
+        ];
+        
+        $pdf = PDF::loadView('stock.pdf', [
+            'stocks' => $stocks,
+            'filters' => $filters,
+            'stats' => $stats,
+            'fecha' => now()->format('d/m/Y H:i')
+        ])->setOptions([
+            'defaultFont' => 'sans-serif',
+            'isHtml5ParserEnabled' => true,
+            'margin_top' => 70,
+            'margin_bottom' => 40,
+            'margin_left' => 15,
+            'margin_right' => 15
+        ]);
+        
         return $pdf->stream('stock_' . date('Ymd_His') . '.pdf');
     }
 

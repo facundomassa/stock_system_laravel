@@ -115,46 +115,6 @@ class StockService
         }
     }
 
-    // public function updateStockAlert(Stock $stock, bool $decreaseMode = false): void
-    // {
-    //     $user = Auth::user();
-        
-    //     if (!$user) {
-    //         return;
-    //     }
-
-    //     // Buscar notificaciones existentes
-    //     $existingNotification = $user->notifications->first(function ($notification) use ($stock) {
-    //         $data = $notification->data;
-    //         return isset($data['stockcenter_id']) && 
-    //                isset($data['article_id']) &&
-    //                $data['stockcenter_id'] == $stock->id_stockcenter && 
-    //                $data['article_id'] == $stock->id_article;
-    //     });
-
-    //     // Si el stock está por encima de la alerta y hay notificación, eliminarla
-    //     if ($stock->quantity > $stock->quantity_alert && $existingNotification) {
-    //         $existingNotification->delete();
-    //         return;
-    //     }
-
-    //     // Si el stock está por debajo de la alerta y no hay notificación, crearla
-    //     if ($stock->quantity_alert > 0 && 
-    //         $stock->quantity <= $stock->quantity_alert && 
-    //         !$existingNotification) {
-            
-    //         $data = [
-    //             'message' => "El material {$stock->article->name} se encuentra por debajo del nivel de stock",
-    //             'article_id' => $stock->id_article,
-    //             'stockcenter_id' => $stock->id_stockcenter,
-    //             'current_quantity' => $stock->quantity,
-    //             'alert_quantity' => $stock->quantity_alert,
-    //         ];
-            
-    //         $user->notify(new Notificationalert($data));
-    //     }
-    // }
-
     public function getAvailableStockcenters(): Collection
     {
         return Stockcenter::whereNotIn('type', ['P', 'C'])->get();
@@ -168,5 +128,25 @@ class StockService
     public function decreaseStock(Refer $refer, Collection $movements): void
     {
         $this->adjustStock($refer, $movements, false);
+    }
+
+    public function getStockSummary(array $filters = [])
+    {
+        $stocks = $this->filterStocks(
+            stockcenterId: $filters['stockselect'] ?? null,
+            type: $filters['type'] ?? null,
+            articleName: $filters['articlename'] ?? null,
+            code: $filters['code'] ?? null
+        );
+        
+        return [
+            'total_items' => $stocks->count(),
+            'total_quantity' => $stocks->sum('quantity'),
+            'total_value' => $stocks->sum(function($stock) {
+                return $stock->quantity * ($stock->Article->cost ?? 0);
+            }),
+            'warning_count' => $stocks->where('warning', true)->count(),
+            'zero_stock_count' => $stocks->where('quantity', '<=', 0)->count(),
+        ];
     }
 }
