@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\Operation;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -13,51 +11,67 @@ use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     *
-     * @return void
-     */
     public function run()
     {
-        // Crear permisos
-        Permission::create(['name' => 'POP36']);
-        Permission::create(['name' => 'POP20']);
-        Permission::create(['name' => 'ADMIN']);
+        // 1. Crear permisos primero (esto es lo más importante)
+        $permissions = ['POP36', 'POP20', 'ADMIN'];
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate(['name' => $perm]);
+        }
 
-        Operation::create(['name' => 'POP36']);
-        Operation::create(['name' => 'POP20']);
-        Operation::create(['name' => 'ADMIN']);
-        
-        // Crear roles y asignar permisos a roles
-        Role::create(['name' => 'dispatcher']);
-        Role::create(['name' => 'admin'])->givePermissionTo('ADMIN');
-        Role::create(['name' => 'tecnico']);
+        // 2. Crear operaciones
+        foreach (['POP36', 'POP20', 'ADMIN'] as $op) {
+            Operation::firstOrCreate(['name' => $op]);
+        }
 
-        // Crear usuarios
-        User::create([
-            'name' => 'admin',
-            'surname' => 'admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin'),
-        ])->assignRole('admin');
-        User::create([
-            'name' => 'tecnico',
-            'surname' => 'tecnico',
-            'email' => 'tecnico@tecnico.com',
-            'password' => Hash::make('tecnico'),
-        ])->assignRole('tecnico');
-        User::create([
-            'name' => 'dispatcher36',
-            'surname' => 'dispatcher36',
-            'email' => 'dispatcher36@dispatcher.com',
-            'password' => Hash::make('dispatcher36')
-        ])->assignRole('dispatcher')->givePermissionTo('POP36');
-        User::create([
-            'name' => 'dispatcher20',
-            'surname' => 'dispatcher20',
-            'email' => 'dispatcher20@dispatcher.com',
-            'password' => Hash::make('dispatcher20')
-        ])->assignRole('dispatcher')->givePermissionTo('POP20');
+        // 3. Crear roles
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'dispatcher']);
+        Role::firstOrCreate(['name' => 'tecnico']);
+
+        // 4. Asignar permisos a roles
+        $adminRole->syncPermissions(['ADMIN']);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'admin',
+                'surname' => 'admin',
+                'password' => Hash::make('admin'),
+            ]
+        );
+        $admin->assignRole('admin');
+
+        $tecnico = User::firstOrCreate(
+            ['email' => 'tecnico@tecnico.com'],
+            [
+                'name' => 'tecnico',
+                'surname' => 'tecnico',
+                'password' => Hash::make('tecnico'),
+            ]
+        );
+        $tecnico->assignRole('tecnico');
+        $tecnico->givePermissionTo('POP36');
+
+        $dispatcher36 = User::firstOrCreate(
+            ['email' => 'dispatcher36@dispatcher.com'],
+            [
+                'name' => 'dispatcher36',
+                'surname' => 'dispatcher36',
+                'password' => Hash::make('dispatcher36'),
+            ]
+        );
+        $dispatcher36->assignRole('dispatcher');
+        $dispatcher36->givePermissionTo('POP36');
+
+        $dispatcher20 = User::firstOrCreate(
+            ['email' => 'dispatcher20@dispatcher.com'],
+            [
+                'name' => 'dispatcher20',
+                'surname' => 'dispatcher20',
+                'password' => Hash::make('dispatcher20'),
+            ]
+        );
+        $dispatcher20->assignRole('dispatcher');
+        $dispatcher20->givePermissionTo('POP20');
     }
 }

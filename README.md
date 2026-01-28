@@ -82,6 +82,37 @@ Sistema interno de control de inventario y stock multi-almacén, diseñado para 
     ```
     Acceder en: http://127.0.0.1:8000
     
+## Docker
+
+Para ejecutar el proyecto en Docker:
+1. Ejecutar
+    ```Bash
+    docker-compose up -d --build
+    ``` 
+2.  Entrar al contenedor
+    ```Bash
+    docker compose exec app bash
+    ```
+3. Instalar dependencias
+    ```Bash
+    composer install --no-interaction
+    ```
+4. Generar clave de aplicación
+    ```Bash
+    php artisan key:generate
+    ```
+5. Ejecutar migraciones y seeders
+    ```Bash
+    php artisan migrate                 
+    php artisan db:seed       
+    ```
+8. Iniciar el servidor
+    ```Bash
+    php artisan serve
+    ```
+    Acceder en: http://127.0.0.1:8000
+
+
 ## Próximos pasos / Roadmap
 
 1. Implementar scope global para filtrar por operación/empresa activa.
