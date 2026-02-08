@@ -92,7 +92,17 @@ class HomeController extends Controller
     }
 
     public function operationSelect(Request $request): View|RedirectResponse
-    {
+    {   
+        $allowedOperations = get_allowed_operations_list();
+        
+        if($allowedOperations->count() == 1){
+
+            session(['selected_operation' => $allowedOperations->first()]);
+            
+            return redirect()->route('home')
+                ->with('success', 'Operación seleccionada correctamente');
+        }
+
         if ($request->isMethod('post')) {
             $request->validate([
                 'selected_operation' => 'required',

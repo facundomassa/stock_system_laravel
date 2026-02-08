@@ -12,6 +12,7 @@ use App\Http\Controllers\ReferController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TechnicalController;
 // use App\Notifications\NotificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,8 +48,12 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
     });
 
     Route::middleware('checkSelectedOperation')->group(function () {
+        Route::group(['middleware' => ['role:tecnico']], function () { 
+            Route::resource('technical', TechnicalController::class); //Ruta para ordenes tecnicas
+        });
+
         Route::get('/home', [HomeController::class, 'index'])->name('home');
-        
+
         Route::resource('person', PersonController::class);
         Route::resource('article', ArticleController::class);
         Route::resource('direction', DirectionController::class);
