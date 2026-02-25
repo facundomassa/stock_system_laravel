@@ -1,17 +1,59 @@
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
-.env
-.env.backup
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+# Created by https://www.toptal.com/developers/gitignore/api/laravel
+# Edit at https://www.toptal.com/developers/gitignore?templates=laravel
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+.Network Trash Folder
+Temporary Items
+.apdisk
+
+# OS X/darwin
+.HFS+ Private Directory Data
+
+# Project-specific
 /.idea
 /.vscode
-composer.lock
+*.sublime-project
+*.sublime-workspace
+
+# Laravel
+/vendor/
+/node_modules/
+/public/storage
+/storage/*.key
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/framework/cache/*
+/storage/logs/*.log
+.env
+npm-debug.log
+yarn-error.log
+
+# Firebase
+/.firebase/
+firebase.json
+database.rules.json
+storage.rules
+
+# IDX
+/.idx/
+
+# End of https://www.toptal.com/developers/gitignore/api/laravel

@@ -1,0 +1,27 @@
+{
+  "resources/js/app.js": {
+    "file": "assets/app.c3b0c3b7.js",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/ajax/state.js": {
+    "file": "assets/state.6750f330.js",
+    "src": "resources/js/ajax/state.js",
+    "isEntry": true
+  },
+  "resources/js/ajax/generatepdf.js": {
+    "file": "assets/generatepdf.4a073f33.js",
+    "src": "resources/js/ajax/generatepdf.js",
+    "isEntry": true
+  },
+  "resources/js/functions/movement.js": {
+    "file": "assets/movement.afeddd33.js",
+    "src": "resources/js/functions/movement.js",
+    "isEntry": true
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app.a508ea32.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}

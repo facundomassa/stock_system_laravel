@@ -4,6 +4,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DirectionController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\OperationController;
 use App\Http\Controllers\MovementController;
 use App\Http\Controllers\PersonController;
@@ -45,6 +46,10 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         Route::put('admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
         Route::get('admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
         Route::resource('operation', OperationController::class);
+
+        // CSV Import Routes
+        Route::get('importar', [ImportController::class, 'create'])->name('import.create');
+        Route::post('importar', [ImportController::class, 'store'])->name('import.store');
     });
 
     Route::middleware('checkSelectedOperation')->group(function () {
@@ -104,8 +109,3 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
             ->defaults('status', 'E');
     });
 });
-
-
-
-
-

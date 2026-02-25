@@ -158,7 +158,7 @@
             </li>
 
             <!-- Sección Admin -->
-            @if (get_selected_operation() === 'admin')
+            @if (get_selected_operation() === 'ADMIN')
             <li class="nav-item mt-4 border-top border-secondary pt-3">
                 <div class="px-4 py-2 text-uppercase small fw-bold text-secondary">
                     Administración
@@ -172,6 +172,11 @@
             <li class="nav-item">
                 <a class="nav-link px-4 py-3 {{ request()->is('operation') ? 'active' : '' }}" href="{{ url('/operation') }}">
                     <i class="bx bx-cog me-2"></i> Operaciones
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link px-4 py-3 {{ request()->is('importar') ? 'active' : '' }}" href="{{ route('import.create') }}">
+                    <i class="bx bx-upload me-2"></i> Importar CSV
                 </a>
             </li>
             @endif
