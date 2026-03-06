@@ -17,12 +17,11 @@
                     <label for="country">Pais:</label>
                     <select required class="form-control" name="country" maxlength="60" id="country">
                         <option disabled selected value="">-Seleccionar una opcion-</option>
-                        @foreach ($countrys as $country)
-                            @if ((isset($direction->country) ? $direction->country : old('country')) == $country['country_name'])
-                                <option selected value="{{ $country['country_name'] }}"> {{ $country['country_name'] }}</option>
-                            @else
-                                <option value="{{ $country['country_name'] }}"> {{ $country['country_name'] }}</option>
-                            @endif
+                        @foreach ($countries as $country)
+                            <option value="{{ $country['name'] }}" 
+                                {{ (isset($direction->country) && $direction->country == $country['name']) || old('country') == $country['name'] ? 'selected' : '' }}>
+                                {{ $country['name'] }}
+                            </option>
                         @endforeach
                     </select>
                 </div>

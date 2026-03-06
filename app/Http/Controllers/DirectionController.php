@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Direction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\api\ApiCountryController;
 
 class DirectionController extends Controller
 {
-    protected static $tittle = 'Direcciones';
+    protected static $title = 'Direcciones';
 
     private static $data = [
         'country' => 'required|string|max:60',
@@ -27,106 +27,69 @@ class DirectionController extends Controller
         'max' => 'El :attribute no puedo tener mas de :max caracteres'
     ];
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
         $data['directions'] = Direction::paginate(20);
-        return view('direction/index')->with($data)->with('tittle', static::$tittle);
+        return view('direction/index')->with($data)->with('title', static::$title);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
-        $countrys = Http::get(url('api/country'));
-        return view('direction/create')->with('tittle', static::$tittle)->with('countrys',$countrys->json());
+        $api = new ApiCountryController();
+        $response = $api->country();
+        $countries = json_decode($response->getContent(), true);
+
+        $data = [
+            'direction' => new Direction(), // Empty model for the form
+            'countries' => $countries, // Array of countries for the dropdown
+            'title' => static::$title,
+        ];
+
+        return view('direction/create', $data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
         $this->validate($request, static::$data, static::$message);
-        
-
         $dataDirection = request()->except('_token');
-        
         Direction::create($dataDirection);
-        return redirect('direction')->with('mensaje', 'Direccion agregada con exito')->with('tittle', static::$tittle);
+        return redirect('direction')->with('mensaje', 'Direccion agregada con exito')->with('title', static::$title);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Direction  $direction
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
         $direction = Direction::findOrFail($id);
-        return view('direction.show', compact('direction'))->with('tittle', static::$tittle);
+        return view('direction.show', compact('direction'))->with('title', static::$title);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Direction  $direction
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
-        $countrys = Http::get(url('api/country'));
+        $api = new ApiCountryController();
+        $response = $api->country();
+        $countries = json_decode($response->getContent(), true);
         $direction = Direction::findOrFail($id);
-        return view('direction.edit', compact('direction'))->with('tittle', static::$tittle)->with('countrys',$countrys->json());
+
+        $data = [
+            'direction' => $direction,
+            'countries' => $countries,
+            'title' => static::$title,
+        ];
+
+        return view('direction.edit', $data);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Direction  $direction
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
         $this->validate($request, static::$data, static::$message);
-
         $dataDirection = request()->except(['_token', '_method']);
-
         Direction::find($id)->update($dataDirection);
-        return redirect('direction')->with('mensaje', 'Direccion editada con exito')->with('tittle', static::$tittle);
+        return redirect('direction')->with('mensaje', 'Direccion editada con exito')->with('title', static::$title);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Direction  $direction
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
         $direction = Direction::findOrFail($id);
-
         Direction::destroy($id);
-
-        return redirect('direction')->with('mensaje', 'Direccion eliminada')->with('tittle', static::$tittle);
+        return redirect('direction')->with('mensaje', 'Direccion eliminada')->with('title', static::$title);
     }
 }

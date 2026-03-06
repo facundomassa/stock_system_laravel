@@ -3,47 +3,51 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\File;
 
 class ApiCountryController extends Controller
 {
-    //
-    public function country(){
+    /**
+     * Fetches a list of countries from a local JSON file.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function country()
+    {
+        $path = database_path('data/countries.json');
+        if (File::exists($path)) {
+            $json = File::get($path);
+            $countries = collect(json_decode($json, true))->sortBy('name')->values();
+            return response($countries, 200);
+        }
 
-        $response = Http::withHeaders([
-            "Accept" => "application/json",
-            "api-token" => 
-            "tiEBZQn7tQcwSuDIYI-OnMrdFx9N2tajptZ0k5OAWk3uQPhA0-jS0PtVk23m8A5-xWU",
-            "user-email" => "massafacundo11@gmail.com"
-        ])->get('https://www.universal-tutorial.com/api/getaccesstoken');
-
-        $token = $response->json("auth_token");
-
-        $country = Http::withHeaders([
-            "Authorization" => "Bearer " . $token,
-            "Accept" => "application/json",
-        ])->get('https://www.universal-tutorial.com/api/countries/');
-        
-        return response($country->json(), 200);
+        return response()->json(['error' => 'Country data not found.'], 404);
     }
-    
-    public function state($country){
 
-        $response = Http::withHeaders([
-            "Accept" => "application/json",
-            "api-token" => 
-            "tiEBZQn7tQcwSuDIYI-OnMrdFx9N2tajptZ0k5OAWk3uQPhA0-jS0PtVk23m8A5-xWU",
-            "user-email" => "massafacundo11@gmail.com"
-        ])->get('https://www.universal-tutorial.com/api/getaccesstoken');
+    /**
+     * Fetches states for a given country name from the local countries JSON file.
+     *
+     * @param  string  $country_name
+     * @return \Illuminate\Http\Response
+     */
+    public function state($country_name)
+    {
+        $path = database_path('data/countries.json');
+        if (File::exists($path)) {
+            $json = File::get($path);
+            $countries = collect(json_decode($json, true));
 
-        $token = $response->json("auth_token");
+            // Find the country by name
+            $country = $countries->firstWhere('name', $country_name);
 
-        $country = Http::withHeaders([
-            "Authorization" => "Bearer " . $token,
-            "Accept" => "application/json",
-        ])->get('https://www.universal-tutorial.com/api/states/' . $country);
-        
-        return response($country->json(), 200);
+            if ($country && !empty($country['states'])) {
+                // Sort states by name and return them
+                $states = collect($country['states'])->sortBy('name')->values();
+                return response($states, 200);
+            }
+        }
+
+        // Return an empty array if country not found or has no states
+        return response()->json([]);
     }
 }
