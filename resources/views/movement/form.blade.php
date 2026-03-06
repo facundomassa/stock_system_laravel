@@ -59,7 +59,7 @@
 
                 <div class="fixed-top aticle-container collapse" id="article-t">
                     <div class="article-store">
-                        <div class="article-tittle d-flex gap-2 flex-column">
+                        <div class="article-title d-flex gap-2 flex-column">
 
                             <button class="btn btn-dark article-btn" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#article-t" aria-expanded="true" aria-controls="article-t">X</button>

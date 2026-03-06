@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PersonController extends Controller
 {
-    protected static $tittle = 'Tecnicos';
+    protected static $title = 'Tecnicos';
 
     private static $data = [
         'name' => 'required|string|max:100',
@@ -29,9 +29,9 @@ class PersonController extends Controller
     public function index()
     {
         //
-        // $tittle = "Personas";
+        // $title = "Personas";
         $data['persons'] = Person::paginate(20);
-        return view('person/index')->with($data)->with('tittle', static::$tittle);
+        return view('person/index')->with($data)->with('title', static::$title);
     }
 
     /**
@@ -42,7 +42,7 @@ class PersonController extends Controller
     public function create()
     {
         //
-        return view('person/create')->with('tittle', static::$tittle);
+        return view('person/create')->with('title', static::$title);
     }
 
     /**
@@ -59,7 +59,7 @@ class PersonController extends Controller
         $dataPerson = request()->except('_token');
 
         Person::create($dataPerson);
-        return redirect('person')->with('mensaje', 'Persona agregado con exito')->with('tittle', static::$tittle);
+        return redirect('person')->with('mensaje', 'Persona agregado con exito')->with('title', static::$title);
     }
 
     /**
@@ -72,7 +72,7 @@ class PersonController extends Controller
     {
         //
         $person = Person::findOrFail($id);
-        return view('person.show', compact('person'))->with('tittle', static::$tittle);
+        return view('person.show', compact('person'))->with('title', static::$title);
     }
 
     /**
@@ -85,7 +85,7 @@ class PersonController extends Controller
     {
         //
         $person = Person::findOrFail($id);
-        return view('person.edit', compact('person'))->with('tittle', static::$tittle);
+        return view('person.edit', compact('person'))->with('title', static::$title);
     }
 
     /**
@@ -103,7 +103,7 @@ class PersonController extends Controller
         $dataPerson = request()->except(['_token', '_method']);
 
         Person::find($id)->update($dataPerson);
-        return redirect('person')->with('mensaje', 'Persona modificada')->with('tittle', static::$tittle);
+        return redirect('person')->with('mensaje', 'Persona modificada')->with('title', static::$title);
     }
 
     /**
@@ -119,6 +119,6 @@ class PersonController extends Controller
 
         Person::destroy($id);
 
-        return redirect('person')->with('mensaje', 'Persona eliminada')->with('tittle', static::$tittle);
+        return redirect('person')->with('mensaje', 'Persona eliminada')->with('title', static::$title);
     }
 }

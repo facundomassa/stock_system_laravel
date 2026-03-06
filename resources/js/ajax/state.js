@@ -1,4 +1,3 @@
- 
 $(document).ready(function () {
 
     var $countrySelect = $("#country"),
@@ -25,16 +24,19 @@ $(document).ready(function () {
             type: "get",
             url: location.origin + "/api/state/" + $countryValue,
             success: function (response) {
+                // The new API provides 'name' for the state name
                 $.each(response, function (index, value) {
-                    if($stateValue == value.state_name){
-                        $stateSelect.append(`<option selected value="` + value.state_name + `">` + value.state_name + `</option>`);
+                    if($stateValue == value.name){
+                        $stateSelect.append(`<option selected value="` + value.name + `">` + value.name + `</option>`);
                     } else {
-                        $stateSelect.append(`<option value="` + value.state_name + `">` + value.state_name + `</option>`);
+                        $stateSelect.append(`<option value="` + value.name + `">` + value.name + `</option>`);
                     }
                 });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching states: ", error);
+                $stateSelect.append(`<option value="">Error al cargar provincias</option>`);
             }
         });
     }
-
-
 });

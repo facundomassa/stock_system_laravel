@@ -56,7 +56,7 @@
 
                 <div class="aticle-container collapse" id="article-t">
                     <div class="article-store">
-                        <div class="article-tittle d-grid gap-2 ">
+                        <div class="article-title d-grid gap-2 ">
 
                             <button class="btn btn-dark article-btn" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#article-t" aria-expanded="true" aria-controls="article-t">X</button>

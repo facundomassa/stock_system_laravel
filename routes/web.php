@@ -58,6 +58,7 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         });
 
         Route::get('/home', [HomeController::class, 'index'])->name('home');
+        Route::get('/howtouse', [HomeController::class, 'howtouse'])->name('howtouse');
 
         Route::resource('person', PersonController::class);
         Route::resource('article', ArticleController::class);

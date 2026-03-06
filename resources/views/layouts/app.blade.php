@@ -34,7 +34,7 @@ min-height: 100vh;">
     <main class="py-2 fs-6" style="flex: 1;">
         <div>
             <div class="menu-trigger"></div>
-            <h1 class="text-center pb-1">{{ isset($tittle) ? $tittle : ' ' }}</h1>
+            <h1 class="text-center pb-1">{{ isset($title) ? $title : ' ' }}</h1>
             @yield('content')
         </div>
 

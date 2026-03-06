@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Permission;
 
 class OperationController extends Controller
 {
-    protected static $tittle = 'Operacion';
+    protected static $title = 'Operacion';
 
     private static $data = [
         'name' => 'required|string|max:255',
@@ -27,7 +27,7 @@ class OperationController extends Controller
     {
         //
         $data['operations'] = Operation::paginate(20);
-        return view('operation/index')->with($data)->with('tittle', static::$tittle);
+        return view('operation/index')->with($data)->with('title', static::$title);
     }
 
     /**
@@ -38,7 +38,7 @@ class OperationController extends Controller
     public function create()
     {
         //
-        return view('operation/create')->with('tittle', static::$tittle);
+        return view('operation/create')->with('title', static::$title);
     }
 
     /**
@@ -64,7 +64,7 @@ class OperationController extends Controller
             Permission::create(['name' => $permissionName]);
         }
 
-        return redirect('operation')->with('mensaje', 'Operacion agregada con exito')->with('tittle', static::$tittle);
+        return redirect('operation')->with('mensaje', 'Operacion agregada con exito')->with('title', static::$title);
     }
 
     /**
@@ -77,7 +77,7 @@ class OperationController extends Controller
     {
         //
         $operation = Operation::findOrFail($id);
-        return view('operation.show', compact('operation'))->with('tittle', static::$tittle);
+        return view('operation.show', compact('operation'))->with('title', static::$title);
     }
 
     /**
@@ -90,7 +90,7 @@ class OperationController extends Controller
     {
         //
         $operation = Operation::findOrFail($id);
-        return view('operation.edit', compact('operation'))->with('tittle', static::$tittle);
+        return view('operation.edit', compact('operation'))->with('title', static::$title);
     }
 
     /**
@@ -109,7 +109,7 @@ class OperationController extends Controller
 
         Operation::find($id)->update($dataOperation);
 
-        return redirect('operation')->with('mensaje', 'Operacion editada con exito')->with('tittle', static::$tittle);
+        return redirect('operation')->with('mensaje', 'Operacion editada con exito')->with('title', static::$title);
     }
 
     /**
@@ -125,6 +125,6 @@ class OperationController extends Controller
 
         Operation::destroy($id);
 
-        return redirect('operation')->with('mensaje', 'Operacion eliminada')->with('tittle', static::$tittle);
+        return redirect('operation')->with('mensaje', 'Operacion eliminada')->with('title', static::$title);
     }
 }

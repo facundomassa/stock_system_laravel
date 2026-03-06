@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    protected static $tittle = 'Panel Administrativo';
+    protected static $title = 'Panel Administrativo';
 
     private static $message = array(
         'name.required' => 'El nombre es obligatorio.',
@@ -88,6 +88,6 @@ class AdminController extends Controller
         
         return redirect('admin/users/' . $id . '/edit')
             ->with('mensaje', 'Perfil del usuario editado con éxito')
-            ->with('tittle', 'Editar Usuario');
+            ->with('title', 'Editar Usuario');
     }
 }

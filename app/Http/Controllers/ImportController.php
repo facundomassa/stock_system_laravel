@@ -18,7 +18,7 @@ class ImportController extends Controller
      */
     public function create()
     {
-        return view('import.create');
+        return view('import.create')->with('title', "Importacion de Datos");;
     }
 
     /**

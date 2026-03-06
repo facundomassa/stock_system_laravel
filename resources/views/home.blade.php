@@ -295,7 +295,7 @@
             </div>
         </div>
     </div>
-    
+    <div id="chart-container" data-chart='@json($chartData)'></div>
     <!-- Gráficos (si hay datos) -->
     @if(!empty($chartData['labels']) && count($chartData['labels']) > 0)
     <div class="row mt-4">
@@ -348,7 +348,8 @@
         // Gráfico de movimientos
         const ctx = document.getElementById('movementsChart');
         if (ctx) {
-            const chartData = @json($chartData);
+            const element = document.getElementById('chart-container');
+            const chartData = JSON.parse(element.dataset.chart);
             
             new Chart(ctx, {
                 type: 'bar',

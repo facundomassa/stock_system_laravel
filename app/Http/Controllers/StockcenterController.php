@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class StockcenterController extends Controller
 {
-    protected static $tittle = 'Centros de Stock';
+    protected static $title = 'Centros de Stock';
     /**
      * Display a listing of the resource.
      *
@@ -34,7 +34,7 @@ class StockcenterController extends Controller
             $data['stockcenters'][$key]->TypeOf();
         }
 
-        return view('stockcenter/index')->with($data)->with('tittle', static::$tittle);
+        return view('stockcenter/index')->with($data)->with('title', static::$title);
     }
 
     /**
@@ -49,7 +49,7 @@ class StockcenterController extends Controller
         $data['directions'] = Direction::get();
         $data['persons'] = Person::get();
 
-        return view('stockcenter/create')->with('tittle', static::$tittle)->with($data);
+        return view('stockcenter/create')->with('title', static::$title)->with($data);
     }
 
     /**
@@ -81,7 +81,7 @@ class StockcenterController extends Controller
 
         Stockcenter::insert($dataStockcenter);
 
-        return redirect('stockcenter')->with('mensaje', 'Articulo agregado con exito')->with('tittle', static::$tittle);
+        return redirect('stockcenter')->with('mensaje', 'Articulo agregado con exito')->with('title', static::$title);
     }
 
     /**
@@ -106,7 +106,7 @@ class StockcenterController extends Controller
 
         $stockcenter->TypeOf();
 
-        return view('stockcenter.show', compact('stockcenter'))->with('tittle', static::$tittle);
+        return view('stockcenter.show', compact('stockcenter'))->with('title', static::$title);
     }
 
     /**
@@ -124,7 +124,7 @@ class StockcenterController extends Controller
 
         $stockcenter = Stockcenter::findOrFail($id);
 
-        return view('stockcenter.edit', compact('stockcenter'))->with($data)->with('tittle', static::$tittle);
+        return view('stockcenter.edit', compact('stockcenter'))->with($data)->with('title', static::$title);
     }
 
     /**
@@ -156,7 +156,7 @@ class StockcenterController extends Controller
         $dataStockcenter = request()->except(['_token', '_method']);
 
         Stockcenter::where('id', '=', $id)->update($dataStockcenter);
-        return redirect('stockcenter')->with('mensaje', 'Centro de Stock editado con exito')->with('tittle', static::$tittle);
+        return redirect('stockcenter')->with('mensaje', 'Centro de Stock editado con exito')->with('title', static::$title);
     }
 
     /**
@@ -172,6 +172,6 @@ class StockcenterController extends Controller
 
         Stockcenter::destroy($id);
 
-        return redirect('stockcenter')->with('mensaje', 'Centro de Stock eliminado')->with('tittle', static::$tittle);
+        return redirect('stockcenter')->with('mensaje', 'Centro de Stock eliminado')->with('title', static::$title);
     }
 }
