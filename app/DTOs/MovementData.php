@@ -8,7 +8,7 @@ class MovementData
         public ?int $id = null,
         public int $id_refer,
         public int $id_article,
-        public int $quantity,
+        public ?int $quantity = 0,
         public ?bool $delete = false
     ) {}
 }

@@ -43,9 +43,31 @@ class MovementController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $id_refer = $request->id_refer;
-        $data = $request->except(['_token', 'id_refer']);
+        $movementsData = $request->except(['_token', 'id_refer']);
+
+        $cleanedData = [];
+        foreach ($movementsData as $key => $data) {
+            // A movement is valid if it's being deleted, or if it has a quantity.
+            $isDeletion = !empty($data['delete']);
+            $hasQuantity = !empty($data['quantity']);
+
+            if ($isDeletion) {
+                $cleanedData[$key] = $data;
+            } elseif ($hasQuantity) {
+                // It's a create or update, ensure quantity is an integer.
+                $data['quantity'] = (int) $data['quantity'];
+                $cleanedData[$key] = $data;
+            }
+            // Ignore entries that are not for deletion and have no quantity.
+        }
+
+        if (empty($cleanedData)) {
+            return redirect()->route('refer.show', $id_refer)
+                ->with('mensaje', 'No se proporcionaron datos de movimiento válidos.')
+                ->with('title', $this->title);
+        }
         
-        $results = $this->movementService->processBatchMovements($data, $id_refer);
+        $results = $this->movementService->processBatchMovements($cleanedData, $id_refer);
         
         $message = $this->generateResultMessage($results);
 
