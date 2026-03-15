@@ -15,4 +15,9 @@ class Operation extends Model
     {
         $this->attributes['name'] = strtoupper($value);
     }
+
+    public function config()
+    {
+        return $this->hasOne(OperationConfig::class);
+    }
 }

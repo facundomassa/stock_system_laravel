@@ -37,4 +37,13 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    protected function authenticated(\Illuminate\Http\Request $request, $user)
+    {
+        if ($user->hasRole('tecnico')) {
+            return redirect()->route('technical.dashboard');
+        }
+
+        return redirect($this->redirectTo);
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session; 
+use Illuminate\Support\Facades\Session;
 
 class CheckSelectedOperation
 {
@@ -18,6 +18,9 @@ class CheckSelectedOperation
     public function handle($request, Closure $next)
     {
         if (!Session::has('selected_operation') && $request->path() !== 'operation-select') {
+            if (auth()->check() && auth()->user()->hasRole('tecnico')) {
+                return $next($request);
+            }
             // Redirige a 'operation-select' solo si no es la página actual
             return redirect('operation-select')->with('error', 'Debes seleccionar una operación antes de acceder a esta página.');
         }

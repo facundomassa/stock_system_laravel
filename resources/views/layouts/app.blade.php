@@ -27,14 +27,16 @@ box-sizing: border-box;
 display: flex;
 flex-direction: column;
 min-height: 100vh;">
-@if (Auth::check() && Session::has('selected_operation'))
-    @include('layouts.newNavbar')
-@endif
+    @if (Auth::check() && Session::has('selected_operation') || Session::has('selected_technical'))
+        @include('layouts.newNavbar')
+    @endif
 
-    <main class="py-2 fs-6" style="flex: 1;">
+    <main class="fs-6" style="flex: 1;">
         <div>
             <div class="menu-trigger"></div>
-            <h1 class="text-center pb-1">{{ isset($title) ? $title : ' ' }}</h1>
+            @if(isset($tittle) && trim($tittle) !== '')
+                <h1 class="text-center pb-1">{{ $tittle }}</h1>
+            @endif
             @yield('content')
         </div>
 

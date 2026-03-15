@@ -45,22 +45,28 @@
                 </div>
                 <div class="form-group">
                     <label for="date_ended">Fecha Inicio:</label>
-                    <input class="form-control" type="datetime-local" value="{{(isset($refer->date_up) ? $refer->date_up : old('date_up')) ?: date("Y-m-d H:i")}}" name="date_up" id="date_up">
+                    <input class="form-control" type="datetime-local"
+                        value="{{(isset($refer->date_up) ? $refer->date_up : old('date_up')) ?: date("Y-m-d H:i")}}"
+                        name="date_up" id="date_up">
                 </div>
                 <div class="form-group">
                     <label for="date_ended">Fecha Finalizado:</label>
-                    <input class="form-control" type="datetime-local" value="{{isset($refer->date_ended) ? $refer->date_ended : old('date_ended')}}" name="date_ended" id="date_ended">
+                    <input class="form-control" type="datetime-local"
+                        value="{{isset($refer->date_ended) ? $refer->date_ended : old('date_ended')}}" name="date_ended"
+                        id="date_ended">
                 </div>
                 <div class="form-group">
                     <label>Creado por:</label>
-                    <select disabled class="form-control" >
-                        <option selected value="{{ auth()->id(); }}"> {{ auth()->user()->name . " " . auth()->user()->surname; }}</option>
+                    <select disabled class="form-control">
+                        <option selected value="{{ auth()->id() }}">
+                            {{ auth()->user()->name . " " . auth()->user()->surname }}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Observaciones:</label>
                     <input class="form-control" type="text" name="observation" maxlength="60"
-                        value="{{ isset($refer->observation) ? $refer->observation : old('observation') }}" id="observation">
+                        value="{{ isset($refer->observation) ? $refer->observation : old('observation') }}"
+                        id="observation">
                 </div>
                 <br>
                 <input class="btn btn-success" type="submit" value="{{ $modo }} Datos">

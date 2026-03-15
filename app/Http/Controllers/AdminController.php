@@ -34,24 +34,27 @@ class AdminController extends Controller
     {
         $roles = Role::all(); // Todos los roles
         $permissions = Permission::all(); // Todos los permisos
+        $stockcenters = \App\Models\Stockcenter::all();
 
-        return view('admin/user/edit', compact('user', 'roles', 'permissions'));
+        return view('admin/user/edit', compact('user', 'roles', 'permissions', 'stockcenters'));
     }
 
     public function create()
     {
         $roles = Role::all(); // Todos los roles
         $permissions = Permission::all(); // Todos los permisos
+        $stockcenters = \App\Models\Stockcenter::all();
 
-        return view('admin/user/create', compact('roles', 'permissions'));
+        return view('admin/user/create', compact('roles', 'permissions', 'stockcenters'));
     }
 
     public function edit(User $user)
     {
         $roles = Role::all(); // Todos los roles
         $permissions = Permission::all(); // Todos los permisos
+        $stockcenters = \App\Models\Stockcenter::all();
 
-        return view('admin/user/edit', compact('user', 'roles', 'permissions'));
+        return view('admin/user/edit', compact('user', 'roles', 'permissions', 'stockcenters'));
     }
 
     public function update(Request $request, $id)
@@ -64,7 +67,8 @@ class AdminController extends Controller
             'role' => 'required|exists:roles,name',
             'permissions' => 'array',
             'permissions.*' => 'string|exists:permissions,name',
-            'is_active'=>'required|boolean|in:1,0',
+            'is_active' => 'required|boolean|in:1,0',
+            'stockcenter_id' => 'nullable|exists:stockcenters,id',
         ];
         // Validaciones personalizadas
         $request->merge([
@@ -85,7 +89,7 @@ class AdminController extends Controller
         // Actualizar roles y permisos
         $user->syncRoles([$request->role]);
         $user->syncPermissions($request->permissions);
-        
+
         return redirect('admin/users/' . $id . '/edit')
             ->with('mensaje', 'Perfil del usuario editado con éxito')
             ->with('title', 'Editar Usuario');

@@ -21,7 +21,7 @@ class OperationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -33,32 +33,36 @@ class OperationController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
-        //
-        return view('operation/create')->with('title', static::$title);
+        $stockcenters = \App\Models\Stockcenter::all();
+        return view('operation/create', compact('stockcenters'))->with('title', static::$title);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
         $this->validate($request, static::$data, static::$message);
 
-        $dataOperation = request()->except('_token');
+        $operation = Operation::create(['name' => $request->name]);
 
-        $operation = Operation::create($dataOperation);
+        // Crear config
+        \App\Models\OperationConfig::create([
+            'operation_id' => $operation->id,
+            'request_origin_id' => $request->request_origin_id,
+            'consume_destiny_id' => $request->consume_destiny_id,
+        ]);
 
         // Crear un permiso basado en la operación
-        $permissionName = $operation->name; 
-        
+        $permissionName = $operation->name;
+
         // Verifica si el permiso ya existe antes de crearlo
         if (!Permission::where('name', $permissionName)->exists()) {
             Permission::create(['name' => $permissionName]);
@@ -71,12 +75,11 @@ class OperationController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Operation  $operation
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
-        //
-        $operation = Operation::findOrFail($id);
+        $operation = Operation::with('config')->findOrFail($id);
         return view('operation.show', compact('operation'))->with('title', static::$title);
     }
 
@@ -84,13 +87,13 @@ class OperationController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Operation  $operation
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit($id)
     {
-        //
-        $operation = Operation::findOrFail($id);
-        return view('operation.edit', compact('operation'))->with('title', static::$title);
+        $operation = Operation::with('config')->findOrFail($id);
+        $stockcenters = \App\Models\Stockcenter::all();
+        return view('operation.edit', compact('operation', 'stockcenters'))->with('title', static::$title);
     }
 
     /**
@@ -98,16 +101,20 @@ class OperationController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Operation  $operation
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
-        //
         $this->validate($request, static::$data, static::$message);
 
-        $dataOperation = request()->except(['_token', '_method']);
+        $operation = Operation::findOrFail($id);
+        $operation->update(['name' => $request->name]);
 
-        Operation::find($id)->update($dataOperation);
+        $config = \App\Models\OperationConfig::firstOrCreate(['operation_id' => $id]);
+        $config->update([
+            'request_origin_id' => $request->request_origin_id,
+            'consume_destiny_id' => $request->consume_destiny_id,
+        ]);
 
         return redirect('operation')->with('mensaje', 'Operacion editada con exito')->with('title', static::$title);
     }
@@ -116,7 +123,7 @@ class OperationController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Operation  $operation
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {

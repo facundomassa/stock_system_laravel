@@ -25,7 +25,8 @@ class User extends Authenticatable implements JWTSubject
         'surname',
         'email',
         'password',
-        'is_active'
+        'is_active',
+        'stockcenter_id'
     ];
 
     /**
@@ -51,7 +52,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->getKey();
     }
-    
+
     public function getJWTCustomClaims()
     {
         return [];
@@ -73,5 +74,10 @@ class User extends Authenticatable implements JWTSubject
     public function scopeInactive($query)
     {
         return $query->where('is_active', false);
+    }
+
+    public function stockcenter()
+    {
+        return $this->belongsTo(Stockcenter::class, 'stockcenter_id');
     }
 }

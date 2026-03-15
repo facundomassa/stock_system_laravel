@@ -29,35 +29,35 @@ class StockController extends Controller
             'articlename' => request('articlename'),
             'code' => request('code'),
         ];
-        
+
         $stocks = $this->stockService->filterStocks(
             stockcenterId: $filters['stockselect'],
             type: $filters['type'],
             articleName: $filters['articlename'],
             code: $filters['code']
         );
-        
+
         // Estadísticas rápidas
         $stats = [
             'total' => $stocks->count(),
             'alerta' => $stocks->where('warning', true)->count(),
             'agotado' => $stocks->where('quantity', '<=', 0)->count(),
         ];
-        
+
         $pdf = PDF::loadView('stock.pdf', [
             'stocks' => $stocks,
             'filters' => $filters,
             'stats' => $stats,
             'fecha' => now()->format('d/m/Y H:i')
         ])->setOptions([
-            'defaultFont' => 'sans-serif',
-            'isHtml5ParserEnabled' => true,
-            'margin_top' => 70,
-            'margin_bottom' => 40,
-            'margin_left' => 15,
-            'margin_right' => 15
-        ]);
-        
+                    'defaultFont' => 'sans-serif',
+                    'isHtml5ParserEnabled' => true,
+                    'margin_top' => 70,
+                    'margin_bottom' => 40,
+                    'margin_left' => 15,
+                    'margin_right' => 15
+                ]);
+
         return $pdf->stream('stock_' . date('Ymd_His') . '.pdf');
     }
 
@@ -67,7 +67,7 @@ class StockController extends Controller
     public function index()
     {
         $stockcenters = $this->stockService->getAvailableStockcenters();
-        
+
         // Manejar filtros predefinidos del dashboard
         $filters = [
             'stockselect' => request('stockselect'),
@@ -75,7 +75,7 @@ class StockController extends Controller
             'articlename' => request('articlename'),
             'code' => request('code'),
         ];
-        
+
         // Aplicar filtro predefinido si viene del dashboard
         if ($filterType = request('filter')) {
             switch ($filterType) {
@@ -91,7 +91,7 @@ class StockController extends Controller
                     break;
             }
         }
-        
+
         $stocks = $this->stockService->paginateStocks(
             stockcenterId: $filters['stockselect'],
             type: $filters['type'],
@@ -126,7 +126,10 @@ class StockController extends Controller
     public function update(StockRequest $request, int $id)
     {
         $this->stockService->updateQuantityAlert($id, $request->quantity_alert);
-        return redirect()->route('stock.index')
+
+        $redirectRoute = auth()->user()->hasRole('tecnico') ? 'technical.dashboard' : 'stock.index';
+
+        return redirect()->route($redirectRoute)
             ->with('success', 'Alerta de stock actualizada correctamente')
             ->with('title', $this->title);
     }

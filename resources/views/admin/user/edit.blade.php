@@ -50,20 +50,27 @@
                 </select>
             </div>
 
+            <div class="mb-3">
+                <label for="stockcenter_id" class="form-label">Centro de Stock Asignado (Móvil)</label>
+                <select name="stockcenter_id" id="stockcenter_id" class="form-control">
+                    <option value="">Ninguno</option>
+                    @foreach($stockcenters as $stockcenter)
+                        <option value="{{ $stockcenter->id }}" {{ $user->stockcenter_id == $stockcenter->id ? 'selected' : '' }}>
+                            {{ $stockcenter->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Permisos -->
             <div class="mb-3">
                 <label class="form-label">Permisos</label>
                 <div class="form-check">
                     @foreach($permissions as $permission)
                         <div class="mb-2">
-                            <input 
-                                type="checkbox" 
-                                name="permissions[]" 
-                                value="{{ $permission->name }}" 
-                                id="perm-{{ $permission->id }}"
-                                {{ $user->hasPermissionTo($permission->name) ? 'checked' : '' }}
-                                class="form-check-input"
-                            >
+                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                id="perm-{{ $permission->id }}" {{ $user->hasPermissionTo($permission->name) ? 'checked' : '' }}
+                                class="form-check-input">
                             <label for="perm-{{ $permission->id }}" class="form-check-label">
                                 {{ $permission->name }}
                             </label>

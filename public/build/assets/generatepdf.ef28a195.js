@@ -1,0 +1,1 @@
+$(document).ready(function(){let o=$("#framepdf"),c=$("#pfdbuttom"),t=$("form").serialize();c.click(function(){console.log("http://stocksystem.com/stock/pdf?"+t),o.attr("src","http://stocksystem.com/stock/pdf?"+t)})});

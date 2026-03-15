@@ -34,13 +34,13 @@ Route::get('/', function () {
 
 Auth::routes(['register' => true, 'reset' => false]);
 
-Route::middleware('auth','checkIfUserIsActive')->group(function () {
+Route::middleware(['auth', 'checkIfUserIsActive'])->group(function () {
 
     Route::match(['get', 'post'], '/operation-select', [HomeController::class, 'operationSelect'])->name('operation.select');
 
     // Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.delete');
-    
-    Route::group(['middleware' => ['role:admin']], function () { 
+
+    Route::group(['middleware' => ['role:admin']], function () {
         Route::get('admin/users', [AdminController::class, 'index'])->name('admin.users.index');
         Route::get('admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
         Route::put('admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
@@ -53,7 +53,13 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
     });
 
     Route::middleware('checkSelectedOperation')->group(function () {
-        Route::group(['middleware' => ['role:tecnico']], function () { 
+        Route::group(['middleware' => ['role:tecnico']], function () {
+            Route::get('technical/dashboard', [TechnicalController::class, 'dashboard'])->name('technical.dashboard');
+
+            // Formularios separados por carrito de remito
+            Route::get('technical/request', [TechnicalController::class, 'showRequestForm'])->name('technical.request.form');
+            Route::get('technical/consume', [TechnicalController::class, 'showConsumeForm'])->name('technical.consume.form');
+
             Route::resource('technical', TechnicalController::class); //Ruta para ordenes tecnicas
         });
 
@@ -75,10 +81,13 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         Route::get('movement/create/{refer}', [MovementController::class, 'create']);
         Route::get('movement/{refer}/edit', [MovementController::class, 'create']);
         Route::post('movement', [MovementController::class, 'store']);
-        Route::get('movement/show/{refer}', [MovementController::class, 'show'])->name('movement.show');;
+        Route::get('movement/show/{refer}', [MovementController::class, 'show'])->name('movement.show');
+        ;
 
-        Route::get('stock', [StockController::class, 'index'])->name('stock.index');;
-        Route::get('stock/{stock}', [StockController::class, 'show'])->name('stock.show');;
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+        ;
+        Route::get('stock/{stock}', [StockController::class, 'show'])->name('stock.show');
+        ;
         Route::put('stock/{stock}', [StockController::class, 'update'])->name('stock.update');
 
         Route::get('stock/get/pdf', [StockController::class, 'getpdf']);
@@ -99,13 +108,13 @@ Route::middleware('auth','checkIfUserIsActive')->group(function () {
         // Rutas con filtros predefinidos para el dashboard
         Route::get('/stock/negative', [StockController::class, 'index'])->name('stock.negative')
             ->defaults('filter', 'negative');
-            
+
         Route::get('/stock/dead', [StockController::class, 'index'])->name('stock.dead')
             ->defaults('filter', 'dead');
-            
+
         Route::get('/stock/alerts', [StockController::class, 'index'])->name('stock.alerts')
             ->defaults('filter', 'alerts');
-            
+
         Route::get('/refer/pending', [ReferController::class, 'index'])->name('refer.pending')
             ->defaults('status', 'E');
     });
