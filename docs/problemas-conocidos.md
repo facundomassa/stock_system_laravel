@@ -1,22 +1,16 @@
 # Problemas conocidos y deuda técnica
 
-Relevados leyendo el código mientras se escribía esta documentación (rama `main`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Ninguno se corrigió en este cambio: esta página solo los registra.
+Relevados leyendo el código mientras se escribía esta documentación (rama `main`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Los que ya se corrigieron se listan al final, en [Resueltos](#resueltos).
 
 Gravedad: 🔴 alta · 🟠 media · 🟡 baja.
 
 ## Seguridad
 
-### 🔴 Cualquier persona puede registrarse y operar sobre todos los datos
-- `routes/web.php:35` habilita `/register` para cualquiera.
-- `HomeController::operationSelect` (`app/Http/Controllers/HomeController.php:105-112`) guarda en la sesión **cualquier** valor que llegue en `selected_operation`, sin verificar que esté entre las operaciones permitidas.
-- Efecto: alguien sin cuenta puede registrarse, mandar un POST a `/operation-select` con cualquier valor y entrar a todas las pantallas de trabajo (stock, remitos, centros, personas…), con permiso para modificarlas.
-- Sugerencia: cerrar el registro público (`'register' => false`) o dejar a los usuarios nuevos inactivos hasta que un admin los habilite, y validar `selected_operation` contra `get_allowed_operations_list()`.
-
 ### 🟠 No hay autorización por operación ni por registro
 Fuera de `role:admin` y `role:tecnico`, no hay *policies* ni filtros por operación (ver [Roles y permisos](roles-y-permisos.md#qué-filtra-la-operación-activa)). Un despachante de `POP20` puede ver, editar, emitir o cancelar remitos de `POP36` si conoce el ID, y un técnico puede abrir cualquier pantalla escribiendo la URL.
 
 ### 🟠 Emitir un remito es un GET
-`GET /refer/emited/{refer}` (`routes/web.php:76`) mueve stock. Al no pasar por la verificación CSRF, un enlace o una imagen en otra página puede emitir remitos en nombre de un usuario logueado, y también lo puede disparar el *prefetch* del navegador. Debería ser `PATCH`/`POST` con token, como finalizar.
+`GET /refer/emited/{refer}` (`routes/web.php:78`) mueve stock. Al no pasar por la verificación CSRF, un enlace o una imagen en otra página puede emitir remitos en nombre de un usuario logueado, y también lo puede disparar el *prefetch* del navegador. Debería ser `PATCH`/`POST` con token, como finalizar.
 
 ### 🟠 XSS en el buscador de artículos
 `resources/js/functions/movement.js` arma las filas con *template strings* y `append` sin escapar (`${result[index].name}`, `code`, `type`). Un artículo con HTML o JavaScript en el nombre se ejecuta en el navegador de quien abra la carga de artículos de un remito.
@@ -43,13 +37,10 @@ Fuera de `role:admin` y `role:tecnico`, no hay *policies* ni filtros por operaci
 `StockService::adjustStock` (`app/Services/StockService.php:106-108`) corrige a 0 cualquier resultado negativo. Si se emite más de lo disponible, la diferencia se pierde sin aviso y el indicador de "stock negativo" del dashboard nunca se activa por uso normal. Conviene validar la disponibilidad al emitir o permitir negativos y alertar.
 
 ### 🟠 "Borrar todas" las notificaciones no funciona
-`DELETE /notifications/clear-all` (`routes/web.php:106`) se declara después de `DELETE /notifications/{id}` (línea 104), que la captura con `id = "clear-all"`. El usuario ve *"No se pudo eliminar la notificación"*. Hay que declararla antes.
+`DELETE /notifications/clear-all` (`routes/web.php:108`) se declara después de `DELETE /notifications/{id}` (línea 106), que la captura con `id = "clear-all"`. El usuario ve *"No se pudo eliminar la notificación"*. Hay que declararla antes.
 
 ### 🟠 "Ver todas" las notificaciones da error 500
-La ruta `notifications.index` (`routes/web.php:101`), enlazada desde `layouts/notificationbox.blade.php:102`, apunta a `NotificationController@index`, que no existe.
-
-### 🟠 Crear usuario desde el panel de administración no funciona
-`admin/user/create.blade.php:11` envía el formulario a `route('register')`, que tiene el middleware `guest`: con un admin logueado, redirige sin crear el usuario. Además `RegisterController` no guardaría rol, permisos ni centro de stock. Falta una ruta `POST admin/users` con su método `store`.
+La ruta `notifications.index` (`routes/web.php:103`), enlazada desde `layouts/notificationbox.blade.php:102`, apunta a `NotificationController@index`, que no existe.
 
 ### 🟠 CUIT y códigos de artículo más largos que su columna
 - `persons.cuit` es `INT` (máximo 2.147.483.647), pero un CUIT tiene 11 dígitos y la validación pide 10 u 11. Con MySQL en modo estricto (`config/database.php`, `'strict' => true`), guardar un CUIT real da error *Out of range*. El ejemplo de la pantalla de importación (`20123456789`) también falla. Conviene usar `string(11)` o `BIGINT`.
@@ -65,10 +56,10 @@ La ruta `notifications.index` (`routes/web.php:101`), enlazada desde `layouts/no
 El listado y el detalle muestran "Finalizar" también en estado `I`, pero el servicio solo acepta `E` y devuelve un error.
 
 ### 🟡 Registro por API roto
-`UserController` (`app/Http/Controllers/UserController.php:5`) importa `App\User`, que no existe (el modelo es `App\Models\User`), y no envía `surname`, que es obligatorio. `POST /api/register` responde 500. Tampoco hay `config/jwt.php` publicado: hace falta `JWT_SECRET` para que funcione el login JWT.
+`UserController` (`app/Http/Controllers/UserController.php:5`) importa `App\User`, que no existe (el modelo es `App\Models\User`), y no envía `surname`, que es obligatorio. `POST /api/register` responde 500. Si se arregla, volvería a abrir el alta pública que se cerró en la web (ver [Resueltos](#resueltos)), así que conviene borrar la ruta en lugar de arreglarla. Tampoco hay `config/jwt.php` publicado: hace falta `JWT_SECRET` para que funcione el login JWT.
 
 ### 🟡 Rutas declaradas sin método o tapadas
-- `Route::resource('technical', ...)` (`routes/web.php:63`): `TechnicalController` no implementa ninguna acción REST.
+- `Route::resource('technical', ...)` (`routes/web.php:65`): `TechnicalController` no implementa ninguna acción REST.
 - `POST /stock` → `StockController@store` no existe.
 - `/stock/negative`, `/stock/dead`, `/stock/alerts` y `/refer/pending` las tapan `stock/{stock}` y `refer/{refer}` y responden error; ninguna vista las usa.
 
@@ -115,7 +106,19 @@ Al finalizar un remito cuyo destino es de tipo `C` no se llama a `adjustStock`, 
 
 ## Calidad y herramientas
 
-- Sin tests propios: solo los de ejemplo de Laravel.
+- Pocos tests: solo cubren el control de acceso (`tests/Feature/OperationAccessTest.php`) y el alta de usuarios desde el panel (`tests/Feature/AdminUserTest.php`).
 - Sin CI: el workflow `php.yml` que existía se borró.
 - `tymon/jwt-auth` está fijado en `dev-develop` y `minimum-stability` es `dev`: las instalaciones no son reproducibles fuera del `composer.lock`.
 - Conviven dos estilos de controlador (con servicios y sin ellos); los ABM viejos validan en el controlador y usan `request()->except(...)` para asignación masiva.
+
+## Resueltos
+
+### 🔴 Cualquier persona podía registrarse y operar sobre todos los datos
+Antes, `/register` estaba abierto al público, el usuario nuevo quedaba activo, y `HomeController::operationSelect` guardaba en la sesión **cualquier** valor de `selected_operation`. Con un POST a `/operation-select` se entraba a todas las pantallas de trabajo (stock, remitos, centros, personas…) y se las podía modificar. Ahora:
+- `routes/web.php` declara `Auth::routes(['register' => false, 'reset' => false])`, así que `/register` responde 404. Si se vuelve a habilitar, `RegisterController::create` crea al usuario inactivo (`is_active = false`) hasta que un admin lo active.
+- `HomeController::operationSelect` valida `selected_operation` contra `get_allowed_operations_list()`. Una operación para la que el usuario no tiene permiso se rechaza con un error de validación y no se guarda en la sesión.
+- `CheckSelectedOperation` vuelve a comprobar en cada request que la operación de la sesión siga permitida. Si no lo está (por ejemplo, porque un admin le quitó el permiso al usuario), la descarta y redirige a `/operation-select`.
+- Tests: `tests/Feature/OperationAccessTest.php`.
+
+### 🟠 Crear usuario desde el panel de administración no funcionaba
+El formulario `admin/user/create.blade.php` enviaba a `route('register')`, que tiene el middleware `guest` y con un admin logueado redirigía sin crear el usuario. Ahora envía a `POST /admin/users` (`AdminController@store`, solo admin), que guarda rol, permisos, estado activo y centro de stock con las mismas reglas que la edición. Tests: `tests/Feature/AdminUserTest.php`.

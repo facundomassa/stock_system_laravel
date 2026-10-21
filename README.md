@@ -89,11 +89,11 @@ Para usuarios finales hay un manual dentro de la aplicación, en **Cómo usar** 
 | Stock por centro y alertas | Funcional | Los filtros rápidos del dashboard no filtran. |
 | Remitos y movimientos | Funcional | Cancelar un remito emitido no devuelve el stock al origen (ver problemas conocidos). |
 | Movimientos en tránsito | Funcional | |
-| Usuarios, roles y permisos | Funcional | El alta desde el panel admin no funciona; se usa el registro y después se editan rol y permisos. |
+| Usuarios, roles y permisos | Funcional | El registro público está cerrado: los usuarios los crea un admin desde el panel. |
 | Filtro por operación | Parcial | Solo se aplica en el listado de remitos; falta un *scope* global. |
 | Portal del técnico | Parcial | Solicitud y consumo funcionan; falta el historial por técnico y la validación por despachante. |
 | Reportes | Parcial | PDF y Excel básicos; faltan reportes avanzados. |
-| Tests | Pendiente | Solo los tests de ejemplo de Laravel. |
+| Tests | Parcial | Tests de feature del control de acceso y del alta de usuarios; el resto sin cubrir. |
 
 ## Próximos pasos
 

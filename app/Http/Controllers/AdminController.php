@@ -13,10 +13,13 @@ class AdminController extends Controller
 
     private static $message = array(
         'name.required' => 'El nombre es obligatorio.',
+        'surname.required' => 'El apellido es obligatorio.',
         'email.required' => 'El correo electrónico es obligatorio.',
         'email.email' => 'El correo electrónico debe ser válido.',
         'email.unique' => 'El correo electrónico ya está en uso.',
+        'password.required' => 'La contraseña es obligatoria.',
         'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+        'password.confirmed' => 'Las contraseñas no coinciden.',
         'role.required' => 'Debe seleccionar un rol válido.',
         'permissions.*.exists' => 'Algunos de los permisos seleccionados no son válidos.'
     );
@@ -46,6 +49,38 @@ class AdminController extends Controller
         $stockcenters = \App\Models\Stockcenter::all();
 
         return view('admin/user/create', compact('roles', 'permissions', 'stockcenters'));
+    }
+
+    public function store(Request $request)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|exists:roles,name',
+            'permissions' => 'array',
+            'permissions.*' => 'string|exists:permissions,name',
+            'is_active' => 'required|boolean|in:1,0',
+            'stockcenter_id' => 'nullable|exists:stockcenters,id',
+        ];
+
+        $this->validate($request, $rules, static::$message);
+
+        $user = User::create([
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'is_active' => $request->is_active,
+            'stockcenter_id' => $request->stockcenter_id,
+        ]);
+
+        $user->syncRoles([$request->role]);
+        $user->syncPermissions($request->input('permissions', []));
+
+        return redirect()->route('admin.users.index')
+            ->with('mensaje', 'Usuario creado con éxito');
     }
 
     public function edit(User $user)

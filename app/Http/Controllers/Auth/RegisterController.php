@@ -70,6 +70,9 @@ class RegisterController extends Controller
             'surname' => $data['surname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            // El registro público está cerrado en routes/web.php. Si se vuelve a abrir,
+            // el usuario queda inactivo hasta que un admin lo habilite.
+            'is_active' => false,
         ]);
     }
 }

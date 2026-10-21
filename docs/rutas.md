@@ -23,20 +23,20 @@ Las rutas `Route::resource` generan las siete acciones REST estándar:
 | GET | `/` | closure | Página de bienvenida (`welcome`). |
 | GET/POST | `/login` | `Auth\LoginController` | Login. Redirige a `/operation-select`, o a `/technical/dashboard` si es técnico. |
 | POST | `/logout` | `Auth\LoginController` | Logout. |
-| GET/POST | `/register` | `Auth\RegisterController` | Registro abierto (nombre, apellido, email, contraseña). |
 | GET/POST | `/password/confirm` | `Auth\ConfirmPasswordController` | Confirmación de contraseña de Laravel UI. |
 
 ### `auth` + `checkIfUserIsActive`
 
 | Método | URI | Controlador | Descripción |
 |--------|-----|-------------|-------------|
-| GET/POST | `/operation-select` | `HomeController@operationSelect` | Elegir la operación de trabajo. |
+| GET/POST | `/operation-select` | `HomeController@operationSelect` | Elegir la operación de trabajo. Solo acepta operaciones permitidas para el usuario. |
 
 ### `+ role:admin`
 
 | Método | URI | Controlador | Nombre |
 |--------|-----|-------------|--------|
 | GET | `/admin/users` | `AdminController@index` | `admin.users.index` |
+| POST | `/admin/users` | `AdminController@store` | `admin.users.store` |
 | GET | `/admin/users/create` | `AdminController@create` | `admin.users.create` |
 | GET | `/admin/users/{user}/edit` | `AdminController@edit` | `admin.users.edit` |
 | PUT | `/admin/users/{user}` | `AdminController@update` | `admin.users.update` |

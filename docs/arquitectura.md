@@ -47,7 +47,7 @@ flowchart LR
 3. **Middleware de ruta**, en este orden para casi todas las pantallas:
    - `auth`: exige sesión iniciada; si no la hay, redirige a `/login`.
    - `checkIfUserIsActive` (`CheckIfUserIsActive`): si `users.is_active` es falso, cierra la sesión y redirige al login con el mensaje *"Tu cuenta está inactiva."*.
-   - `checkSelectedOperation` (`CheckSelectedOperation`): si en la sesión no hay `selected_operation`, redirige a `/operation-select`. Los usuarios con rol `tecnico` están exceptuados.
+   - `checkSelectedOperation` (`CheckSelectedOperation`): si en la sesión no hay `selected_operation`, o la que hay ya no está entre las operaciones permitidas del usuario, la descarta y redirige a `/operation-select`. Los usuarios con rol `tecnico` están exceptuados.
    - `role:admin` / `role:tecnico` (Spatie): restringe los grupos de administración y del portal técnico.
 4. **Controlador**, que delega en un servicio (en los módulos refactorizados) o trabaja directo con Eloquent (en los ABM más viejos).
 5. **Respuesta**: vista Blade, redirección con mensaje *flash* (`success`, `error`, `mensaje`), PDF en streaming, descarga Excel o JSON.

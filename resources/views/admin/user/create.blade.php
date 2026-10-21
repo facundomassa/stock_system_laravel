@@ -8,7 +8,7 @@
                     <div class="card-header">{{ __('Regiter a Nuevo Usuario') }}</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('register') }}">
+                        <form method="POST" action="{{ route('admin.users.store') }}">
                             @csrf
 
                             <div class="row mb-3">
@@ -89,13 +89,52 @@
                                 <label for="roles" class="col-md-4 col-form-label text-md-end">{{ __('Roles') }}</label>
 
                                 <div class="col-md-6">
-                                    <select name="role" id="roles" class="form-control">
+                                    <select name="role" id="roles" class="form-control @error('role') is-invalid @enderror">
                                         @foreach($roles as $role)
                                             <option value="{{ $role->name }}" {{ old('role') == $role->name ? 'selected' : '' }}>
                                                 {{ $role->name }}
                                             </option>
                                         @endforeach
                                     </select>
+
+                                    @error('role')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-md-4 col-form-label text-md-end">{{ __('Permissions') }}</label>
+
+                                <div class="col-md-6 pt-2">
+                                    @foreach($permissions as $permission)
+                                        <div class="form-check">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                                id="perm-{{ $permission->id }}" class="form-check-input"
+                                                {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}>
+                                            <label for="perm-{{ $permission->id }}" class="form-check-label">
+                                                {{ $permission->name }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+
+                                    @error('permissions.*')
+                                        <span class="text-danger small" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="is_active" class="col-md-4 col-form-label text-md-end">{{ __('Active') }}</label>
+
+                                <div class="col-md-6 pt-2">
+                                    <input type="hidden" name="is_active" value="0">
+                                    <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1"
+                                        {{ old('is_active', '1') == '1' ? 'checked' : '' }}>
                                 </div>
                             </div>
 

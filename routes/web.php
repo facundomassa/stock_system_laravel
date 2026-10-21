@@ -32,7 +32,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes(['register' => true, 'reset' => false]);
+// El alta de usuarios la hace un admin desde el panel (POST admin/users)
+Auth::routes(['register' => false, 'reset' => false]);
 
 Route::middleware(['auth', 'checkIfUserIsActive'])->group(function () {
 
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'checkIfUserIsActive'])->group(function () {
 
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('admin/users', [AdminController::class, 'index'])->name('admin.users.index');
+        Route::post('admin/users', [AdminController::class, 'store'])->name('admin.users.store');
         Route::get('admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
         Route::put('admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
         Route::get('admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');

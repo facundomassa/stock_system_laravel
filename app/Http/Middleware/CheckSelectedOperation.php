@@ -17,6 +17,12 @@ class CheckSelectedOperation
      */
     public function handle($request, Closure $next)
     {
+        // Si la operación de la sesión ya no está entre las permitidas (se le quitó el permiso
+        // al usuario, o el valor no es válido), se descarta y se vuelve a pedir
+        if (Session::has('selected_operation') && !get_allowed_operations_list()->contains(Session::get('selected_operation'))) {
+            Session::forget('selected_operation');
+        }
+
         if (!Session::has('selected_operation') && $request->path() !== 'operation-select') {
             if (auth()->check() && auth()->user()->hasRole('tecnico')) {
                 return $next($request);

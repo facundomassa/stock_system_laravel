@@ -8,6 +8,7 @@ use App\Exports\MovementExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -104,8 +105,12 @@ class HomeController extends Controller
         }
 
         if ($request->isMethod('post')) {
+            // Solo se acepta una operación para la que el usuario tenga permiso
             $request->validate([
-                'selected_operation' => 'required',
+                'selected_operation' => ['required', Rule::in($allowedOperations->all())],
+            ], [
+                'selected_operation.required' => 'Debe seleccionar una operación.',
+                'selected_operation.in' => 'No tiene permiso para trabajar en la operación seleccionada.',
             ]);
             
             session(['selected_operation' => $request->input('selected_operation')]);

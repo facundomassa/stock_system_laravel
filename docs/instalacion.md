@@ -146,7 +146,7 @@ Además, las vistas cargan desde CDN: jQuery 3.5.1, Chart.js, Boxicons y la fuen
 php artisan test
 ```
 
-Solo existen los tests de ejemplo de Laravel (`tests/Feature/ExampleTest.php`, `tests/Unit/ExampleTest.php`). `phpunit.xml` tiene comentada la configuración de SQLite en memoria; para tests que toquen la base, descomentar `DB_CONNECTION`/`DB_DATABASE` o usar una base de test aparte.
+Además de los de ejemplo de Laravel, hay tests de feature para el control de acceso (`tests/Feature/OperationAccessTest.php`) y el alta de usuarios desde el panel (`tests/Feature/AdminUserTest.php`). Corren sobre SQLite en memoria: `phpunit.xml` fuerza `DB_CONNECTION=sqlite` y `DB_DATABASE=:memory:`, así que no tocan la base MySQL de desarrollo. Necesitan la extensión `pdo_sqlite` y un `.env` con `APP_KEY`.
 
 ## Despliegue en producción
 

@@ -22,12 +22,13 @@ flowchart TD
     A -- no --> OS["/operation-select"]
     OS --> B{¿Cuántas operaciones permitidas?}
     B -- una --> S[Se guarda en la sesión automáticamente] --> H["/home"]
-    B -- varias o ninguna --> E[El usuario elige una] --> S2[session selected_operation] --> H
+    B -- varias --> E[El usuario elige una] --> S2[session selected_operation] --> H
+    B -- ninguna --> N[Aviso: pedirle a un admin que lo habilite]
 ```
 
 - Las **operaciones permitidas** son las operaciones cuyo nombre coincide con algún permiso del usuario (directo o heredado del rol).
-- La operación elegida se guarda en `session('selected_operation')`. Para cambiarla, se vuelve a `/operation-select`.
-- Hasta elegir una operación, el middleware `checkSelectedOperation` redirige ahí desde cualquier pantalla de trabajo. Los técnicos no pasan por este paso.
+- La operación elegida se guarda en `session('selected_operation')`, solo si está entre las permitidas. Para cambiarla, se vuelve a `/operation-select`.
+- Hasta elegir una operación, el middleware `checkSelectedOperation` redirige ahí desde cualquier pantalla de trabajo. También lo hace si al usuario le quitaron el permiso de la operación que tenía seleccionada. Los técnicos no pasan por este paso.
 - Qué filtra la operación activa: ver [Roles y permisos](roles-y-permisos.md#qué-filtra-la-operación-activa).
 
 ## Ciclo de vida del remito
