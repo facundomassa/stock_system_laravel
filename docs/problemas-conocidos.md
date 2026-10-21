@@ -1,6 +1,6 @@
 # Problemas conocidos y deuda técnica
 
-Relevados leyendo el código mientras se escribía esta documentación (rama `master`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Ninguno se corrigió en este cambio: esta página solo los registra.
+Relevados leyendo el código mientras se escribía esta documentación (rama `master`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Los que ya se corrigieron pasan a [Resueltos](#resueltos), con la referencia a la corrección y a sus tests.
 
 Gravedad: 🔴 alta · 🟠 media · 🟡 baja.
 
@@ -30,17 +30,13 @@ Fuera de `role:admin` y `role:tecnico`, no hay *policies* ni filtros por operaci
 
 ## Errores funcionales
 
-### Cancelar un remito emitido acredita el destino en vez de devolver al origen
-🔴 `ReferService::cancelRefer` (`app/Services/ReferService.php:128-133`) llama a `increaseStock`, que acredita siempre el centro **destino** (`StockService.php:81`). Al cancelar un remito emitido, el origen no recupera la mercadería y el destino la recibe como si hubiera llegado. Hace falta una variante de `adjustStock` que acredite el origen.
-
-### Se pueden editar los artículos de un remito emitido
-🔴 `refer/show.blade.php:87-88` muestra "Editar Artículos" en estado `I` **y** `E`, y `MovementController::store` no valida el estado. Si se cambia una cantidad después de emitir, el origen ya se descontó con la cantidad vieja y el destino se acredita con la nueva: el stock total cambia sin explicación. Debería bloquearse la edición fuera del estado `I`.
-
 ### 🟠 El buscador de artículos falla al filtrar dentro de un remito
 `ArticleService::addStockInfo` (`app/Services/ArticleService.php:69`) hace `Refer::with('originStockCenter')`, pero la relación se llama `origin`. Como `movement.js` siempre manda el parámetro `refer`, el filtro de la pantalla de carga de artículos devuelve error 500. Además, el JS lee `stock.quantity` cuando la API devuelve el número directo en `stock`.
 
 ### 🟠 El stock nunca baja de cero
-`StockService::adjustStock` (`app/Services/StockService.php:106-108`) corrige a 0 cualquier resultado negativo. Si se emite más de lo disponible, la diferencia se pierde sin aviso y el indicador de "stock negativo" del dashboard nunca se activa por uso normal. Conviene validar la disponibilidad al emitir o permitir negativos y alertar.
+`StockService::adjustStockcenter` (`app/Services/StockService.php:114-116`) corrige a 0 cualquier resultado negativo. Si se emite más de lo disponible, la diferencia se pierde sin aviso y el indicador de "stock negativo" del dashboard nunca se activa por uso normal. Conviene validar la disponibilidad al emitir o permitir negativos y alertar.
+
+También afecta a la cancelación: al cancelar un remito emitido se devuelve al origen la cantidad completa de cada renglón, aunque al emitir se haya descontado menos por el piso en 0. Por ejemplo, con 3 unidades en el origen, emitir 5 deja el origen en 0 y cancelar lo deja en 5.
 
 ### 🟠 "Borrar todas" las notificaciones no funciona
 `DELETE /notifications/clear-all` (`routes/web.php:106`) se declara después de `DELETE /notifications/{id}` (línea 104), que la captura con `id = "clear-all"`. El usuario ve *"No se pudo eliminar la notificación"*. Hay que declararla antes.
@@ -115,7 +111,24 @@ Al finalizar un remito cuyo destino es de tipo `C` no se llama a `adjustStock`, 
 
 ## Calidad y herramientas
 
-- Sin tests propios: solo los de ejemplo de Laravel.
+- Pocos tests: solo cubren emitir, cancelar y finalizar remitos y la edición de sus artículos (`tests/Feature/ReferCancelStockTest.php`, `tests/Feature/MovementEditionTest.php`). El resto del sistema no tiene tests.
 - Sin CI: el workflow `php.yml` que existía se borró.
 - `tymon/jwt-auth` está fijado en `dev-develop` y `minimum-stability` es `dev`: las instalaciones no son reproducibles fuera del `composer.lock`.
 - Conviven dos estilos de controlador (con servicios y sin ellos); los ABM viejos validan en el controlador y usan `request()->except(...)` para asignación masiva.
+
+## Resueltos
+
+### Cancelar un remito emitido acreditaba el destino en vez de devolver al origen
+✅ Corregido en octubre de 2026. Antes, `ReferService::cancelRefer` llamaba a `increaseStock`, que acredita siempre el centro **destino**: al cancelar un remito emitido, el origen no recuperaba la mercadería y el destino la recibía como si hubiera llegado.
+
+- Ahora `cancelRefer` llama a `StockService::restoreOriginStock`, que suma las cantidades al centro **origen** y saca los movimientos de tránsito. El destino no se toca.
+- Si el origen es un proveedor (`P`) no se modifica el stock, igual que al emitir.
+- Tests: `tests/Feature/ReferCancelStockTest.php` (emitir y cancelar deja origen y destino como estaban; cancelar desde un proveedor no toca el stock; finalizar sigue acreditando el destino).
+- **Datos anteriores a la corrección:** cada remito cancelado desde `E` con un origen que no fuera proveedor dejó acreditado el destino y sin reponer el origen. El sistema no guarda desde qué estado se canceló un remito, así que esos casos hay que revisarlos a mano (por ejemplo, con las notificaciones de cambio de stock de esas fechas).
+
+### Se podían editar los artículos de un remito emitido
+✅ Corregido en octubre de 2026. Antes, "Editar Articulos" aparecía en estado `I` **y** `E`, y `MovementController::store` no validaba el estado: si se cambiaba una cantidad después de emitir, el origen ya estaba descontado con la cantidad vieja y el destino se acreditaba con la nueva.
+
+- El botón solo se muestra en estado `I` (`refer/show.blade.php` y `movement/show.blade.php`).
+- `MovementController::create` y `store` rechazan los remitos que no están en `I`: vuelven al detalle del remito con el error *"No se pueden modificar los artículos del remito N porque está EMITIDO. Solo se pueden editar los artículos de remitos en estado INGRESADO."*
+- Tests: `tests/Feature/MovementEditionTest.php`.
