@@ -87,13 +87,13 @@ Para usuarios finales hay un manual dentro de la aplicación, en **Cómo usar** 
 |--------|--------|-------|
 | Artículos, personas, direcciones, centros de stock | Funcional | Incluye importación CSV. |
 | Stock por centro y alertas | Funcional | Los filtros rápidos del dashboard no filtran. |
-| Remitos y movimientos | Funcional | Cancelar un remito emitido no devuelve el stock al origen (ver problemas conocidos). |
+| Remitos y movimientos | Funcional | Los artículos solo se editan antes de emitir; cancelar un remito emitido repone el origen. |
 | Movimientos en tránsito | Funcional | |
 | Usuarios, roles y permisos | Funcional | El alta desde el panel admin no funciona; se usa el registro y después se editan rol y permisos. |
 | Filtro por operación | Parcial | Solo se aplica en el listado de remitos; falta un *scope* global. |
 | Portal del técnico | Parcial | Solicitud y consumo funcionan; falta el historial por técnico y la validación por despachante. |
 | Reportes | Parcial | PDF y Excel básicos; faltan reportes avanzados. |
-| Tests | Pendiente | Solo los tests de ejemplo de Laravel. |
+| Tests | Parcial | Tests de feature para emitir, cancelar y finalizar remitos y para la edición de artículos. |
 
 ## Próximos pasos
 
@@ -101,4 +101,4 @@ Para usuarios finales hay un manual dentro de la aplicación, en **Cómo usar** 
 2. Aplicar un *scope* global por operación o empresa activa.
 3. Completar el módulo de técnicos: historial por técnico y validación de consumos por el despachante.
 4. Reportes avanzados (stock crítico, movimientos por período, consumo por técnico).
-5. Tests unitarios y de integración, y CI.
+5. Ampliar los tests al resto de los módulos y agregar CI.

@@ -127,9 +127,9 @@ class ReferService
             if ($refer->status === 'E') {
                 $movements = Movement::where('id_refer', $id)->get();
                 
-                // Revertir descuentos (aumentar stock en origen)
+                // Revertir descuentos (devolver el stock al origen)
                 if ($refer->origin->type !== 'P') {
-                    $this->stockService->increaseStock($refer, $movements);
+                    $this->stockService->restoreOriginStock($refer, $movements);
                 }
             }
             

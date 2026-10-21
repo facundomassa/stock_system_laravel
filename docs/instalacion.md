@@ -146,7 +146,16 @@ Además, las vistas cargan desde CDN: jQuery 3.5.1, Chart.js, Boxicons y la fuen
 php artisan test
 ```
 
-Solo existen los tests de ejemplo de Laravel (`tests/Feature/ExampleTest.php`, `tests/Unit/ExampleTest.php`). `phpunit.xml` tiene comentada la configuración de SQLite en memoria; para tests que toquen la base, descomentar `DB_CONNECTION`/`DB_DATABASE` o usar una base de test aparte.
+`phpunit.xml` fuerza una base SQLite en memoria (`DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`) y define un `APP_KEY` solo para tests, así que no hace falta MySQL ni `.env` para correrlos. Requiere la extensión `pdo_sqlite`.
+
+| Test | Qué cubre |
+|------|-----------|
+| `tests/Feature/ReferCancelStockTest.php` | Emitir y cancelar un remito deja el stock del origen y del destino como estaba; cancelar desde un proveedor no toca el stock; finalizar acredita el destino. |
+| `tests/Feature/MovementEditionTest.php` | Los artículos de un remito emitido no se pueden abrir, guardar ni borrar; en un remito ingresado sí. |
+
+Los datos de prueba se arman con el trait `tests/Concerns/CreatesStockScenario.php`.
+
+> No correr los tests con la configuración cacheada (`php artisan config:cache`): Laravel ignora `phpunit.xml`, usa la base del `.env` y `RefreshDatabase` la vacía. Si hace falta, ejecutar antes `php artisan config:clear`.
 
 ## Despliegue en producción
 

@@ -79,8 +79,16 @@ class StockService
     public function adjustStock(Refer $refer, Collection $movements, bool $increase): void
     {
         $stockcenterField = $increase ? 'destiny_id_stockcenter' : 'origen_id_stockcenter';
-        $stockcenterId = $refer->$stockcenterField;
 
+        $this->adjustStockcenter($refer->$stockcenterField, $movements, $increase);
+    }
+
+    /**
+     * Suma o resta las cantidades de los movimientos en el centro indicado.
+     * Al sumar saca los movimientos de tránsito; al restar los marca en tránsito.
+     */
+    protected function adjustStockcenter(int $stockcenterId, Collection $movements, bool $increase): void
+    {
         foreach ($movements as $movement) {
             // Actualizar estado de tránsito del movimiento
             if ($increase) {
@@ -128,6 +136,15 @@ class StockService
     public function decreaseStock(Refer $refer, Collection $movements): void
     {
         $this->adjustStock($refer, $movements, false);
+    }
+
+    /**
+     * Devuelve al centro de origen lo que se descontó al emitir el remito
+     * y saca los movimientos de tránsito. Se usa al cancelar un remito emitido.
+     */
+    public function restoreOriginStock(Refer $refer, Collection $movements): void
+    {
+        $this->adjustStockcenter($refer->origen_id_stockcenter, $movements, true);
     }
 
     public function getStockSummary(array $filters = [])

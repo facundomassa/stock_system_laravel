@@ -93,7 +93,7 @@ Ciclo de vida de los remitos. Depende de `StockService`.
 | `updateRefer(id, data)` | Actualiza la carátula; ignora `status` a propósito. |
 | `emitRefer(id)` | `I → E`. Exige al menos un movimiento. Descuenta stock del origen salvo que sea proveedor (`P`). |
 | `finalizeRefer(id, fecha?)` | `E → F`. Acredita stock en el destino salvo que sea consumo (`C`). Guarda `date_ended`. |
-| `cancelRefer(id)` | `I/E → C`. Si estaba emitido, llama a `increaseStock` (ver [problemas conocidos](problemas-conocidos.md#cancelar-un-remito-emitido-acredita-el-destino-en-vez-de-devolver-al-origen)). |
+| `cancelRefer(id)` | `I/E → C`. Si estaba emitido, repone el stock del origen con `restoreOriginStock`, salvo que sea proveedor (`P`). |
 | `getArticlesWithStockInfo(referId)` | Todos los artículos con la cantidad disponible en el origen del remito. |
 | `getAvailableOrigins(operaciones)` | Pensado para limitar los orígenes a las operaciones permitidas. Hoy no tiene efecto: compara IDs de operación con nombres y el formulario no usa el resultado. |
 | `getReferWithMovements`, `getReferForPdf`, `findRefer`, `getAllStockcenters` | Consultas auxiliares. |
@@ -102,8 +102,10 @@ Ciclo de vida de los remitos. Depende de `StockService`.
 
 | Método | Qué hace |
 |--------|----------|
-| `adjustStock(refer, movimientos, aumentar)` | Núcleo de la actualización de stock. Por cada movimiento: marca `transit` (verdadero al descontar, falso al acreditar), busca o crea el registro de `stocks` del centro (destino si aumenta, origen si descuenta), suma o resta la cantidad **con piso en 0** y dispara `StockAlertUpdated`. |
-| `increaseStock` / `decreaseStock` | Atajos de `adjustStock`. |
+| `adjustStock(refer, movimientos, aumentar)` | Elige el centro (destino si aumenta, origen si descuenta) y delega en `adjustStockcenter`. |
+| `adjustStockcenter(centro, movimientos, aumentar)` | Núcleo de la actualización de stock. Por cada movimiento: marca `transit` (verdadero al descontar, falso al acreditar), busca o crea el registro de `stocks` del centro, suma o resta la cantidad **con piso en 0** y dispara `StockAlertUpdated`. |
+| `increaseStock` / `decreaseStock` | Atajos de `adjustStock`: acreditan el destino (al finalizar) o descuentan el origen (al emitir). |
+| `restoreOriginStock(refer, movimientos)` | Acredita el **origen** y saca los movimientos de tránsito. Se usa al cancelar un remito emitido. |
 | `filterStocks`, `paginateStocks` | Stock filtrado por centro, tipo, nombre y código de artículo. |
 | `findStock`, `getStockMovements` | Detalle de un stock y los movimientos de ese artículo con ese centro como origen o destino. |
 | `updateQuantityAlert(id, alerta)` | Cambia `quantity_alert` y dispara `StockAlertUpdated` de tipo `alert`. |
