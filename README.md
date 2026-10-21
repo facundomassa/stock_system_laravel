@@ -1,127 +1,104 @@
 # StockSystem
 
-Sistema interno de control de inventario y stock multi-almacén, diseñado para empresas con equipos técnicos en campo.
+Sistema web interno para controlar inventario en varios almacenes, pensado para empresas con equipos técnicos en la calle. Registra dónde está cada artículo (depósitos, móviles de técnicos, talleres) y cada traslado se documenta con un **remito**.
 
-## Descripción
+> El sistema maneja solo cantidades físicas: no registra precios ni valores monetarios.
 
-**StockSystem** es una aplicación web desarrollada en Laravel que permite:
+## Funcionalidades
 
-- Gestionar artículos y su stock en múltiples almacenes.
-- Realizar movimientos de stock (entradas, salidas, traslados entre almacenes).
-- Controlar movimientos en tránsito (pendientes de recepción).
-- Generar y registrar remitos.
-- Gestionar usuarios con diferentes permisos (administradores, despachantes, técnicos).
-- (Próximamente) Módulo para técnicos en calle: solicitar materiales, registrar consumos y validar por despachante.
+- **Datos maestros**: artículos, centros de stock, personas y direcciones, con alta manual o importación CSV.
+- **Remitos** con ciclo *Ingresado → Emitido → Finalizado / Cancelado*: al emitir se descuenta el origen y al finalizar se acredita el destino.
+- **Mercadería en tránsito**: remitos emitidos pendientes de recepción.
+- **Stock por centro** con niveles de alerta y notificaciones internas.
+- **Dashboard** con rotación de stock, stock sin movimiento, tiempos de despacho y recomendaciones.
+- **Reportes**: PDF (stock, remito) y Excel (stock, movimientos, consumo por artículo).
+- **Roles y permisos por operación** (admin, despachante, técnico) con Spatie Permission.
+- **Portal del técnico**: stock de su móvil, solicitud de materiales y reporte de consumo diario.
 
-**Nota importante:** Actualmente el sistema **no maneja valores monetarios** (solo cantidades físicas de stock).
+## Tecnologías
 
-## Tecnologías utilizadas
+| Capa | Tecnología |
+|------|------------|
+| Backend | PHP ≥ 8.1, **Laravel 9** |
+| Base de datos | MySQL 8 / MariaDB |
+| Frontend | Blade, Bootstrap 5, jQuery, Sass, Vite 3, Boxicons, Bootstrap Icons, Chart.js |
+| Paquetes | `spatie/laravel-permission`, `barryvdh/laravel-dompdf`, `maatwebsite/excel`, `laravel/ui`, `laravel/sanctum`, `tymon/jwt-auth` |
+| Infraestructura | Docker Compose (PHP-FPM 8.2, Nginx, MySQL 8) |
 
-- **Backend:** Laravel 11 (o 10 – confirmar versión)
-- **Frontend:** Blade + Bootstrap 5 + Boxicons
-- **Base de datos:** MySQL
-- **Otros paquetes:** Laravel Livewire, Spatie Laravel Permission 
+## Inicio rápido
+
+### Local
+
+```bash
+git clone https://github.com/facundomassa/stock_system_laravel.git
+cd stock_system_laravel
+composer install && npm install
+cp .env.example .env && php artisan key:generate
+# configurar DB_* en .env y crear la base vacía
+php artisan migrate --seed
+npm run dev          # en otra terminal: php artisan serve
+```
+
+Abrir http://127.0.0.1:8000.
+
+### Docker
+
+```bash
+# en .env: DB_HOST=db, DB_DATABASE=stock_system_laravel, DB_USERNAME=root, DB_PASSWORD=secret
+docker compose up -d --build
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+npm install && npm run build   # en el host
+```
+
+Abrir http://localhost:8000.
+
+Detalles, variables de entorno y despliegue: [docs/instalacion.md](docs/instalacion.md).
+
+### Usuarios de prueba
+
+| Email | Contraseña | Rol |
+|-------|------------|-----|
+| `admin@admin.com` | `admin` | admin |
+| `dispatcher36@dispatcher.com` | `dispatcher36` | dispatcher (operación POP36) |
+| `dispatcher20@dispatcher.com` | `dispatcher20` | dispatcher (operación POP20) |
+| `tecnico@tecnico.com` | `tecnico` | tecnico (operación POP36) |
+
+Son solo para desarrollo. El seeder no crea centros de stock ni artículos; los primeros pasos están en la [guía de instalación](docs/instalacion.md#usuarios-de-prueba).
+
+## Documentación
+
+| Documento | Contenido |
+|-----------|-----------|
+| [Instalación y configuración](docs/instalacion.md) | Requisitos, local, Docker, variables de entorno, despliegue. |
+| [Arquitectura](docs/arquitectura.md) | Capas, servicios, middleware, eventos, frontend, PDF/Excel. |
+| [Modelo de datos](docs/modelo-de-datos.md) | Diagrama ER, tablas, códigos, cascadas. |
+| [Flujos de negocio](docs/flujos-de-negocio.md) | Remitos, impacto en el stock, tránsito, portal técnico, dashboard, reportes, importación. |
+| [Roles y permisos](docs/roles-y-permisos.md) | Roles, permisos por operación, gestión de usuarios. |
+| [Rutas](docs/rutas.md) | Referencia de rutas web y API. |
+| [Problemas conocidos](docs/problemas-conocidos.md) | Bugs, riesgos de seguridad y deuda técnica. |
+
+Para usuarios finales hay un manual dentro de la aplicación, en **Cómo usar** (`/howtouse`).
 
 ## Estado del proyecto
 
-| Módulo                        | Estado                  | Notas |
-|-------------------------------|-------------------------|-------|
-| Gestión de Artículos          | Funcional               |       |
-| Stock por almacén             | Funcional               |       |
-| Movimientos (entradas/salidas/traslados) | Funcional     |       |
-| Movimientos en tránsito       | Funcional               |  |
-| Remitos                       | Funcional               |       |
-| Usuarios y permisos           | Funcional               | Usando Spatie Permission |
-| Filtro por operación/empresa  | Parcial                 | Falta aplicar scope global |
-| Módulo Técnicos (solicitudes y consumos) | Pendiente     | En desarrollo / planificación |
-| Reportes básicos              | Parcial               |    Falta implementar reportes complejos |
+| Módulo | Estado | Notas |
+|--------|--------|-------|
+| Artículos, personas, direcciones, centros de stock | Funcional | Incluye importación CSV. |
+| Stock por centro y alertas | Funcional | Los filtros rápidos del dashboard no filtran. |
+| Remitos y movimientos | Funcional | Cancelar un remito emitido no devuelve el stock al origen (ver problemas conocidos). |
+| Movimientos en tránsito | Funcional | |
+| Usuarios, roles y permisos | Funcional | El alta desde el panel admin no funciona; se usa el registro y después se editan rol y permisos. |
+| Filtro por operación | Parcial | Solo se aplica en el listado de remitos; falta un *scope* global. |
+| Portal del técnico | Parcial | Solicitud y consumo funcionan; falta el historial por técnico y la validación por despachante. |
+| Reportes | Parcial | PDF y Excel básicos; faltan reportes avanzados. |
+| Tests | Pendiente | Solo los tests de ejemplo de Laravel. |
 
-## Requisitos
+## Próximos pasos
 
-- PHP ≥ 8.1
-- Composer
-- MySQL 8 o MariaDB
-- Node.js + NPM (para assets)
-- Laravel 10 o 11
-
-## Instalación
-
-1. Clonar el repositorio
-   ```Bash
-   git clone https://github.com/facundomassa/stock_system_laravel.git
-   cd stock_system_laravel
-   git checkout main 
-   ``` 
-2. Instalar dependencias
-    ```Bash
-    composer install
-    npm install
-    ```
-3. Copiar archivo de entorno    
-    ```Bash
-    cp .env.example .env
-    ```
-4. Generar clave de aplicación
-    ```Bash
-    php artisan key:generate
-    ```
-5. Configurar la base de datos en .env
-6. Ejecutar migraciones y seeders
-    ```Bash
-    php artisan migrate --seed
-    ```
-7. Compilar assets
-    ```Bash
-    npm run dev
-    # o para producción:
-    npm run build
-    ```
-8. Iniciar el servidor
-    ```Bash
-    php artisan serve
-    ```
-    Acceder en: http://127.0.0.1:8000
-    
-## Docker
-
-Para ejecutar el proyecto en Docker:
-1. Ejecutar
-    ```Bash
-    docker-compose up -d --build
-    ``` 
-2.  Entrar al contenedor
-    ```Bash
-    docker compose exec app bash
-    ```
-3. Instalar dependencias
-    ```Bash
-    composer install --no-interaction
-    ```
-4. Generar clave de aplicación
-    ```Bash
-    php artisan key:generate
-    ```
-5. Ejecutar migraciones y seeders
-    ```Bash
-    php artisan migrate                 
-    php artisan db:seed       
-    ```
-8. Iniciar el servidor
-    ```Bash
-    php artisan serve
-    ```
-    Acceder en: http://127.0.0.1:8000
-
-
-## Próximos pasos / Roadmap
-
-1. Implementar scope global para filtrar por operación/empresa activa.
-2. Desarrollar módulo completo para Técnicos:
-    - Solicitud de materiales
-    - Registro de consumos
-    - Validación por despachante
-    - Historial por técnico
-3. Mejorar UI/UX (rediseño de movement box, notification box, etc.)
-4. Agregar reportes básicos (stock crítico, movimientos por período, etc.)
-5. Tests unitarios y de características
-6. Documentación técnica detallada (arquitectura, modelos, servicios)
+1. Corregir los problemas de [docs/problemas-conocidos.md](docs/problemas-conocidos.md), empezando por los de seguridad.
+2. Aplicar un *scope* global por operación o empresa activa.
+3. Completar el módulo de técnicos: historial por técnico y validación de consumos por el despachante.
+4. Reportes avanzados (stock crítico, movimientos por período, consumo por técnico).
+5. Tests unitarios y de integración, y CI.
