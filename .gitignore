@@ -44,6 +44,7 @@ Temporary Items
 /storage/framework/cache/*
 /storage/logs/*.log
 .env
+.phpunit.result.cache
 npm-debug.log
 yarn-error.log
 

@@ -84,7 +84,7 @@
                 </div>
                 <div>
                     {!! $movements->links('vendor.pagination.bootstrap-5') !!}
-                    @if ($refer->status == 'I' || $refer->status == 'E')
+                    @if ($refer->status == 'I')
                     <a class="btn btn-warning me-2" href="{{ url('movement/create/' . $refer->id ) }}">Editar Articulos</a>
                 @endif
                 <a class="btn btn-secondary" href="{{ url('movement/show/' . $refer->id ) }}">Ver Articulos</a>

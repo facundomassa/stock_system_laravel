@@ -39,7 +39,7 @@ stateDiagram-v2
     I --> E: Emitir<br/>(requiere ≥ 1 artículo)
     I --> C: Cancelar
     E --> F: Finalizar
-    E --> C: Cancelar
+    E --> C: Cancelar<br/>(se repone el origen)
     F --> [*]
     C --> [*]
     note right of I: Ingresado — borrador,<br/>no toca el stock
@@ -62,7 +62,7 @@ El remito se crea en estado `I` con el usuario logueado como autor y se redirige
 
 ### 2. Cargar artículos (movimientos)
 
-Desde el detalle del remito, **Editar Artículos** abre `GET /movement/create/{remito}`:
+Desde el detalle de un remito en estado `I`, **Editar Artículos** abre `GET /movement/create/{remito}`:
 
 - La tabla de la derecha lista el catálogo con el stock disponible en el centro de origen. Se puede filtrar por nombre, tipo y código (AJAX a `GET /api/article`).
 - Los artículos marcados se pasan a la tabla del remito con **Insertar**; ahí se escribe la cantidad.
@@ -74,7 +74,7 @@ Desde el detalle del remito, **Editar Artículos** abre `GET /movement/create/{r
   - los renglones sin cantidad y sin marca de borrado se ignoran.
 - Al terminar se muestra un resumen ("Se eliminaron X de Y – Se actualizaron… – Se crearon…") con los errores de cada renglón, si los hubo.
 
-La interfaz permite editar artículos mientras el remito está en `I` o en `E`. Editar un remito ya emitido deja el stock inconsistente (ver [problemas conocidos](problemas-conocidos.md#se-pueden-editar-los-artículos-de-un-remito-emitido)): conviene hacerlo solo en estado `I`.
+Los artículos **solo se pueden cargar o modificar en estado `I`**. En cualquier otro estado el botón no aparece, y si se entra igual a la carga de artículos o se envía el formulario, `MovementController` vuelve al detalle del remito sin guardar nada y con el error *"No se pueden modificar los artículos del remito N porque está EMITIDO. Solo se pueden editar los artículos de remitos en estado INGRESADO."* Así el destino siempre se acredita con las mismas cantidades que se descontaron del origen. Para corregir un remito ya emitido, hay que cancelarlo (lo que repone el origen) y hacer uno nuevo.
 
 ### 3. Emitir (`I → E`)
 
@@ -99,20 +99,22 @@ Botón **Finalizar** (`PATCH /refer/finalized/{remito}`). `ReferService::finaliz
 Botón **Cancelar** (`DELETE /refer/{remito}`). No borra el remito: lo pasa a estado `C`.
 
 - Desde `I`: solo cambia el estado.
-- Desde `E`: intenta revertir el descuento. Por un error de implementación acredita el **destino** en lugar de devolver la mercadería al origen; ver [problemas conocidos](problemas-conocidos.md#cancelar-un-remito-emitido-acredita-el-destino-en-vez-de-devolver-al-origen).
+- Desde `E`: si el origen **no** es un proveedor (`P`), `StockService::restoreOriginStock` devuelve al stock del origen la cantidad de cada movimiento y lo saca de tránsito. El destino no se toca. Si el origen es un proveedor no hay nada que reponer, porque al emitir tampoco se descontó.
 - Los remitos finalizados no se pueden cancelar.
 
 ### Impacto en el stock según el tipo de centro
 
-| Origen → Destino | Al emitir | Al finalizar | Uso típico |
-|------------------|-----------|--------------|------------|
-| Proveedor → Depósito | Nada | + Depósito | Compra o ingreso inicial de mercadería. |
-| Depósito → Móvil | − Depósito | + Móvil | Entrega de materiales a un técnico. |
-| Móvil → Consumo | − Móvil | Nada | Material usado en campo. |
-| Depósito → Depósito / Taller | − Origen | + Destino | Transferencia interna. |
-| Proveedor → Consumo | Nada | Nada | Sin efecto en el stock. |
+| Origen → Destino | Al emitir | Al finalizar | Al cancelar un emitido | Uso típico |
+|------------------|-----------|--------------|------------------------|------------|
+| Proveedor → Depósito | Nada | + Depósito | Nada | Compra o ingreso inicial de mercadería. |
+| Depósito → Móvil | − Depósito | + Móvil | + Depósito | Entrega de materiales a un técnico. |
+| Móvil → Consumo | − Móvil | Nada | + Móvil | Material usado en campo. |
+| Depósito → Depósito / Taller | − Origen | + Destino | + Origen | Transferencia interna. |
+| Proveedor → Consumo | Nada | Nada | Nada | Sin efecto en el stock. |
 
-**Piso en cero:** si un remito descuenta más de lo disponible, el stock queda en 0 y no se registra la diferencia. El sistema no impide emitir con stock insuficiente.
+Cancelar un remito emitido deja el origen y el destino como estaban antes de emitir, salvo en el caso del piso en cero que se explica abajo.
+
+**Piso en cero:** si un remito descuenta más de lo disponible, el stock queda en 0 y no se registra la diferencia. El sistema no impide emitir con stock insuficiente. Si después se cancela ese remito, el origen recibe la cantidad completa del remito, no solo lo que se llegó a descontar (ver "El stock nunca baja de cero" en [problemas conocidos](problemas-conocidos.md)).
 
 ### PDF del remito
 

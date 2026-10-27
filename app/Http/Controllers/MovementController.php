@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Refer;
 use App\Services\MovementService;
 use App\Services\ReferService;
 use Illuminate\Http\RedirectResponse;
@@ -27,9 +28,14 @@ class MovementController extends Controller
         return view('movement.index', compact('movements'))->with('title', $this->title);
     }
 
-    public function create(int $id): View
+    public function create(int $id): View|RedirectResponse
     {
         $refer = $this->referService->findRefer($id);
+
+        if (!$this->isEditable($refer)) {
+            return $this->rejectEdition($refer);
+        }
+
         $movements = $this->movementService->getMovementsByRefer($id);
         $movements = $this->movementService->enrichMovementsWithStockInfo($movements, $refer);
         $movements = $this->movementService->enrichMovementsWithArticleInfo($movements);
@@ -43,6 +49,12 @@ class MovementController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $id_refer = $request->id_refer;
+        $refer = $this->referService->findRefer((int) $id_refer);
+
+        if (!$this->isEditable($refer)) {
+            return $this->rejectEdition($refer);
+        }
+
         $movementsData = $request->except(['_token', 'id_refer']);
 
         $cleanedData = [];
@@ -105,6 +117,21 @@ class MovementController extends Controller
         
         return view('movement.transit', compact('paginatedResults', 'refer'))
             ->with('title', 'Movimientos en Tránsito');
+    }
+
+    // Los artículos solo se pueden modificar antes de emitir: al emitir se descuenta
+    // el origen con estas cantidades y al finalizar se acredita el destino con las mismas.
+    private function isEditable(Refer $refer): bool
+    {
+        return $refer->status === 'I';
+    }
+
+    private function rejectEdition(Refer $refer): RedirectResponse
+    {
+        return redirect()->route('refer.show', $refer->id)
+            ->with('error', "No se pueden modificar los artículos del remito {$refer->id} porque está {$refer->status_name}. " .
+                'Solo se pueden editar los artículos de remitos en estado INGRESADO.')
+            ->with('title', $this->title);
     }
 
     private function generateResultMessage(array $results): string

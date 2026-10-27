@@ -41,8 +41,10 @@
         @if ($refer->status == 'I')
             <a class="btn btn-primary me-2" href="{{ url('refer/' . $refer->id . '/edit') }}">Emitir</a>
         @endif
-        @if ($refer->status == 'I' || $refer->status == 'E')
+        @if ($refer->status == 'I')
             <a class="btn btn-warning me-2" href="{{ url('movement/create/' . $refer->id ) }}">Editar</a>
+        @endif
+        @if ($refer->status == 'I' || $refer->status == 'E')
             <form class="d-inline" action="{{ url('/refer/finalized/' . $refer->id) }}" method="post">
                 @csrf
                 {{ method_field('PATCH') }}

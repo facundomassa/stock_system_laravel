@@ -146,7 +146,18 @@ Además, las vistas cargan desde CDN: jQuery 3.5.1, Chart.js, Boxicons y la fuen
 php artisan test
 ```
 
-Además de los de ejemplo de Laravel, hay tests de feature para el control de acceso (`tests/Feature/OperationAccessTest.php`) y el alta de usuarios desde el panel (`tests/Feature/AdminUserTest.php`). Corren sobre SQLite en memoria: `phpunit.xml` fuerza `DB_CONNECTION=sqlite` y `DB_DATABASE=:memory:`, así que no tocan la base MySQL de desarrollo. Necesitan la extensión `pdo_sqlite` y un `.env` con `APP_KEY`.
+`phpunit.xml` fuerza una base SQLite en memoria (`DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`) y define un `APP_KEY` solo para tests, así que no hace falta MySQL ni `.env` para correrlos. Requiere la extensión `pdo_sqlite`.
+
+| Test | Qué cubre |
+|------|-----------|
+| `tests/Feature/ReferCancelStockTest.php` | Emitir y cancelar un remito deja el stock del origen y del destino como estaba; cancelar desde un proveedor no toca el stock; finalizar acredita el destino. |
+| `tests/Feature/MovementEditionTest.php` | Los artículos de un remito emitido no se pueden abrir, guardar ni borrar; en un remito ingresado sí. |
+| `tests/Feature/OperationAccessTest.php` | El registro público está cerrado; `/operation-select` rechaza operaciones no permitidas; un usuario sin permisos, o al que le quitaron el de su operación, no entra a las pantallas de trabajo; el técnico entra sin operación; un usuario inactivo no entra. |
+| `tests/Feature/AdminUserTest.php` | El admin crea usuarios desde el panel (rol, permisos, activo, centro), el alta se valida y un usuario que no es admin recibe 403. |
+
+Los tests de remitos arman sus datos con el trait `tests/Concerns/CreatesStockScenario.php`.
+
+> No correr los tests con la configuración cacheada (`php artisan config:cache`): Laravel ignora `phpunit.xml`, usa la base del `.env` y `RefreshDatabase` la vacía. Si hace falta, ejecutar antes `php artisan config:clear`.
 
 ## Despliegue en producción
 
