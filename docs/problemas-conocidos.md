@@ -105,6 +105,7 @@ Al finalizar un remito cuyo destino es de tipo `C` no se llama a `adjustStock`, 
 - Pocos tests: solo cubren emitir, cancelar y finalizar remitos y la edición de sus artículos (`tests/Feature/ReferCancelStockTest.php`, `tests/Feature/MovementEditionTest.php`), el control de acceso (`tests/Feature/OperationAccessTest.php`) y el alta de usuarios desde el panel (`tests/Feature/AdminUserTest.php`). El resto del sistema no tiene tests.
 - Sin CI: el workflow `php.yml` que existía se borró.
 - `tymon/jwt-auth` está fijado en `dev-develop` y `minimum-stability` es `dev`: las instalaciones no son reproducibles fuera del `composer.lock`.
+- La imagen Docker (`.docker/php/Dockerfile`) usa `php:8.2-fpm`, pero el `composer.lock` pide PHP 8.3 o 8.4 (`lcobucci/clock` 3.5.0 exige ≥ 8.3), así que `composer install` falla dentro del contenedor. `composer.json` sigue declarando `^8.1`.
 - Conviven dos estilos de controlador (con servicios y sin ellos); los ABM viejos validan en el controlador y usan `request()->except(...)` para asignación masiva.
 
 ## Resueltos

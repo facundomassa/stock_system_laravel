@@ -4,7 +4,7 @@
 
 | Componente | Versión | Notas |
 |------------|---------|-------|
-| PHP | ≥ 8.1 (la imagen Docker usa 8.2) | Extensiones: `pdo_mysql`, `mbstring`, `xml`/`dom`, `gd`, `zip`, `bcmath`, `exif`, `pcntl`. `gd` y `zip` las usan DomPDF y Laravel Excel. |
+| PHP | 8.3 o 8.4 | `composer.json` declara `^8.1`, pero las versiones fijadas en `composer.lock` piden PHP ≥ 8.3 (`lcobucci/clock`) y < 8.5 (`phpoffice/phpspreadsheet`). Extensiones: `pdo_mysql`, `mbstring`, `xml`/`dom`, `gd`, `zip`, `bcmath`, `exif`, `pcntl`. `gd` y `zip` las usan DomPDF y Laravel Excel. |
 | Composer | 2.x | |
 | MySQL / MariaDB | MySQL 8 o MariaDB 10.x | Las migraciones usan claves foráneas, así que el motor tiene que ser InnoDB. |
 | Node.js + npm | Node 16 o superior | Solo para compilar los assets con Vite 3. |
@@ -43,6 +43,8 @@ El `docker-compose.yml` levanta tres contenedores en la red `stock-net`:
 | `app` | `stock-app` | `.docker/php/Dockerfile` (php:8.2-fpm + Composer) | — | Ejecuta PHP-FPM en el puerto 9000 interno. |
 | `nginx` | `stock-nginx` | `nginx:alpine` | `8000` → 80 | Sirve `public/` y pasa los `.php` a `app:9000` (`.docker/nginx/default.conf`). |
 | `db` | `stock-db` | `mysql:8.0` | `33060` → 3306 | Base `stock_system_laravel`, usuario `root`, contraseña `secret`. Los datos persisten en el volumen `dbdata`. |
+
+> **La imagen `app` todavía usa PHP 8.2**, que no alcanza para el `composer.lock` actual (ver [Requisitos](#requisitos)): `composer install` falla dentro del contenedor. Hasta que se actualice, cambiar `FROM php:8.2-fpm` por `FROM php:8.3-fpm` en `.docker/php/Dockerfile` antes de construir la imagen.
 
 Pasos:
 
@@ -85,7 +87,7 @@ Variables que importan para este proyecto (el resto son las estándar de Laravel
 
 | Variable | Valor de ejemplo | Uso |
 |----------|------------------|-----|
-| `APP_NAME` | `Sistema de Stock` | Título de la aplicación. |
+| `APP_NAME` | `"Sistema de Stock"` | Título de la aplicación. Va entre comillas porque tiene espacios: sin comillas, Laravel no puede leer el `.env` (*Failed to parse dotenv file*). Lo mismo vale para cualquier otro valor con espacios. |
 | `APP_ENV` / `APP_DEBUG` | `local` / `true` | En producción: `production` / `false`. |
 | `APP_URL` | `http://localhost` | URL base. |
 | `DB_*` | — | Conexión MySQL. |

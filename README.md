@@ -19,7 +19,7 @@ Sistema web interno para controlar inventario en varios almacenes, pensado para 
 
 | Capa | Tecnología |
 |------|------------|
-| Backend | PHP ≥ 8.1, **Laravel 9** |
+| Backend | PHP 8.3 o 8.4, **Laravel 9** |
 | Base de datos | MySQL 8 / MariaDB |
 | Frontend | Blade, Bootstrap 5, jQuery, Sass, Vite 3, Boxicons, Bootstrap Icons, Chart.js |
 | Paquetes | `spatie/laravel-permission`, `barryvdh/laravel-dompdf`, `maatwebsite/excel`, `laravel/ui`, `laravel/sanctum`, `tymon/jwt-auth` |
