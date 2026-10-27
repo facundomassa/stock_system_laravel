@@ -44,6 +44,19 @@ class OperationAccessTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'intruso@example.com']);
     }
 
+    public function test_el_registro_por_api_esta_deshabilitado()
+    {
+        $this->postJson('/api/register', [
+            'name' => 'Intruso',
+            'surname' => 'Intruso',
+            'email' => 'intruso@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertNotFound();
+
+        $this->assertDatabaseMissing('users', ['email' => 'intruso@example.com']);
+    }
+
     public function test_operation_select_rechaza_una_operacion_no_permitida()
     {
         $user = User::factory()->create();

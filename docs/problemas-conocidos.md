@@ -16,7 +16,10 @@ Fuera de `role:admin` y `role:tecnico`, no hay *policies* ni filtros por operaci
 `resources/js/functions/movement.js` arma las filas con *template strings* y `append` sin escapar (`${result[index].name}`, `code`, `type`). Un artículo con HTML o JavaScript en el nombre se ejecuta en el navegador de quien abra la carga de artículos de un remito.
 
 ### 🟡 Endpoint de artículos sin autenticación
-`GET /api/article` (`routes/api.php:36`) devuelve el catálogo completo sin pedir sesión ni token.
+`GET /api/article` (`routes/api.php:35`) devuelve el catálogo completo sin pedir sesión ni token.
+
+### 🟡 El login por API no comprueba si el usuario está activo
+`POST /api/login` (`UserController::authenticate`) entrega un token JWT aunque `users.is_active` sea falso, y con ese token `GET /api/user` devuelve los datos del usuario. Hoy el token no abre nada más (es la única ruta con `jwt.verify`), pero un usuario desactivado desde el panel puede seguir autenticándose por la API.
 
 ### 🟡 Credenciales y archivos sensibles en el repositorio
 - `DatabaseSeeder` crea usuarios con contraseñas triviales (`admin`/`admin`, etc.).
@@ -51,8 +54,8 @@ La ruta `notifications.index` (`routes/web.php:103`), enlazada desde `layouts/no
 ### 🟡 Botón "Finalizar" en remitos ingresados
 El listado y el detalle muestran "Finalizar" también en estado `I`, pero el servicio solo acepta `E` y devuelve un error.
 
-### 🟡 Registro por API roto
-`UserController` (`app/Http/Controllers/UserController.php:5`) importa `App\User`, que no existe (el modelo es `App\Models\User`), y no envía `surname`, que es obligatorio. `POST /api/register` responde 500. Si se arregla, volvería a abrir el alta pública que se cerró en la web (ver [Resueltos](#resueltos)), así que conviene borrar la ruta en lugar de arreglarla. Tampoco hay `config/jwt.php` publicado: hace falta `JWT_SECRET` para que funcione el login JWT.
+### 🟡 El login JWT necesita `JWT_SECRET`
+No hay `config/jwt.php` publicado y `.env.example` no trae `JWT_SECRET`. Sin esa variable, `POST /api/login` responde 500 (`{"error":"could_not_create_token"}`). Se genera con `php artisan jwt:secret` (ver [Instalación](instalacion.md)).
 
 ### 🟡 Rutas declaradas sin método o tapadas
 - `Route::resource('technical', ...)` (`routes/web.php:65`): `TechnicalController` no implementa ninguna acción REST.
@@ -108,6 +111,13 @@ Al finalizar un remito cuyo destino es de tipo `C` no se llama a `adjustStock`, 
 - Conviven dos estilos de controlador (con servicios y sin ellos); los ABM viejos validan en el controlador y usan `request()->except(...)` para asignación masiva.
 
 ## Resueltos
+
+### La API conservaba una ruta de registro público
+✅ Corregido en octubre de 2026. Después de cerrar `/register` en la web, `routes/api.php` seguía declarando `POST /api/register` (`UserController@register`). Respondía 500 porque el controlador importaba `App\User` (el modelo es `App\Models\User`) y no enviaba `surname`, que es obligatorio. Pero si alguien arreglaba ese error, volvía a abrir el alta pública, con el usuario nuevo activo, porque `is_active` es `true` por defecto.
+
+- Se borraron la ruta y el método `UserController::register`: `POST /api/register` responde 404. Los usuarios se crean solo desde el panel (`POST /admin/users`).
+- `POST /api/login` y `GET /api/user` no cambiaron.
+- Tests: `tests/Feature/OperationAccessTest.php`.
 
 ### Cualquier persona podía registrarse y operar sobre todos los datos
 ✅ Corregido en octubre de 2026. Antes, `/register` estaba abierto al público, el usuario nuevo quedaba activo y `HomeController::operationSelect` guardaba en la sesión **cualquier** valor de `selected_operation`: con un POST a `/operation-select` se entraba a todas las pantallas de trabajo (stock, remitos, centros, personas…) y se las podía modificar.

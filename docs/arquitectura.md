@@ -76,7 +76,7 @@ Conviven dos estilos:
 | `AdminController` | Gestión de usuarios: rol, permisos, estado activo y centro de stock asignado. |
 | `ImportController` | Importación CSV de artículos, personas y direcciones. |
 | `TechnicalController` | Portal del técnico: dashboard, solicitud de materiales y reporte de consumo. |
-| `UserController` | Registro y login por JWT para la API (ver [problemas conocidos](problemas-conocidos.md)). |
+| `UserController` | Login por JWT para la API y usuario del token (ver [problemas conocidos](problemas-conocidos.md)). |
 | `PermissionController` | Esqueleto vacío, sin rutas. |
 
 ## Servicios (`app/Services`)
@@ -208,6 +208,6 @@ Los gráficos del dashboard usan Chart.js por CDN (`cdn.jsdelivr.net/npm/chart.j
 
 - `GET /api/country` y `GET /api/state/{country}`: leen `database/data/countries.json`.
 - `GET /api/article`: buscador de artículos que usa la pantalla de carga de remitos. **No requiere autenticación.**
-- `POST /api/register`, `POST /api/login`, `GET /api/user`: autenticación JWT con `tymon/jwt-auth`. Ver [problemas conocidos](problemas-conocidos.md).
+- `POST /api/login` y `GET /api/user`: autenticación JWT con `tymon/jwt-auth`. No hay alta de usuarios por la API: los crea un admin desde el panel. Ver [problemas conocidos](problemas-conocidos.md).
 
 El throttle de la API es de 60 solicitudes por minuto por usuario o IP (`RouteServiceProvider`).

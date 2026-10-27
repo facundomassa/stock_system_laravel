@@ -130,10 +130,11 @@ Grupo `api`: sin sesión, con throttle de 60 solicitudes por minuto.
 | GET | `/api/country` | — | `api\ApiCountryController@country` | Países ordenados por nombre, desde `database/data/countries.json`. |
 | GET | `/api/state/{country}` | — | `api\ApiCountryController@state` | Provincias del país (por nombre). `[]` si no existe. |
 | GET | `/api/article` | — | `ArticleController@filters` | Busca artículos. Parámetros: `nameTx`, `typeTx`, `codeTx`, `refer` (agrega el stock del origen del remito). |
-| POST | `/api/register` | — | `UserController@register` | Alta con JWT (no funciona; ver problemas conocidos). |
-| POST | `/api/login` | — | `UserController@authenticate` | Devuelve `{token}` JWT. |
+| POST | `/api/login` | — | `UserController@authenticate` | Devuelve `{token}` JWT. Necesita `JWT_SECRET` (ver [problemas conocidos](problemas-conocidos.md)). |
 | GET | `/api/user` | `jwt.verify` | `UserController@getAuthenticatedUser` | Usuario del token. |
 | GET | `/api/user` | `auth:sanctum` | closure | Misma URI que la anterior pero declarada antes; Laravel se queda con la última registrada (la de JWT), así que esta queda sin efecto. |
+
+No hay alta de usuarios por la API: `POST /api/register` se eliminó y responde 404. Los usuarios los crea un admin desde `POST /admin/users`.
 
 ## Canales de broadcasting
 

@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('register', [UserController::class,'register']);
 Route::post('login', [UserController::class, 'authenticate']);
 Route::get('country', [ApiCountryController::class, 'country']);
 Route::get('state/{country}', [ApiCountryController::class, 'state']);
