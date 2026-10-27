@@ -1,6 +1,6 @@
 # Problemas conocidos y deuda técnica
 
-Relevados leyendo el código mientras se escribía esta documentación (rama `main`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Ninguno se corrigió en este cambio: esta página solo los registra.
+Relevados leyendo el código mientras se escribía esta documentación (rama `master`, octubre 2026). Cada punto indica dónde está el problema y qué efecto tiene. Ninguno se corrigió en este cambio: esta página solo los registra.
 
 Gravedad: 🔴 alta · 🟠 media · 🟡 baja.
 
