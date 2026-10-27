@@ -30,8 +30,11 @@ Después del login, los usuarios que no son técnicos pasan por `/operation-sele
 
 - Si tienen **una** operación permitida, se selecciona sola.
 - Si tienen varias, eligen una. La elección se guarda en `session('selected_operation')` y dura lo que dura la sesión.
+- Si no tienen ninguna, la pantalla les avisa que un administrador tiene que habilitarlos, y no pueden pasar de ahí.
 
-El middleware `checkSelectedOperation` bloquea las pantallas de trabajo hasta que haya una operación seleccionada.
+La operación enviada se valida contra las permitidas (`get_allowed_operations_list()`): si el usuario no tiene el permiso de esa operación, se rechaza con un error de validación y no se guarda en la sesión.
+
+El middleware `checkSelectedOperation` bloquea las pantallas de trabajo hasta que haya una operación seleccionada. Además, en cada request vuelve a comprobar que la operación de la sesión siga entre las permitidas. Si un admin le quita a un usuario el permiso de la operación que tiene seleccionada, en el siguiente request se descarta y se lo manda a `/operation-select` a elegir otra. Los técnicos siguen exceptuados: entran a sus pantallas sin operación seleccionada.
 
 ### Qué filtra la operación activa
 
@@ -49,7 +52,7 @@ El filtrado por operación **todavía es parcial** (falta un *scope* global):
 
 | Grupo de rutas | Middleware | admin | dispatcher | tecnico |
 |----------------|------------|:-----:|:----------:|:-------:|
-| `/`, `/login`, `/register` | público | ✔ | ✔ | ✔ |
+| `/`, `/login` | público | ✔ | ✔ | ✔ |
 | `/operation-select` | `auth`, `checkIfUserIsActive` | ✔ | ✔ | ✔ |
 | `/admin/users*`, `/operation*`, `/importar` | + `role:admin` | ✔ | ✘ | ✘ |
 | `/technical/*` | + `checkSelectedOperation`, `role:tecnico` | ✘ | ✘ | ✔ |
@@ -61,14 +64,14 @@ Las rutas no tienen *policies* ni chequeos por registro: cualquier usuario que l
 
 ## Usuarios inactivos
 
-`users.is_active = false` bloquea el acceso: el middleware `checkIfUserIsActive` cierra la sesión en el siguiente request y muestra *"Tu cuenta está inactiva."*. Se cambia desde la edición de usuario. No hay borrado de usuarios desde la interfaz: se desactivan.
+`users.is_active = false` bloquea el acceso: el middleware `checkIfUserIsActive` cierra la sesión en el siguiente request y muestra *"Tu cuenta está inactiva."*. Se elige al crear el usuario y se cambia desde la edición. No hay borrado de usuarios desde la interfaz: se desactivan.
 
 ## Gestión de usuarios
 
-**Administración → Usuarios** (`/admin/users`, solo admin) lista los usuarios con sus roles y permisos. Desde **Editar** se cambian:
+**Administración → Usuarios** (`/admin/users`, solo admin) lista los usuarios con sus roles y permisos. Desde **Nuevo Usuario** se crean y desde **Editar** se cambian:
 
 - nombre, apellido y email;
-- contraseña (opcional, mínimo 8 caracteres; vacía la deja como está);
+- contraseña (al crear es obligatoria, con confirmación y mínimo 8 caracteres; al editar es opcional y vacía la deja como está);
 - rol (uno solo);
 - permisos de operación (casillas);
 - estado activo o inactivo;
@@ -76,8 +79,9 @@ Las rutas no tienen *policies* ni chequeos por registro: cualquier usuario que l
 
 ### Alta de usuarios
 
-- El registro en `/register` está **abierto al público**. El usuario nuevo queda activo, sin rol y sin permisos, y un admin tiene que asignárselos desde la edición.
-- El formulario **Crear usuario** del panel de administración envía a la ruta pública `register`, que solo acepta visitantes sin sesión, así que con un admin logueado no crea el usuario. Ver [problemas conocidos](problemas-conocidos.md).
+- El registro público está **cerrado** (`Auth::routes(['register' => false, ...])` en `routes/web.php`): `/register` responde 404 y la pantalla de bienvenida ya no muestra el enlace.
+- Los usuarios los crea un admin desde **Administración → Usuarios → Nuevo Usuario** (`POST /admin/users`, `AdminController@store`). En el mismo formulario se cargan los datos personales, la contraseña, el rol, los permisos de operación, el estado activo y el centro de stock. El primer admin lo crea el `DatabaseSeeder`.
+- Si se vuelve a habilitar el registro público, `RegisterController` crea al usuario **inactivo** (`is_active = false`): no puede entrar hasta que un admin lo active y le asigne rol y permisos.
 - El reseteo de contraseña por email está deshabilitado (`Auth::routes(['reset' => false])`): un admin cambia la contraseña desde la edición.
 
 ## Tareas habituales
@@ -89,8 +93,8 @@ Las rutas no tienen *policies* ni chequeos por registro: cualquier usuario que l
 4. Asignar el permiso a los usuarios que van a trabajar en ella.
 
 **Dar de alta un técnico**
-1. El técnico se registra en `/register` (o lo crea un admin con `php artisan tinker`).
-2. Admin → Usuarios → Editar: rol `tecnico`, permiso de su operación, centro de stock Móvil asignado, activo.
+1. Admin → Usuarios → Nuevo Usuario: nombre, apellido, email y contraseña.
+2. En el mismo formulario: rol `tecnico`, permiso de su operación, centro de stock Móvil asignado y activo.
 
 **Cambios de permisos hechos directo en la base**
 Spatie cachea los permisos por 24 horas. Si se modifican tablas de permisos por SQL, limpiar la caché:

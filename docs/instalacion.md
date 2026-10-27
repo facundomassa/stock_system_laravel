@@ -152,8 +152,10 @@ php artisan test
 |------|-----------|
 | `tests/Feature/ReferCancelStockTest.php` | Emitir y cancelar un remito deja el stock del origen y del destino como estaba; cancelar desde un proveedor no toca el stock; finalizar acredita el destino. |
 | `tests/Feature/MovementEditionTest.php` | Los artículos de un remito emitido no se pueden abrir, guardar ni borrar; en un remito ingresado sí. |
+| `tests/Feature/OperationAccessTest.php` | El registro público está cerrado; `/operation-select` rechaza operaciones no permitidas; un usuario sin permisos, o al que le quitaron el de su operación, no entra a las pantallas de trabajo; el técnico entra sin operación; un usuario inactivo no entra. |
+| `tests/Feature/AdminUserTest.php` | El admin crea usuarios desde el panel (rol, permisos, activo, centro), el alta se valida y un usuario que no es admin recibe 403. |
 
-Los datos de prueba se arman con el trait `tests/Concerns/CreatesStockScenario.php`.
+Los tests de remitos arman sus datos con el trait `tests/Concerns/CreatesStockScenario.php`.
 
 > No correr los tests con la configuración cacheada (`php artisan config:cache`): Laravel ignora `phpunit.xml`, usa la base del `.env` y `RefreshDatabase` la vacía. Si hace falta, ejecutar antes `php artisan config:clear`.
 
